@@ -15,13 +15,14 @@ class ForceField extends IDObject {
     /*
     vars can be used: time, pos (target), v (target), mass (target), TARGET_varNickname (var of target), VAR_varid
     */
-    constructor(world, expression = "", condition = "") {
+    constructor(world, expression = "", condition = "", nickname = "Untitled Force Field") {
         super();
         this.world = world;
         this.expression = expression;
         this.condition = condition;
         this.compiled_expression = math.compile(expression);
         this.compiled_condition = math.compile(condition);
+        this.nickname = nickname;
 
         world.add(this);
     }
@@ -50,4 +51,54 @@ class ForceField extends IDObject {
     }
 }
 
-export { ForceField };
+class FakeVar_FF {
+    type = "derived";
+    nickname;
+
+    constructor(ff) {
+        this.ff = ff;
+        this.nickname = ff.nickname;
+    }
+
+    get expression() {
+        return this.ff.expression;
+    }
+
+    set expression(newExpression) {
+        this.ff.expression = newExpression;
+        this.ff.compiled_expression = math.compile(newExpression);
+    }
+
+    get value() {
+        return null;
+    }
+
+    set value(newValue) {
+        this.ff.expression = newValue;
+        this.ff.compiled_expression = math.compile(newValue);
+    }
+
+    _getDependencies() {
+        return [];
+    }
+
+    reset(nickname, value, type = "immediate") {
+        this.ff.nickname = nickname;
+        this.ff.expression = value;
+        this.ff.compiled_expression = math.compile(value);
+    }
+
+    resetWithParams({ nickname, value, type = "immediate" }) {
+        this.reset(nickname || this.nickname, value, type);
+    }
+
+    checkCircularDependency() {
+        return {
+            hasCycle: false,
+            cyclePath: [],
+            message: "No circular dependency found"
+        };
+    }
+}
+
+export { ForceField, FakeVar_FF };

@@ -257,7 +257,7 @@ function enhanceLatex(latex) {
  * @param {boolean} disabled - Whether the input is disabled
  * @returns {Object} Object with methods to update and manage the math input
  */
-function createMathInput(container, variable, uniqueId, disabled = false) {
+function createMathInput(container, variable, uniqueId, disabled = false, onChange = null) {
     const mathDisplayId = uniqueId + '_display';
     const inputId = uniqueId + '_input';
 
@@ -324,6 +324,11 @@ function createMathInput(container, variable, uniqueId, disabled = false) {
                         renderMathExpression(mathDisplay, newExpression).catch(() => {
                             mathDisplay.innerHTML = `<code>=${newExpression}</code>`;
                         });
+
+                        // Trigger onChange callback if provided
+                        if (onChange && typeof onChange === 'function') {
+                            onChange(variable, newExpression);
+                        }
                     } catch (error) {
                         // If the expression is invalid, revert and show error
                         input.value = "=" + variable.expression;
@@ -339,6 +344,11 @@ function createMathInput(container, variable, uniqueId, disabled = false) {
                 renderMathExpression(mathDisplay, input.value).catch(() => {
                     mathDisplay.innerHTML = `<code>=${input.value}</code>`;
                 });
+
+                // Trigger onChange callback if provided
+                if (onChange && typeof onChange === 'function') {
+                    onChange(variable, Number(input.value));
+                }
             }
 
             // Update the value display
@@ -387,12 +397,12 @@ function createMathInput(container, variable, uniqueId, disabled = false) {
  * @param {boolean} disabled - Whether the input is disabled
  * @returns {Object} Math input management object
  */
-function initializeMathInput(container, variable, uniqueId, disabled = false) {
+function initializeMathInput(container, variable, uniqueId, disabled = false, onChange = null) {
     if (variable.type !== 'derived') {
         throw new Error('Math input can only be used with derived variables');
     }
     
-    return createMathInput(container, variable, uniqueId, disabled);
+    return createMathInput(container, variable, uniqueId, disabled, onChange);
 }
 
 export {

@@ -44,6 +44,7 @@
     right: 0;
     width: 30%;
     height: calc(100% - 3rem);
+    overflow-y: auto;
     background-color: #e6e6e6;
 }
 

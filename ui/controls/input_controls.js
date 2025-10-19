@@ -1,7 +1,7 @@
 import { createVectorVisualization } from './vector_visualizer.js';
 import { renderMathExpression, initializeMathInput } from './mathinput.js';
 
-function InputNormal({ field, variable, disabled = false }) {
+function InputNormal({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     var defaultValue = (variable.type == 'derived' ? '=' + variable.expression : variable.value);
 
@@ -61,6 +61,11 @@ function InputNormal({ field, variable, disabled = false }) {
         }
 
         updateValueDisplay();
+        
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, e.target.value);
+        }
     });
 
     // Initial value display update
@@ -69,7 +74,7 @@ function InputNormal({ field, variable, disabled = false }) {
     return dom;
 }
 
-function InputNumber({ field, variable, disabled = false }) {
+function InputNumber({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
 
     // Generate unique ID for value display
@@ -115,6 +120,11 @@ function InputNumber({ field, variable, disabled = false }) {
         });
 
         updateValueDisplay();
+        
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, newValue);
+        }
     });
 
     // Initial value display update
@@ -123,7 +133,7 @@ function InputNumber({ field, variable, disabled = false }) {
     return dom;
 }
 
-function InputRange({ field, variable, range = [0, 100], step = 1, disabled = false }) {
+function InputRange({ field, variable, range = [0, 100], step = 1, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     dom.innerHTML = `<b class="field-title">${field}:</b> <input type="range" value="${variable.value}" ${disabled ? "disabled" : ""} min="${range[0]}" max="${range[1]}" step="${step}" /> <label id="value-disp">${variable.value}</label>`;
 
@@ -137,12 +147,17 @@ function InputRange({ field, variable, range = [0, 100], step = 1, disabled = fa
             value: newValue,
             type: 'immediate',
         });
+        
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, newValue);
+        }
     });
 
     return dom;
 }
 
-function InputVector2({ field, variable, disabled = false }) {
+function InputVector2({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     dom.className = "input-vector2-container";
 
@@ -163,12 +178,12 @@ function InputVector2({ field, variable, disabled = false }) {
     const infoArea = dom.querySelector(`#${infoAreaId}`);
 
     // Initialize the vector visualization
-    createVectorVisualization(visualArea, infoArea, variable, disabled);
+    createVectorVisualization(visualArea, infoArea, variable, disabled, onChange);
 
     return dom;
 }
 
-function InputMath({ field, variable, disabled = false }) {
+function InputMath({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     dom.className = "input-math-container";
 
@@ -185,11 +200,11 @@ function InputMath({ field, variable, disabled = false }) {
         const mathInputArea = dom.querySelector('.math-input-area');
 
         // Use the math input utilities to create and manage the math input
-        initializeMathInput(mathInputArea, variable, uniqueId, disabled);
+        initializeMathInput(mathInputArea, variable, uniqueId, disabled, onChange);
 
         return dom;
     } else {
-        return InputNormal({ field: field, variable: variable, disabled: disabled });
+        return InputNormal({ field: field, variable: variable, disabled: disabled, onChange: onChange });
     }
 }
 

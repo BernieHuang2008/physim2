@@ -66,13 +66,16 @@ class UI_Section {
     addHTML(html) {
         if (this._chain_constructor) {
             this._chain_constructor.contents.push({
-                html: html
+                type: "html",
+                html: html,
+                dom: null,
             });
         }
         else {
             this.contents.push({
                 type: "html",
-                html: html
+                html: html,
+                dom: null,
             });
         }
         return this;
@@ -87,10 +90,10 @@ class UI_Section {
     render() {
         function _create_subsection_dom(subsection) {
             var sub_dom = document.createElement("div");
-            sub_dom.className = "ui-subsection no-select";
+            sub_dom.className = `ui-subsection no-select ${subsection.collapsed ? 'collapsed' : ''}`;
             sub_dom.innerHTML = `
                 <div class="subsection-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <h3 class="ui-label-h3 ${subsection.collapsed ? 'collapsed' : ''}">${subsection.title}</h3>
+                    <h3 class="ui-label-h3">${subsection.title}</h3>
                 </div>
                 <div class="subsection-content"></div>
             `;
@@ -108,9 +111,10 @@ class UI_Section {
 
         for (let subsection of this.contents) {
             if (subsection.type === "html") {
-                var html_dom = document.createElement("div");
+                var html_dom = subsection.dom || document.createElement("div");
                 html_dom.innerHTML = subsection.html;
                 this.dom_content.appendChild(html_dom);
+                subsection.dom = html_dom;
             }
             if (subsection.type === "subsection") {
                 // render subsection

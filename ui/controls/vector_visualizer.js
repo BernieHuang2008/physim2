@@ -4,7 +4,7 @@
  * Extracted from the original input_controls.js implementation
  */
 
-export function createVectorVisualization(visualArea, infoArea, variable, disabled) {
+export function createVectorVisualization(visualArea, infoArea, variable, disabled, onChange = null) {
     const SVG_SIZE = 120;
     const CENTER = SVG_SIZE / 2;
     const MAX_VECTOR_LENGTH = 45; // Maximum visual length of vector
@@ -86,6 +86,11 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     function setVectorValue(x, y) {
         variable.value = [x, y];
         updateDisplay();
+        
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, [x, y]);
+        }
     }
 
     function calculateMagnitude(x, y) {

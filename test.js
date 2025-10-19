@@ -25,6 +25,7 @@ console.log(b);
 import { ForceField } from "./phy/ForceField.js";
 
 var ffi = new ForceField(world, "mass * 10", "true");
+b.ffs.push(ffi.id);
 console.log(ffi);
 
 render_frame(world);
