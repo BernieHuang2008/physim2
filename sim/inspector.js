@@ -48,7 +48,21 @@ function inspect_phyobj(world, phyobj_id) {
         .addUIControl(UIControls.InputControls.InputVector2, { field: "Velocity", variable: phyobj.velocity, disabled: true })
 
     inspector_ui_section.addSubsection("Vars")
-        .addUIControl(UIControls.Tables.VarList, { field: "Vars", vars: phyobj.vars.map(v_id => phyobj.world.vars[v_id]) })
+        .addUIControl(UIControls.Tables.ColumedList, { 
+            field: "Variables", 
+            iterator: phyobj.vars.map(v_id => phyobj.world.vars[v_id]),
+            colums: [
+                // 第一列：显示变量昵称
+                (variable) => {
+                    const span = document.createElement("span");
+                    span.className = "var-nickname";
+                    span.textContent = variable.nickname;
+                    return span;
+                },
+                // 第二列：显示变量的 math input
+                (variable) => UIControls.InputControls.InputMath({ field: "", variable: variable }),
+            ]
+        })
 
     inspector_ui_section.render();
 }

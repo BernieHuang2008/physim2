@@ -1,18 +1,18 @@
 import { createVectorVisualization } from './vector_visualizer.js';
-import { renderMathExpression, initializeMathInput } from './math_utils.js';
+import { renderMathExpression, initializeMathInput } from './mathinput.js';
 
 function InputNormal({ field, variable, disabled = false }) {
     var dom = document.createElement("div");
     var defaultValue = (variable.type == 'derived' ? '=' + variable.expression : variable.value);
-    
+
     // Generate unique ID for value display
     const uniqueId = 'normal_' + Math.random().toString(36).substr(2, 9);
-    
+
     dom.innerHTML = `<b class="field-title">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
     const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
-    
+
     let isEditing = false;
 
     // Function to update the value display
@@ -59,7 +59,7 @@ function InputNormal({ field, variable, disabled = false }) {
             });
             defaultValue = e.target.value;
         }
-        
+
         updateValueDisplay();
     });
 
@@ -71,15 +71,15 @@ function InputNormal({ field, variable, disabled = false }) {
 
 function InputNumber({ field, variable, disabled = false }) {
     var dom = document.createElement("div");
-    
+
     // Generate unique ID for value display
     const uniqueId = 'number_' + Math.random().toString(36).substr(2, 9);
-    
+
     dom.innerHTML = `<b class="field-title">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
     const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
-    
+
     let isEditing = false;
 
     // Function to update the value display
@@ -113,7 +113,7 @@ function InputNumber({ field, variable, disabled = false }) {
             value: newValue,
             type: 'immediate',
         });
-        
+
         updateValueDisplay();
     });
 
@@ -177,13 +177,13 @@ function InputMath({ field, variable, disabled = false }) {
 
         dom.innerHTML = `
             <div class="math-field-container">
-                <b class="field-title">${field}:</b>
+                <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
                 <div class="math-input-area"></div>
             </div>
         `;
 
         const mathInputArea = dom.querySelector('.math-input-area');
-        
+
         // Use the math input utilities to create and manage the math input
         initializeMathInput(mathInputArea, variable, uniqueId, disabled);
 
