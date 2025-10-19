@@ -1,0 +1,109 @@
+/* Vector2 Input Component Styles */
+.input-vector2-container {
+    margin: 0.5rem 0;
+}
+
+.vector2-label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.vector2-inputs {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.vector2-visual-area {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0;
+}
+
+.vector2-svg {
+    background-color: #fafafa;
+}
+
+.vector2-svg.disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+.vector2-info-area {
+    margin-top: 0.5rem;
+    display: flex;
+    align-content: space-around;
+    flex-wrap: wrap;
+}
+
+.vector2-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.vector2-coords {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.vector2-coords label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.coord-input {
+    width: 4rem;
+    padding: 0.125rem 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.875rem;
+}
+
+.coord-input:focus {
+    outline: none;
+    border-color: #007acc;
+}
+
+.coord-input:disabled {
+    /* background-color: #f5f5f5; */
+    color: #666;
+}
+
+.vector2-polar {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #00f;
+}
+
+.vector2-info-area.disabled .vector2-polar {
+    color: #666;
+}
+
+.magnitude-input {
+    width: 4rem;
+    padding: 0.125rem 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    color: #00f;
+}
+
+.angle-input {
+    width: 4rem;
+    padding: 0.125rem 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    color: #00f;
+}
+
+input:disabled {
+    color: #666;
+}

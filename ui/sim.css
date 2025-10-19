@@ -1,0 +1,19 @@
+#simulation-area-anchor {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    /* width: 10px;
+    height: 10px;
+    background-color: red; */
+}
+
+#simulation-area-background {
+    position: absolute;
+
+    --grid-color: #5a5a5a60;
+    --grid-size: 20px;
+
+    background: radial-gradient(circle , var(--grid-color) .5px, transparent .5px);
+    background-size: var(--grid-size) var(--grid-size);
+}

@@ -1,0 +1,11 @@
+.phyobj {
+    position: absolute;
+}
+
+.phyobj.phyobj-particle {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}

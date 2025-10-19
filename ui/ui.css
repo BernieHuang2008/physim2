@@ -1,0 +1,58 @@
+hr {
+    --hr-side-color: transparent;
+    --hr-center-color: #909090;
+
+    border: 0;
+    border-radius: 1px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--hr-side-color), var(--hr-center-color), var(--hr-side-color));
+}
+
+.small {
+    font-size: 0.75rem;
+}
+
+.big {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.gray {
+    color: #909090;
+}
+
+.float-right {
+    float: right;
+}
+
+@font-face {
+    font-family: SegoeMDL2;
+    src: url('mwfmdl2-v3.54.woff');
+}
+
+.symbol {
+    font-family: SegoeMDL2;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.no-select {
+    user-select: none;
+}
+
+input.input-short {
+    width: 4rem;
+}
+
+h3.ui-label-h3 {
+    font-weight: bold;
+    /* text-align: center; */
+    background-color: #c4c4c4;
+}
+
+b.field-title {
+    font-family: serif;
+}
+

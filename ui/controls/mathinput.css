@@ -1,0 +1,162 @@
+
+/* Math Input Component Styles */
+.input-math-container {
+    margin-bottom: 1rem;
+}
+
+.math-field-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.math-input-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0; /* Allow shrinking below content size */
+}
+
+.math-display-area {
+    background: #f8f9fa;
+    /* border-radius: 6px; */
+    padding: 0.75rem 1rem;
+    min-height: 2.5rem;
+    min-width: 150px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.math-display-area:hover:not(.disabled) {
+    border-color: var(--color-400);
+    background: #f0f7f3;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.math-display-area.disabled {
+    cursor: not-allowed;
+    background: #eaeaea;
+}
+
+.math-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-400);
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 200px;
+    font-family: 'Courier New', monospace;
+}
+
+.math-input:focus {
+    outline: none;
+    border-color: var(--color-500);
+    box-shadow: 0 0 0 3px rgba(185, 222, 201, 0.2);
+}
+
+.math-input.hidden {
+    display: none;
+}
+
+.math-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Variable value display */
+.variable-value-display {
+    color: #666;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+    font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* MathJax styling enhancements */
+.math-display-area .MathJax {
+    font-size: inherit !important;
+}
+
+.math-display-area mjx-container {
+    margin: 0 !important;
+}
+
+/* Var Span */
+mjx-container foreignObject {
+    overflow: visible;
+}
+
+mjx-container .var-in-math{
+    /* 抵消 mjx 的 svg effect */
+    display: inline-block;
+    transform: scaleY(-1);
+    height: 1000px;
+    translate: 0 -125px;
+    font-size: 900px;
+
+    --var-in-math-prefix: "";
+    font-family: math;
+    background: linear-gradient(120deg, var(--color-300) 26%, var(--color-600) 26%);
+    overflow: hidden;
+}
+
+.var-in-math.var {
+    --var-in-math-prefix: "VAR";
+    background: linear-gradient(120deg, var(--color-300) 1350px, var(--color-600) 1350px);
+}
+
+.var-in-math.target {
+    --var-in-math-prefix: "𝄌";
+    background: linear-gradient(120deg, rgb(250, 191, 250) 1100px, violet 1100px);
+}
+
+.var-in-math.target::before {
+    padding: 0;
+    padding-left: 225px;
+    font-size: 1000px;
+}
+
+mjx-container .var-in-math::before {
+    content: var(--var-in-math-prefix);
+    font-size: 450px;
+    display: inline-block;
+    position: absolute;
+    height: 50%;
+    padding: 225px;
+}
+
+.var-in-math-nickname {
+    font-size: 600px;
+    color: var(--color-50);
+    font-family: sans-serif;
+    margin-left: 1500px;
+    margin-right: 225px;
+}
+
+.var-in-math.target .var-in-math-nickname {
+    color: white;
+    margin-left: 1300px;
+}
+
+.var-in-math-id {
+    display: none;
+    font-size: 300px;
+    color: white;
+    font-family: sans-serif;
+}
+
+.var-in-math-placeholder {
+    font-size: 900px;
+    color: transparent;
+}
