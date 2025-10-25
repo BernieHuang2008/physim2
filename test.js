@@ -24,7 +24,8 @@ console.log(b);
 
 import { ForceField } from "./phy/ForceField.js";
 
-var ffi = new ForceField(world, "mass * 10", "true");
+var ffi = new ForceField(world, "mass * [0, -10]", "true");
+// var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
 b.ffs.push(ffi.id);
 console.log(ffi);
 

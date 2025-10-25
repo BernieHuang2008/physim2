@@ -17,3 +17,8 @@
     background: radial-gradient(circle , var(--grid-color) .5px, transparent .5px);
     background-size: var(--grid-size) var(--grid-size);
 }
+
+#visualField-cover {
+    width: 100%;
+    height: 100%;
+}

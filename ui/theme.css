@@ -10,4 +10,16 @@ body {
     --color-800: #173727;
     --color-900: #001507;
     --color-950: #000100;
+
+    --tcolor-50: black;
+    --tcolor-100: black;
+    --tcolor-200: black;
+    --tcolor-300: black;
+    --tcolor-400: black;
+    --tcolor-500: white;
+    --tcolor-600: white;
+    --tcolor-700: white;
+    --tcolor-800: white;
+    --tcolor-900: white;
+    --tcolor-950: white;
 }

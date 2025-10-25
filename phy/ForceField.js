@@ -29,9 +29,9 @@ class ForceField extends IDObject {
 
     compute_force(phyobject, time, vars={}) {
         var scope = {
-            pos: phyobject.pos,
-            v: phyobject.velocity,
-            mass: phyobject.mass,
+            pos: phyobject.pos.value,
+            v: phyobject.velocity.value,
+            mass: phyobject.mass.value,
             time: time,
         };
         var target_vars = {};
@@ -47,7 +47,7 @@ class ForceField extends IDObject {
         }
 
         var force = this.compiled_expression.evaluate(scope);
-        return force;
+        return Array.isArray(force) ? force : force._data;
     }
 }
 

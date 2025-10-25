@@ -93,7 +93,7 @@ function expressionToLatex(expression) {
 
                     switch (header) {
                         case 'TARGET':
-                            header = TARGET_IN_MATH_SPECIAL_CHAR+"Oo";  // also placeholders
+                            header = TARGET_IN_MATH_SPECIAL_CHAR + "Oo";  // also placeholders
                             break;
                         case 'VAR':
                             header = VAR_IN_MATH_SPECIAL_CHAR;
@@ -155,7 +155,7 @@ async function renderMathJax(element, latexExpression) {
 
             // find the variable in the registry 
             var nickname = var_id;  // TODO
-            
+
             // add foreignObject
             vardom.innerHTML = `
                 <foreignObject>
@@ -284,8 +284,12 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
     // Function to update the value display
     function updateValueDisplay() {
         try {
-            const currentValue = variable.value;
-            valueDisplay.textContent = `= ${currentValue}`;
+            if (variable.value === null) {
+                valueDisplay.textContent = "";
+            } else {
+                const currentValue = variable.value;
+                valueDisplay.textContent = `= ${currentValue}`;
+            }
         } catch (error) {
             valueDisplay.textContent = `= Error`;
             throw error;
@@ -401,7 +405,7 @@ function initializeMathInput(container, variable, uniqueId, disabled = false, on
     if (variable.type !== 'derived') {
         throw new Error('Math input can only be used with derived variables');
     }
-    
+
     return createMathInput(container, variable, uniqueId, disabled, onChange);
 }
 

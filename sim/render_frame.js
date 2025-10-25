@@ -1,6 +1,8 @@
 import { $, $$ } from '../utils.js';
 import { PhyObjOnClickEvent } from './events.js';
 
+var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
+
 function revY(y) {
     // convert from cartesian y to screen y
     // not a typo. this function is just a marker for readability
@@ -76,7 +78,7 @@ function render_displayArea(content_area) {
     const MARGIN = 100;
 
     var min_content_area = [-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2];
-    var render_area = [
+    render_area = [
         Math.min(content_area[0], min_content_area[0]) - MARGIN,
         Math.max(content_area[1], min_content_area[1]) + MARGIN,
         Math.min(content_area[2], min_content_area[2]) - MARGIN,
@@ -111,4 +113,4 @@ function render_displayArea(content_area) {
     sim_area_div.scrollTop += delta_pos[1];
 }
 
-export { render_frame };
+export { render_frame, render_area };
