@@ -31,7 +31,7 @@ Radio Buttons with Images
     each option: { label: string, value: any, image: string (URL), imgSelected: string (URL) }
 */
 function RadioWithImage(props) {
-    const { options, defaultValue, onChange, name = 'radio-group' } = props;
+    const { options, getCurrentValue, onChange, name = 'radio-group' } = props;
     const div = document.createElement('div');
     div.className = 'radio-with-image';
 
@@ -45,7 +45,7 @@ function RadioWithImage(props) {
         input.type = 'radio';
         input.name = name;
         input.value = option.value;
-        input.checked = (defaultValue === option.value);
+        input.checked = (getCurrentValue() === option.value);
         input.className = 'radio-with-image__input';
 
         // Create image container
@@ -69,13 +69,6 @@ function RadioWithImage(props) {
         // Handle change event
         const handleChange = () => {
             if (input.checked && option.value != last_selected) {
-                var isSuccess = onChange(option.value);
-                if (isSuccess == false) {
-                    // Revert selection
-                    input.checked = false;
-                    return;
-                }
-
                 // Update all images in this group
                 div.querySelectorAll('.radio-with-image__option').forEach((opt, idx) => {
                     const optImg = opt.querySelector('.radio-with-image__image');
@@ -88,6 +81,9 @@ function RadioWithImage(props) {
                         optImg.src = optOption.image;
                     }
                 });
+
+                onChange(last_selected, option.value);
+                last_selected = option.value;
             }
         };
 

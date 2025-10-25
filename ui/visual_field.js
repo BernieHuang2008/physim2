@@ -120,7 +120,7 @@ function generatePotentialGrid(world, ff_id, bounds, fake_po, gridResolution = 5
     let minPotential = Infinity;
     let maxPotential = -Infinity;
     
-    console.log(`生成 ${gridResolution + 1} x ${gridResolution + 1} 势能网格...`);
+    // console.log(`生成 ${gridResolution + 1} x ${gridResolution + 1} 势能网格...`);
     
     for (let i = 0; i <= gridResolution; i++) {
         const row = [];
@@ -551,7 +551,7 @@ function visualize_ff_FL(world, ff_id) {
         ymin: render_area[2],
         ymax: render_area[3]
     };
-    console.log("计算得到的可视边界:", bounds);
+    // console.log("计算得到的可视边界:", bounds);
     
     // 生成起始点
     const startPoints = generateAdaptiveStartPoints(bounds, 15);
@@ -566,7 +566,7 @@ function visualize_ff_FL(world, ff_id) {
         bounds: bounds
     };
     
-    console.log(`开始计算 ${startPoints.length} 条力场线...`);
+    // console.log(`开始计算 ${startPoints.length} 条力场线...`);
     
     startPoints.forEach((startPoint, index) => {
         const line = traceFieldLine(world, ff_id, startPoint, fake_po, traceOptions);
@@ -575,11 +575,11 @@ function visualize_ff_FL(world, ff_id) {
         }
     });
     
-    console.log(`计算完成，共生成 ${fieldLines.length} 条有效力场线`);
+    // console.log(`计算完成，共生成 ${fieldLines.length} 条有效力场线`);
     
     // 优化线的分布
     const optimizedLines = optimizeFieldLineDistribution(fieldLines, 3.0);
-    console.log(`优化后保留 ${optimizedLines.length} 条力场线`);
+    // console.log(`优化后保留 ${optimizedLines.length} 条力场线`);
     
     // 清除之前的内容
     visualFieldCover.innerHTML = '';
@@ -612,7 +612,7 @@ function visualize_ff_EPS(world, ff_id) {
         ymin: render_area[2],
         ymax: render_area[3]
     };
-    console.log("计算等势面边界:", bounds);
+    // console.log("计算等势面边界:", bounds);
     
     // 生成势能网格数据
     const gridResolution = 30; // 较低分辨率以提高性能
@@ -633,7 +633,7 @@ function visualize_ff_EPS(world, ff_id) {
         contourLevels.push(gridData.minPotential + i * contourStep);
     }
     
-    console.log(`生成 ${contourLevels.length} 条等势线，范围: ${gridData.minPotential.toFixed(3)} 到 ${gridData.maxPotential.toFixed(3)}`);
+    // console.log(`生成 ${contourLevels.length} 条等势线，范围: ${gridData.minPotential.toFixed(3)} 到 ${gridData.maxPotential.toFixed(3)}`);
     
     // 清除之前的内容
     visualFieldCover.innerHTML = '';

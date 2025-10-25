@@ -48,7 +48,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     `);
 
     inspector_ui_section
-        .addSubsection(t("Basic Properties"), true)
+        .addSubsection(t("Basic Properties"), false)
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t("Mass"),
             variable: phyobj.mass,
@@ -67,7 +67,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             onChange: () => inspector_ui_section.render()
         })
 
-    inspector_ui_section.addSubsection(t("Vars"), false)
+    inspector_ui_section.addSubsection(t("Vars"), true)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Variables"),
             iterator: phyobj.vars.map(v_id => phyobj.world.vars[v_id]),
@@ -104,7 +104,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             ]
         })
 
-    inspector_ui_section.addSubsection(t("Force Fields"), false)
+    inspector_ui_section.addSubsection(t("Force Fields"), true)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Force Fields"),
             iterator: phyobj.ffs.map(ff_id => phyobj.world.ffs[ff_id]),

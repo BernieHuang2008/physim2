@@ -41,6 +41,9 @@ class UI_Section {
     }
 
     activate(return_to=null) {
+        this.area.innerHTML = ""; // clear area
+        area_sections_map[this.area] = [];
+
         this.area.appendChild(this.dom);
         area_sections_map[this.area].push(this);
 
@@ -71,7 +74,18 @@ class UI_Section {
             if (index != -1) {
                 area_sections_map[this.area].splice(index, 1);
             }
+            // EQUAL TO:
+            // area_sections_map[this.area].pop();
         }
+
+        // // activate last section in area
+        // if (this.area && area_sections_map[this.area]) {
+        //     const sections = area_sections_map[this.area];
+        //     if (sections.length > 0) {
+        //         const last_section = sections[sections.length - 1];
+        //         last_section.activate();
+        //     }
+        // }
     }
 
     addSubsection(title, collapsed=true) {
@@ -87,7 +101,7 @@ class UI_Section {
         return this;
     }
 
-    addUIControl(component, params) {
+    addUIControl(component, params=null) {
         if (this._chain_constructor) {
             this._chain_constructor.contents.push({
                 type: "ui-control",

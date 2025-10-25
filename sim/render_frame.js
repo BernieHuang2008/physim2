@@ -3,6 +3,16 @@ import { PhyObjOnClickEvent } from './events.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
 
+var zoom_level = 10.0;
+
+function setZoomLevel(level) {
+    zoom_level = Math.max(0.1, Math.min(10.0, level)); // clamp between 0.1x and 10x
+}
+
+function getZoomLevel() {
+    return zoom_level;
+}
+
 function revY(y) {
     // convert from cartesian y to screen y
     // not a typo. this function is just a marker for readability
@@ -37,8 +47,8 @@ function render_phyobj(phyobj) {
         case 'ParticlePO':
             {
                 dom_element.classList.add("phyobj-particle");
-                dom_element.style.left = (phyobj.pos.value[0]) + "px";
-                dom_element.style.top = revY(-phyobj.pos.value[1]) + "px";
+                dom_element.style.left = (phyobj.pos.value[0] * zoom_level) + "px";
+                dom_element.style.top = revY(-phyobj.pos.value[1] * zoom_level) + "px";
             }
     }
 
@@ -56,10 +66,10 @@ function render_phyobjs(world) {
         var pos = render_phyobj(phyobj);
 
         // update content area
-        content_area[0] = Math.min(content_area[0], pos[0]);
-        content_area[1] = Math.max(content_area[1], pos[0]);
-        content_area[2] = Math.min(content_area[2], pos[1]);
-        content_area[3] = Math.max(content_area[3], pos[1]);
+        content_area[0] = Math.min(content_area[0], pos[0] * zoom_level);
+        content_area[1] = Math.max(content_area[1], pos[0] * zoom_level);
+        content_area[2] = Math.min(content_area[2], pos[1] * zoom_level);
+        content_area[3] = Math.max(content_area[3], pos[1] * zoom_level);
     }
 
     // remove unneeded elements
@@ -113,4 +123,4 @@ function render_displayArea(content_area) {
     sim_area_div.scrollTop += delta_pos[1];
 }
 
-export { render_frame, render_area };
+export { render_frame, render_area, setZoomLevel, getZoomLevel };
