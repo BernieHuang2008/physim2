@@ -19,9 +19,11 @@ const translations = {
     "Velocity": "速度",
     "Variables": "变量",
     "Force Fields": "力场",
-    "Strength": "强度",
-    "Applies To": "应用于",
+    "Application Scope": "适用范围",
+    "Expression": "表达式",
+    "Advanced Settings": "高级设置",
     "Vars": "变量",
+    "Choose Template": "选择模板",
     
     // Vector Component Labels
     "X": "X",
@@ -45,6 +47,11 @@ const translations = {
     "Force field not found": "未找到力场",
     "No force field with id": "未找到标识符对应的力场",
     "No phyobj with id": "未找到标识符对应的物理对象",
+
+    "Gravity": "重力",
+    "Universal Gravitational": "万有引力",
+    "Electrostatic": "静电力",
+    "Use New Template? By doing this, current settings will be LOST.": "使用新模板？这样做会丢失当前设置。",
 };
 
 export default translations;

@@ -11,6 +11,7 @@ class UI_Section {
     dom_content = null;
     area = null;
     contents = [];
+    return_to = null;   // return to this section when closed
 
     _chain_constructor = null;
 
@@ -24,6 +25,7 @@ class UI_Section {
         this.dom.className = "ui-section";
         this.dom.innerHTML = `
         <div class='ui-section-title'>
+            <button class='return-btn symbol'>&#xE0D5;</button>
             ${this.title}
             <button class='close-btn symbol' onclick="this.closest('.ui-section').remove()">&#xE711;</button>
         </div>
@@ -33,10 +35,12 @@ class UI_Section {
 
     activateAt(area) {
         this.area = area;
+        area_sections_map[area] = area_sections_map[area] || [];
+
         this.activate();
     }
 
-    activate() {
+    activate(return_to=null) {
         this.area.appendChild(this.dom);
         area_sections_map[this.area].push(this);
 
@@ -58,7 +62,16 @@ class UI_Section {
     }
 
     deactivate() {
+        // remove DOM
         this.dom.remove();
+
+        // remove from area map
+        if (this.area && area_sections_map[this.area]) {
+            const index = area_sections_map[this.area].indexOf(this);
+            if (index != -1) {
+                area_sections_map[this.area].splice(index, 1);
+            }
+        }
     }
 
     addSubsection(title, collapsed=true) {

@@ -1,0 +1,25 @@
+div.radio-with-image {
+    display: flex;
+    gap: 16px;
+}
+
+label.radio-with-image__option {
+    width: 20%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-direction: column;
+}
+
+input.radio-with-image__input {
+    display: none;
+}
+
+img.radio-with-image__image {
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}

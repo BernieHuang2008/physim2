@@ -1,28 +1,29 @@
 import { UI_Section } from "../ui/ui_section.js";
 import { $, $$ } from '../utils.js';
 import { UIControls } from '../ui/controls/controls.js';
-// import { FakeVar_FF } from "../phy/ForceField.js";
 import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "../ui/visual_field.js";
 import { t } from "../i18n/i18n.js";
-// import { FakeVar_FF } from "../phy/ForceField.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
+inspector_ui_section.deactivate();
 
 var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
-function inspect_phyobj(world, phyobj_id) {
-    inspector_ui_section.activate();
+function inspect_phyobj(world, phyobj_id, return_to=null) {
+    inspector_ui_section.activate(return_to);
 
+    // Prevent re-constructing
     if (last_rendered_phyobj_id === phyobj_id) {
-        return; // already rendered
-    }
-    else {
+        inspector_ui_section.render();
+        return;
+    } else {
         last_rendered_phyobj_id = phyobj_id;
     }
 
+    // Get the phyobject
     var phyobj = world.phyobjs[phyobj_id];
     if (!phyobj) {
         console.error("No phyobj with id:", phyobj_id);
@@ -146,7 +147,7 @@ function inspect_phyobj(world, phyobj_id) {
                     const editButton = document.createElement("span");
                     editButton.className = "small-button symbol";
                     editButton.innerHTML = "&#xE70F;";
-                    editButton.onclick = () => edit_ff(phyobj.world, ff.id);
+                    editButton.onclick = () => edit_ff(phyobj.world, ff.id, inspector_ui_section);
                     buttonArea.appendChild(editButton);
                     // View-A button
                     const viewAButton = document.createElement("span");
@@ -167,7 +168,7 @@ function inspect_phyobj(world, phyobj_id) {
                         visualize_ff_FL(phyobj.world, ff.id);
                     };
                     viewBButton.onmouseleave = () => {
-                        // hideVisualFieldCover();
+                        hideVisualFieldCover();
                     };
                     buttonArea.appendChild(viewBButton);
                     // Delete button

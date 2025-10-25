@@ -52,7 +52,7 @@ class ForceField extends IDObject {
     }
 }
 
-class FakeVar_FF {
+class FakeVar_FFExpression {
     type = "derived";
     nickname;
 
@@ -71,7 +71,7 @@ class FakeVar_FF {
     }
 
     get value() {
-        return null;
+        return null;    // disable the calculation preview
     }
 
     set value(newValue) {
@@ -102,4 +102,14 @@ class FakeVar_FF {
     }
 }
 
-export { ForceField, FakeVar_FF };
+class FakeVar_FFCondition extends FakeVar_FFExpression {
+    get expression() {
+        return this.ff.condition;
+    }
+    set expression(newExpression) {
+        this.ff.condition = newExpression;
+        this.ff.compiled_condition = math.compile(newExpression);
+    }
+}
+
+export { ForceField, FakeVar_FFExpression, FakeVar_FFCondition };

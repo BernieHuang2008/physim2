@@ -1,6 +1,7 @@
 import { UI_Section } from "../ui/ui_section.js";
 import { $, $$ } from '../utils.js';
 import { UIControls } from '../ui/controls/controls.js';
+import { FakeVar_FFExpression, FakeVar_FFCondition } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 
 const ffeditor_ui_section = new UI_Section(t("Force Field Editor"));
@@ -12,8 +13,9 @@ var last_rendered_ff_id = null;
 function edit_ff(world, ff_id, return_to=null) {
     ffeditor_ui_section.activate(return_to);
 
-    // Prevent re-rendering
+    // Prevent re-constructing
     if (last_rendered_ff_id === ff_id) {
+        ffeditor_ui_section.render();
         return;
     } else {
         last_rendered_ff_id = ff_id;
@@ -45,10 +47,49 @@ function edit_ff(world, ff_id, return_to=null) {
     `);
 
     ffeditor_ui_section
-        .addSubsection(t("Applies To"), true)
+        .addSubsection(t("Choose Template"), false)
+        .addUIControl(UIControls.Radio.RadioWithImage, {
+            options: [
+                {
+                    label: t("Gravity"),
+                    value: "gravity",
+                    image: "assets/images/gravity_bw.svg",
+                    imgSelected: "assets/images/gravity_c.svg",
+                },
+                {
+                    label: t("Universal Gravitational"),
+                    value: "universal_gravitational",
+                    image: "assets/images/unigravity_bw.svg",
+                    imgSelected: "assets/images/unigravity_c.svg",
+                },
+                {
+                    label: t("Electrostatic"),
+                    value: "electrostatic",
+                    image: "assets/images/elec_bw.svg",
+                    imgSelected: "assets/images/elec_c.svg",
+                }
+            ],
+            defaultValue: (ff.__template || {}).type || "custom",
+            onChange: (newValue) => {
+                if (confirm(t("Use New Template? By doing this, current settings will be LOST."))) {
+                    // ff.setTemplate(newValue);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        })
+
+    ffeditor_ui_section
+        .addSubsection(t("Advanced Settings"), true)
         .addUIControl(UIControls.InputControls.InputMath, {
-            field: t("Strength"),
-            variable: ff.strength,
+            field: t("Application Scope"),
+            variable: new FakeVar_FFCondition(ff),
+            onChange: () => ffeditor_ui_section.render()
+        })
+        .addUIControl(UIControls.InputControls.InputMath, {
+            field: t("Expression"),
+            variable: new FakeVar_FFExpression(ff),
             onChange: () => ffeditor_ui_section.render()
         });
 

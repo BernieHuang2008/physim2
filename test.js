@@ -28,6 +28,7 @@ console.log(a);
 console.log(b);
 
 import { ForceField } from "./phy/ForceField.js";
+import { edit_ff } from "./sim/ffeditor.js";
 
 var ffi = new ForceField(world, "mass * [0, -10]", "true");
 // var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
@@ -35,3 +36,5 @@ b.ffs.push(ffi.id);
 console.log(ffi);
 
 render_frame(world);
+
+edit_ff(world, ffi.id);
