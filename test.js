@@ -2,6 +2,7 @@ import { UI_Section } from "./ui/ui_section.js";
 import { $, $$ } from './utils.js';
 import { math } from './phyEngine/math.js';
 import { Variable } from './phy/Var.js';
+import { setLanguage, getCurrentLanguage, t } from './i18n/i18n.js';
 
 // =====
 
@@ -9,6 +10,10 @@ import { render_frame } from "./sim/render_frame.js";
 
 import { World } from './phy/world.js';
 import { ParticlePhyObject } from "./phy/PhyObjects/Particle.js";
+
+// You can switch languages like this:
+// setLanguage('zh'); // Switch to Chinese (when translations are added)
+// console.log("After switching - Translated 'Inspector':", t("Inspector"));
 
 var world = new World();
 var a = new ParticlePhyObject(world, 3, [5, 0], [0, 0]);

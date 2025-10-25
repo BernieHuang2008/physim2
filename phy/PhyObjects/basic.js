@@ -1,11 +1,12 @@
 import { math } from '../../phyEngine/math.js';
 import { IDObject } from '../idutils.js';
 import { Variable } from '../Var.js';
+import { t } from '../../i18n/i18n.js';
 
 class BasicPhyObject extends IDObject {
     // metadata
     type = "BasicPO";
-    nickname = "Untitled Basic PhyObject";
+    nickname = t("Untitled Basic PhyObject");
     world = null;
 
     // physical properties

@@ -4,8 +4,10 @@ import { UIControls } from '../ui/controls/controls.js';
 // import { FakeVar_FF } from "../phy/ForceField.js";
 import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "../ui/visual_field.js";
+import { t } from "../i18n/i18n.js";
+// import { FakeVar_FF } from "../phy/ForceField.js";
 
-const inspector_ui_section = new UI_Section("Inspector");
+const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
 
 var last_rendered_phyobj_id = null;
@@ -31,13 +33,13 @@ function inspect_phyobj(world, phyobj_id) {
     inspector_ui_section.clearContent();
     inspector_ui_section.addHTML(`
         <span class='big'> ${phyobj.nickname} </span><br>
-        <span class='small gray cursor-pointer' alt="copy" onclick='
+        <span class='small gray cursor-pointer' alt="${t("copy")}" onclick='
 
             navigator.clipboard.writeText("${phyobj.id}");
             this.querySelector("#symbol1").innerHTML = "&#xE73E;";
             setTimeout(() => { this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; }, 1000);'>
 
-            <b>ID:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
+            <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
         </span>
         &emsp;&emsp;
         <span class='small gray'> < ${phyobj.type} > </span>
@@ -45,28 +47,28 @@ function inspect_phyobj(world, phyobj_id) {
     `);
 
     inspector_ui_section
-        .addSubsection("Basic Properties", true)
+        .addSubsection(t("Basic Properties"), true)
         .addUIControl(UIControls.InputControls.InputMath, {
-            field: "Mass",
+            field: t("Mass"),
             variable: phyobj.mass,
             onChange: () => inspector_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: "Position",
+            field: t("Position"),
             variable: phyobj.pos,
             disabled: true,
             onChange: () => inspector_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: "Velocity",
+            field: t("Velocity"),
             variable: phyobj.velocity,
             disabled: true,
             onChange: () => inspector_ui_section.render()
         })
 
-    inspector_ui_section.addSubsection("Vars", false)
+    inspector_ui_section.addSubsection(t("Vars"), false)
         .addUIControl(UIControls.Tables.ColumedList, {
-            field: "Variables",
+            field: t("Variables"),
             iterator: phyobj.vars.map(v_id => phyobj.world.vars[v_id]),
             colums: [
                 // 第一列：显示变量昵称
@@ -75,7 +77,7 @@ function inspect_phyobj(world, phyobj_id) {
                     span.className = "var-nickname cursor-pointer";
 
                     // copy functionality
-                    span.setAttribute("alt", "copy");
+                    span.setAttribute("alt", t("copy"));
                     span.onclick = function () {
                         navigator.clipboard.writeText(variable.id);
                         const symbol = this.querySelector("#symbol-var-" + variable.id);
@@ -101,9 +103,9 @@ function inspect_phyobj(world, phyobj_id) {
             ]
         })
 
-    inspector_ui_section.addSubsection("Force Fields", false)
+    inspector_ui_section.addSubsection(t("Force Fields"), false)
         .addUIControl(UIControls.Tables.ColumedList, {
-            field: "Force Fields",
+            field: t("Force Fields"),
             iterator: phyobj.ffs.map(ff_id => phyobj.world.ffs[ff_id]),
             colums: [
                 // 第一列：显示ff昵称
@@ -112,7 +114,7 @@ function inspect_phyobj(world, phyobj_id) {
                     span.className = "var-nickname cursor-pointer";
 
                     // copy functionality
-                    span.setAttribute("alt", "copy");
+                    span.setAttribute("alt", t("copy"));
                     span.onclick = function () {
                         navigator.clipboard.writeText(ff.id);
                         const symbol = this.querySelector("#symbol-ff-" + ff.id);

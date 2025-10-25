@@ -1,9 +1,10 @@
 import { BasicPhyObject } from "./basic.js";
+import { t } from "../../i18n/i18n.js";
 
 class ParticlePhyObject extends BasicPhyObject {
     // metadata
     type = "ParticlePO";
-    nickname = "Untitled Particle";
+    nickname = t("Untitled Particle");
 
     // constructor
     constructor(world, mass=1, pos=null, velocity=null, vars=[], ffs=[]) {

@@ -1,3 +1,6 @@
+
+import { t } from "../../i18n/i18n.js";
+
 /**
  * 创建一个可配置的表格组件
  * 
@@ -39,7 +42,7 @@ function ColumedList({field, iterator=[], colums=[]}) {
         container.innerHTML = `
             <div class="columed-list-empty">
                 <span class="field-title">${field}:</span>
-                <span class="empty-message">No data to display</span>
+                <span class="empty-message">${t("No data to display")}</span>
             </div>
         `;
         return container;
@@ -92,7 +95,7 @@ function ColumedList({field, iterator=[], colums=[]}) {
             } catch (error) {
                 // 如果函数执行出错，显示错误信息
                 console.error(`Error in column ${colIndex} for row ${rowIndex}:`, error);
-                cell.textContent = 'Error';
+                cell.textContent = t("Error");
                 cell.className += ' error';
             }
             

@@ -1,5 +1,6 @@
 import { math } from '../phyEngine/math.js';
 import { IDObject } from './idutils.js';
+import { t } from '../i18n/i18n.js';
 
 class Variable extends IDObject {
     // metadata

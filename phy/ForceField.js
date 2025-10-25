@@ -1,10 +1,11 @@
 import { math } from '../phyEngine/math.js';
 import { IDObject } from './idutils.js';
+import { t } from '../i18n/i18n.js';
 
 class ForceField extends IDObject {
     // metadata
     type = "FF";
-    nickname = "Untitled Force Field";
+    nickname = t("Untitled Force Field");
     world = null;
 
     expression = null;
@@ -15,7 +16,7 @@ class ForceField extends IDObject {
     /*
     vars can be used: time, pos (target), v (target), mass (target), TARGET_varNickname (var of target), VAR_varid
     */
-    constructor(world, expression = "", condition = "", nickname = "Untitled Force Field") {
+    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field")) {
         super();
         this.world = world;
         this.expression = expression;

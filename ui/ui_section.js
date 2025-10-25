@@ -1,6 +1,12 @@
+import { t } from "../i18n/i18n.js";
+
+var all_sections = [];
+var area_sections_map = {};
+
+
 class UI_Section {
     type = "section";
-    title = "Untitled Section";
+    title = t("Untitled Section");
     dom = null;
     dom_content = null;
     area = null;
@@ -32,6 +38,23 @@ class UI_Section {
 
     activate() {
         this.area.appendChild(this.dom);
+        area_sections_map[this.area].push(this);
+
+        // return_to
+        this.return_to = return_to;
+        const return_btn = this.dom.querySelector(".return-btn");
+        if (this.return_to) {
+            this.return_to.deactivate();
+
+            return_btn.style.display = "inline-block";
+            return_btn.onclick = () => {
+                this.deactivate();
+                this.return_to.activate();
+            };
+        } else {
+            return_btn.style.display = "none";
+            return_btn.onclick = null;
+        }
     }
 
     deactivate() {

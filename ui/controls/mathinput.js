@@ -1,4 +1,5 @@
 import { math } from '../../phyEngine/math.js';
+import { t } from '../../i18n/i18n.js';
 
 const VAR_IN_MATH_SPECIAL_CHAR = "\u200B"; //"🥒";
 const VAR_IN_MATH_SPECIAL_CHAR_HEX = "200B";
@@ -336,7 +337,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
                     } catch (error) {
                         // If the expression is invalid, revert and show error
                         input.value = "=" + variable.expression;
-                        alert('Invalid expression: ' + error.message);
+                        alert(t('Invalid expression') + ': ' + error.message);
                     }
                 }
             } else {

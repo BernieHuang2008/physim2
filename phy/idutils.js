@@ -1,3 +1,5 @@
+import { t } from "../i18n/i18n.js";
+
 class IDObject {
     _id = "UNKNOWN";
     set id(newId) {

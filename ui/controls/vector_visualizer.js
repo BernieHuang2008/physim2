@@ -4,6 +4,8 @@
  * Extracted from the original input_controls.js implementation
  */
 
+import { t } from "../../i18n/i18n.js";
+
 export function createVectorVisualization(visualArea, infoArea, variable, disabled, onChange = null) {
     const SVG_SIZE = 120;
     const CENTER = SVG_SIZE / 2;
@@ -50,12 +52,12 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     infoArea.innerHTML = `
         <div class="vector2-info">
             <div class="vector2-coords">
-                <label>X: <input type="number" class="coord-input coord-x" step="0.1" ${disabled ? 'disabled' : ''} /></label>
-                <label>Y: <input type="number" class="coord-input coord-y" step="0.1" ${disabled ? 'disabled' : ''} /></label>
+                <label>${t("X")}: <input type="number" class="coord-input coord-x" step="0.1" ${disabled ? 'disabled' : ''} /></label>
+                <label>${t("Y")}: <input type="number" class="coord-input coord-y" step="0.1" ${disabled ? 'disabled' : ''} /></label>
             </div>
             <div class="vector2-polar">
-                <label>Len: <input type="number" class="magnitude-input" step="0.1" min="0" ${disabled ? 'disabled' : ''} /></label>
-                <label>&#x03B1;: <input type="number" class="angle-input" step="1" ${disabled ? 'disabled' : ''} />°</label>
+                <label>${t("Len")}: <input type="number" class="magnitude-input" step="0.1" min="0" ${disabled ? 'disabled' : ''} /></label>
+                <label>${t("α")}: <input type="number" class="angle-input" step="1" ${disabled ? 'disabled' : ''} />°</label>
             </div>
         </div>
     `;
