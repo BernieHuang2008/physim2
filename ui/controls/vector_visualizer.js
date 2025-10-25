@@ -6,6 +6,10 @@
 
 import { t } from "../../i18n/i18n.js";
 
+function revY(y) {
+    return y;
+}
+
 export function createVectorVisualization(visualArea, infoArea, variable, disabled, onChange = null) {
     const SVG_SIZE = 120;
     const CENTER = SVG_SIZE / 2;
@@ -88,11 +92,6 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     function setVectorValue(x, y) {
         variable.value = [x, y];
         updateDisplay();
-        
-        // Trigger onChange callback if provided
-        if (onChange && typeof onChange === 'function') {
-            onChange(variable, [x, y]);
-        }
     }
 
     function calculateMagnitude(x, y) {
@@ -119,21 +118,21 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             // Within direct mapping range
             return {
                 x: CENTER + scaledX * directScale,
-                y: CENTER - scaledY * directScale
+                y: CENTER + revY(-scaledY * directScale)
             };
         } else {
             // Beyond direct range: scale to fit within MAX_VECTOR_LENGTH
             const scale = MAX_VECTOR_LENGTH / directScreenMagnitude;
             return {
                 x: CENTER + scaledX * directScale * scale,
-                y: CENTER - scaledY * directScale * scale
+                y: CENTER + revY(-scaledY * directScale * scale)
             };
         }
     }
 
     function screenToVectorCoords(screenX, screenY) {
         const dx = screenX - CENTER;
-        const dy = CENTER - screenY;  // Flip Y back
+        const dy = revY(-screenY) - revY(-CENTER);  // Flip Y back
         const screenMagnitude = calculateMagnitude(dx, dy);
         
         // Direct inverse of vectorToScreenCoords logic
@@ -281,7 +280,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             const [x, y] = getVectorValue();
             const magnitude = calculateMagnitude(x, y);
             const dx = mouseX - CENTER;
-            const dy = CENTER - mouseY;
+            const dy = revY(-mouseY) - revY(-CENTER);
             const newAngle = Math.atan2(dy, dx);
 
             const newX = magnitude * Math.cos(newAngle);
@@ -294,6 +293,11 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         isDragging = false;
         isRotating = false;
         svg.style.cursor = 'default';
+        
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            // onChange();
+        }
     }
 
     function handleInputChange() {
