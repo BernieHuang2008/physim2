@@ -4,7 +4,7 @@ import { t } from "../../i18n/i18n.js";
 class WorldAnchorPhyObject extends BasicPhyObject {
     // metadata
     type = "WorldAnchorPO";
-    nickname = t("World Anchor Point");
+    nickname = t("World Settings");
 
     // constructor
     constructor(world) {

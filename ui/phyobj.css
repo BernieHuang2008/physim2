@@ -1,5 +1,6 @@
 .phyobj {
     position: absolute;
+    cursor: pointer;
 }
 
 .phyobj.phyobj-particle {

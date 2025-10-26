@@ -11,7 +11,8 @@ class World {
     anchor = null;
 
     constructor() {
-        this.anchor = new WorldAnchorPhyObject(this);
+        var anchor = new WorldAnchorPhyObject(this);
+        this.anchor = anchor.id;
     }
 
     _genid(prefix = "UNI") {

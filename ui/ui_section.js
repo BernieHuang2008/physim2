@@ -27,10 +27,13 @@ class UI_Section {
         <div class='ui-section-title'>
             <button class='return-btn symbol'>&#xE0D5;</button>
             ${this.title}
-            <button class='close-btn symbol' onclick="this.closest('.ui-section').remove()">&#xE711;</button>
+            <button class='close-btn symbol' id="close-btn">&#xE711;</button>
         </div>
         <div class='ui-section-content'></div>`;
         this.dom_content = this.dom.querySelector(".ui-section-content");
+        this.dom.querySelector("#close-btn").onclick = () => {
+            this.deactivate();
+        };
     }
 
     activateAt(area) {
@@ -70,12 +73,7 @@ class UI_Section {
 
         // remove from area map
         if (this.area && area_sections_map[this.area]) {
-            const index = area_sections_map[this.area].indexOf(this);
-            if (index != -1) {
-                area_sections_map[this.area].splice(index, 1);
-            }
-            // EQUAL TO:
-            // area_sections_map[this.area].pop();
+            area_sections_map[this.area].pop();
         }
 
         // // activate last section in area
@@ -113,12 +111,13 @@ class UI_Section {
         return this;
     }
 
-    addHTML(html) {
+    addHTML(html, post_render_script = null) {
         if (this._chain_constructor) {
             this._chain_constructor.contents.push({
                 type: "html",
                 html: html,
                 dom: null,
+                post_render_script: post_render_script,
             });
         }
         else {
@@ -126,6 +125,7 @@ class UI_Section {
                 type: "html",
                 html: html,
                 dom: null,
+                post_render_script: post_render_script,
             });
         }
         return this;
@@ -165,6 +165,9 @@ class UI_Section {
                 html_dom.innerHTML = subsection.html;
                 this.dom_content.appendChild(html_dom);
                 subsection.dom = html_dom;
+                if (subsection.post_render_script) {
+                    subsection.post_render_script(html_dom);
+                }
             }
             if (subsection.type === "subsection") {
                 // render subsection

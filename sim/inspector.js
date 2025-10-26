@@ -34,31 +34,56 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     // Display the properties of the phyobject in the inspector panel
     inspector_ui_section.clearContent();
     inspector_ui_section.addHTML(`
-        <span class='big'> ${phyobj.nickname} </span><br>
-        <span class='small gray cursor-pointer' alt="${t("copy")}" onclick='
+        <span class='big' id="nickname-display" style="user-select: none;"> ${phyobj.nickname} </span>
+        <span class='small gray cursor-pointer' alt="${t("Edit")}" id="edit-nickname">
+            <span class='symbol'>&#xE70F;</span>
+        </span>
 
-            navigator.clipboard.writeText("${phyobj.id}");
-            this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => { this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; }, 1000);'>
-
+        <br>
+        <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
             <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
         </span>
         &emsp;&emsp;
         <span class='small gray'> < ${phyobj.type} > </span>
         <hr>
-    `);
+    `, (dom) => {
+        // id copy
+        dom.querySelector("#copy-id-btn").onclick = function () {
+            navigator.clipboard.writeText(phyobj.id);
+            this.querySelector("#symbol1").innerHTML = "&#xE73E;";
+            setTimeout(() => { 
+                this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; 
+            }, 1000);
+        }
+
+        // nickname edit
+        const nicknameDisplay = dom.querySelector("#nickname-display");
+        dom.querySelector("#edit-nickname").onclick = () => {
+            nicknameDisplay.contentEditable = "true";
+            nicknameDisplay.focus();
+
+            nicknameDisplay.onblur = () => {
+                nicknameDisplay.contentEditable = "false";
+                phyobj.nickname = nicknameDisplay.innerText;
+                // inspector_ui_section.render();
+            }
+        }
+    });
+
+    var isWorldAnchor = (phyobj.type === "WorldAnchorPO");
 
     inspector_ui_section
-        .addSubsection(t("Basic Properties"), false)
+        .addSubsection(t("Basic Properties"), isWorldAnchor)
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t("Mass"),
             variable: phyobj.mass,
+            disabled: isWorldAnchor,
             onChange: () => inspector_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Position"),
             variable: phyobj.pos,
-            disabled: false,
+            disabled: isWorldAnchor,
             onChange: () => {inspector_ui_section.render(); render_frame(world, phyobj.id);}
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
@@ -68,7 +93,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             onChange: () => inspector_ui_section.render()
         })
 
-    inspector_ui_section.addSubsection(t("Vars"), true)
+    inspector_ui_section.addSubsection(t("Vars"), !isWorldAnchor)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Variables"),
             iterator: phyobj.vars.map(v_id => phyobj.world.vars[v_id]),
@@ -105,7 +130,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             ]
         })
 
-    inspector_ui_section.addSubsection(t("Force Fields"), true)
+    inspector_ui_section.addSubsection(t("Force Fields"), !isWorldAnchor)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Force Fields"),
             iterator: phyobj.ffs.map(ff_id => phyobj.world.ffs[ff_id]),

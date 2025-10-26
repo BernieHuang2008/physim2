@@ -1,5 +1,6 @@
 import { $, $$ } from '../utils.js';
 import { PhyObjOnClickEvent } from './events.js';
+import { inspect_phyobj } from './inspector.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
 
@@ -21,15 +22,15 @@ function revY(y) {
 
 function render_frame(world, focus_id = null) {
     var content_area = render_phyobjs(world);
-    render_displayArea(content_area);
-
-
+    render_displayArea(content_area, world);
 
     // focus: scroll into view
-    const element = $("#phyobj-" + focus_id);
-    element.scrollIntoView({
-        behavior: 'smooth',
-    });
+    if (focus_id) {
+        const element = $("#phyobj-" + focus_id);
+        element.scrollIntoView({
+            behavior: 'smooth',
+        });
+    }
 }
 
 function render_phyobj(phyobj) {
@@ -91,7 +92,7 @@ function render_phyobjs(world) {
     return content_area;
 }
 
-function render_displayArea(content_area) {
+function render_displayArea(content_area, world) {
     const GRID_SIZE = 20;
     const MARGIN = 100;
 
@@ -106,6 +107,10 @@ function render_displayArea(content_area) {
     /* Setup simulation area */
     const sim_anchor = document.getElementById("simulation-area-anchor");
     const sim_bg = document.getElementById("simulation-area-background");
+    sim_bg.onclick = (e) => {
+        // click on background: open 'World Anchor'
+        inspect_phyobj(world, world.anchor);
+    }
 
     // set background size
     const area_width = render_area[1] - render_area[0];

@@ -14,7 +14,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     const SVG_SIZE = 120;
     const CENTER = SVG_SIZE / 2;
     const MAX_VECTOR_LENGTH = 45; // Maximum visual length of vector
-    
+
     // Calculate initial display scale: initial vector length / 5
     const initialVector = getVectorValue();
     const initialLength = calculateMagnitude(initialVector[0], initialVector[1]);
@@ -83,8 +83,20 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     // State
     let isDragging = false;
     let isRotating = false;
+    var SVGprevBBox = svg.getBoundingClientRect();
 
     // Helper functions
+    function _getSVGBBox() {
+        var newbbox = svg.getBoundingClientRect();
+        if (newbbox.x === 0 && newbbox.y === 0) {
+            return SVGprevBBox;
+        }
+        else {
+            SVGprevBBox = newbbox;
+            return SVGprevBBox;
+        }
+    }
+
     function getVectorValue() {
         return variable.value || [0, 0];
     }
@@ -104,16 +116,16 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
 
     function vectorToScreenCoords(x, y) {
         const magnitude = calculateMagnitude(x, y);
-        
+
         // Apply display scaling: show vector at 1/5 of its initial length
         const scaledX = x / DISPLAY_SCALE;
         const scaledY = y / DISPLAY_SCALE;
         const scaledMagnitude = magnitude / DISPLAY_SCALE;
-        
+
         // Direct mapping scale: 1 scaled unit = 10 pixels
         const directScale = 10;
         const directScreenMagnitude = scaledMagnitude * directScale;
-        
+
         if (directScreenMagnitude <= MAX_VECTOR_LENGTH) {
             // Within direct mapping range
             return {
@@ -134,16 +146,16 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const dx = screenX - CENTER;
         const dy = revY(-screenY) - revY(-CENTER);  // Flip Y back
         const screenMagnitude = calculateMagnitude(dx, dy);
-        
+
         // Direct inverse of vectorToScreenCoords logic
         const directScale = 10;  // 1 scaled unit = 10 pixels
-        
+
         // First, get the "scaled" vector coordinates (displayed coordinates)
         const scaledX = dx / directScale;
         const scaledY = dy / directScale;
-        
+
         let finalScaledX, finalScaledY;
-        
+
         if (screenMagnitude <= MAX_VECTOR_LENGTH) {
             // Within direct mapping range: no additional scaling needed
             finalScaledX = scaledX;
@@ -155,7 +167,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             finalScaledX = scaledX * scaleFactor;
             finalScaledY = scaledY * scaleFactor;
         }
-        
+
         // Convert back from scaled coordinates to actual vector coordinates
         return {
             // Convert back from display scale to actual vector coordinates
@@ -224,7 +236,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         // Update input fields
         coordXInput.value = x.toFixed(2);
         coordYInput.value = y.toFixed(2);
-        
+
         // Update polar coordinate inputs
         magnitudeInput.value = magnitude.toFixed(2);
         angleInput.value = angle.toFixed(1);
@@ -234,7 +246,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     function handleMouseDown(e) {
         if (disabled) return;
 
-        const rect = svg.getBoundingClientRect();
+        const rect = _getSVGBBox();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
@@ -243,7 +255,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const screenCoords = vectorToScreenCoords(x, y);
         const distToHead = calculateMagnitude(mouseX - screenCoords.x, mouseY - screenCoords.y);
 
-        if (distToHead < 15 && calculateMagnitude(x, y) > 0.01) {
+        if (distToHead < 15) {
             isDragging = true;
             svg.style.cursor = 'move';
         } else {
@@ -255,7 +267,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     }
 
     function handleMouseMove(e) {
-        const rect = svg.getBoundingClientRect();
+        const rect = _getSVGBBox();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
@@ -263,7 +275,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             const [x, y] = getVectorValue();
             const screenCoords = vectorToScreenCoords(x, y);
             const distToHead = calculateMagnitude(mouseX - screenCoords.x, mouseY - screenCoords.y);
-            if (distToHead < 15 && calculateMagnitude(x, y) > 0.01) {
+            if (distToHead < 15) {
                 svg.style.cursor = 'move';
             } else {
                 svg.style.cursor = 'crosshair';
@@ -294,7 +306,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         isDragging = false;
         isRotating = false;
         svg.style.cursor = 'default';
-        
+
         // Trigger onChange callback if provided
         if (isOperating && onChange && typeof onChange === 'function') {
             onChange();
@@ -315,7 +327,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const newMagnitude = parseFloat(magnitudeInput.value) || 0;
         const [x, y] = getVectorValue();
         const currentMagnitude = calculateMagnitude(x, y);
-        
+
         if (currentMagnitude > 0) {
             // Keep the same direction, change magnitude
             const scale = newMagnitude / currentMagnitude;
@@ -332,7 +344,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const newAngle = parseFloat(angleInput.value) || 0;
         const [x, y] = getVectorValue();
         const magnitude = calculateMagnitude(x, y);
-        
+
         // Convert angle to radians and create new vector
         const radians = newAngle * Math.PI / 180;
         const newX = magnitude * Math.cos(radians);
@@ -342,8 +354,8 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
 
     // Attach event listeners
     if (!disabled) {
-        svg.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('mousemove', handleMouseMove);
+        svg.onmousedown = handleMouseDown;
+        svg.onmousemove = handleMouseMove;
         document.addEventListener('mouseup', handleMouseUp);
 
         coordXInput.addEventListener('input', handleInputChange);

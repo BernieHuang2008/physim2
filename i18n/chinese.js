@@ -5,7 +5,7 @@ const translations = {
     "Untitled Section": "未命名部分",
     "Untitled Particle": "未命名质点",
     "Untitled Basic PhyObject": "未命名基础物理对象",
-    "World Anchor Point": "世界锚点",
+    "World Settings": "世界设置",
     "Untitled Force Field": "未命名力场",
     
     // UI Section Names
@@ -32,11 +32,10 @@ const translations = {
     "α": "α",
     
     // UI Actions
-    "copy": "复制",
     "ID": "ID",
     "Error": "错误",
     "No data to display": "无数据显示",
-
+    
     // Error Messages
     "Invalid expression": "无效的表达式",
     "Circular dependency detected": "检测到循环依赖",
@@ -47,7 +46,7 @@ const translations = {
     "Force field not found": "未找到力场",
     "No force field with id": "未找到标识符对应的力场",
     "No phyobj with id": "未找到标识符对应的物理对象",
-
+    
     // Variable Types
     "immediate": "立即值",
     "derived": "派生值",
@@ -67,6 +66,7 @@ const translations = {
     "ui-control": "UI控件",
     
     // Button Labels and Actions
+    "Copy": "复制",
     "Edit": "编辑",
     "View": "查看",
     "Delete": "删除",
