@@ -114,8 +114,8 @@ mjx-container .var-in-math{
 }
 
 .var-in-math.var {
-    --var-in-math-prefix: "VAR";
-    background: linear-gradient(120deg, var(--color-300) 1350px, var(--color-600) 1350px);
+    --var-in-math-prefix: "";
+    background: var(--color-600);
 }
 
 .var-in-math.target {
@@ -139,16 +139,18 @@ mjx-container .var-in-math::before {
 }
 
 .var-in-math-nickname {
-    font-size: 600px;
+    font-size: 750px;
+    line-height: 1000px;
     color: var(--color-50);
     font-family: sans-serif;
-    margin-left: 1500px;
+    margin-left: 225px;
     margin-right: 225px;
 }
 
 .var-in-math.target .var-in-math-nickname {
     color: white;
     margin-left: 1300px;
+    line-height: 900px;
 }
 
 .var-in-math-id {

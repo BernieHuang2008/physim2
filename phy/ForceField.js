@@ -126,7 +126,7 @@ class FakeVar_FFExpression {
 
     set expression(newExpression) {
         this.ff.reset(this.ff.condition, newExpression);
-        this.ff.clear_template_params();
+        // this.ff.clear_template_params();
         this.ff.template.type = "custom";
     }
 
@@ -136,6 +136,10 @@ class FakeVar_FFExpression {
 
     set value(newValue) {
         this.expression = newValue;
+    }
+
+    get world() {
+        return this.ff.world;
     }
 
     _getDependencies() {
@@ -166,7 +170,7 @@ class FakeVar_FFCondition extends FakeVar_FFExpression {
     }
     set expression(newCondition) {
         this.ff.reset(newCondition, this.ff.expression);
-        this.ff.clear_template_params();
+        // this.ff.clear_template_params();
         this.ff.template.type = "custom";
     }
 }

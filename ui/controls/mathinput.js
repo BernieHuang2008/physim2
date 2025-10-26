@@ -74,7 +74,7 @@ async function initMathJax() {
  * @param {string} expression - The mathematical expression in MathJS format
  * @returns {string} LaTeX representation of the expression
  */
-function expressionToLatex(expression) {
+function expressionToLatex(expression, world=null) {
     const keywords = ['pos', 'v', 'mass', 'time', /VAR\\_[0-9A-Z]{9,9}/g, /TARGET\\_[a-zA-Z0-9_]+/g];
 
     try {
@@ -94,15 +94,17 @@ function expressionToLatex(expression) {
 
                     switch (header) {
                         case 'TARGET':
-                            header = TARGET_IN_MATH_SPECIAL_CHAR + "Oo";  // also placeholders
+                            header = TARGET_IN_MATH_SPECIAL_CHAR;
+                            placeholder = "xxx";
                             break;
                         case 'VAR':
                             header = VAR_IN_MATH_SPECIAL_CHAR;
-                            placeholder = "O";
+                            placeholder = "x";
+                            var_id = world?world.vars["VAR_"+var_id].nickname:var_id;
                             break;
                     }
 
-                    return `{${header}}_{${var_id}${placeholder}}`;
+                    return `{${header}${placeholder}}_{${var_id}}`;
                 });
             } else {
                 const regex = new RegExp(`\\b${keyword}\\b`, 'g');
@@ -124,7 +126,7 @@ function expressionToLatex(expression) {
  * @param {string} latexExpression - The LaTeX expression to render
  * @returns {Promise} Promise that resolves when rendering is complete
  */
-async function renderMathJax(element, latexExpression) {
+async function renderMathJax(element, latexExpression, world=null) {
     try {
         const MathJax = await initMathJax();
 
@@ -147,15 +149,24 @@ async function renderMathJax(element, latexExpression) {
         });
 
         vardoms.forEach(vardom => {
-            // extract var_id
+            // // extract var_id
+            // var var_id = "";
+            // for (let i = 0; i < 9; i++) {
+            //     var c = parseInt(vardom.children[1].querySelectorAll("use")[i].dataset.c, 16);
+            //     var_id += String.fromCharCode(c > 127 ? c - 0x1D3F3 : c);
+            // }
             var var_id = "";
-            for (let i = 0; i < 9; i++) {
+            var i = 0;
+            while (i < vardom.children[1].querySelectorAll("use").length) {
                 var c = parseInt(vardom.children[1].querySelectorAll("use")[i].dataset.c, 16);
-                var_id += String.fromCharCode(c > 127 ? c - 0x1D3F3 : c);
+                if (isNaN(c)) break;
+                var_id += String.fromCharCode(c > 0x1D44E ? c - 0x1D3ED : c > 127 ? c - 0x1D3F3 : c);
+                i++;
             }
 
             // find the variable in the registry 
-            var nickname = var_id;  // TODO
+            var nickname = var_id;
+            // var nickname = world.vars["VAR_"+var_id].nickname;
 
             // add foreignObject
             vardom.innerHTML = `
@@ -208,9 +219,9 @@ async function renderMathJax(element, latexExpression) {
  * @param {string} expression - The MathJS expression
  * @returns {Promise} Promise that resolves when rendering is complete
  */
-async function renderMathExpression(element, expression) {
-    const latex = expressionToLatex(expression);
-    return renderMathJax(element, "=" + latex);
+async function renderMathExpression(element, expression, world=null) {
+    const latex = expressionToLatex(expression, world);
+    return renderMathJax(element, "=" + latex, world);
 }
 
 /**
@@ -277,7 +288,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
     let isEditing = false;
 
     // Initial render
-    renderMathExpression(mathDisplay, variable.expression).catch(() => {
+    renderMathExpression(mathDisplay, variable.expression, variable.world).catch(() => {
         // Fallback if MathJax fails
         mathDisplay.innerHTML = `<code>=${variable.expression}</code>`;
     });
@@ -326,7 +337,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
                         });
 
                         // Re-render the math
-                        renderMathExpression(mathDisplay, newExpression).catch(() => {
+                        renderMathExpression(mathDisplay, newExpression, variable.world).catch(() => {
                             mathDisplay.innerHTML = `<code>=${newExpression}</code>`;
                         });
 
@@ -346,7 +357,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
                     type: 'immediate',
                 });
 
-                renderMathExpression(mathDisplay, input.value).catch(() => {
+                renderMathExpression(mathDisplay, input.value, variable.world).catch(() => {
                     mathDisplay.innerHTML = `<code>=${input.value}</code>`;
                 });
 
