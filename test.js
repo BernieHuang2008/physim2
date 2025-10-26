@@ -16,7 +16,7 @@ import { ParticlePhyObject } from "./phy/PhyObjects/Particle.js";
 // console.log("After switching - Translated 'Inspector':", t("Inspector"));
 
 var world = new World();
-var a = new ParticlePhyObject(world, 3, [5, 0], [0, 0]);
+var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
 var b = new ParticlePhyObject(world, "2*5", [10, 0], [0, 0]);
 
 var v = new Variable("q", "", "derived");
@@ -30,8 +30,9 @@ console.log(b);
 import { ForceField } from "./phy/ForceField.js";
 import { edit_ff } from "./sim/ffeditor.js";
 
-var ffi = new ForceField(world, "mass * [0, -10]", "true");
+// var ffi = new ForceField(world, "mass * [0, -10]", "true");
 // var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
+var ffi = new ForceField(world, "100/(norm(pos - [10, 0])^2) * ((pos - [10, 0]) / norm(pos - [10, 0]))", "true");
 b.ffs.push(ffi.id);
 console.log(ffi);
 

@@ -106,8 +106,8 @@ function render_displayArea(content_area) {
     sim_bg.style.height = area_height + "px";
 
     // make sure the origin-point is always at the center of a grid square
-    sim_bg.style.marginLeft = (-render_area[0] % GRID_SIZE + GRID_SIZE / 2) + "px";
-    sim_bg.style.marginTop = (revY(render_area[3] % GRID_SIZE + GRID_SIZE / 2)) + "px";
+    sim_bg.style.setProperty("--margin-left", (-render_area[0] % GRID_SIZE + GRID_SIZE / 2) + "px");
+    sim_bg.style.setProperty("--margin-top", (revY(render_area[3] % GRID_SIZE + GRID_SIZE / 2)) + "px");
 
     var anchor_pos_before = [sim_anchor.offsetLeft, sim_anchor.offsetTop];
 

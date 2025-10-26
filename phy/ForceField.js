@@ -101,7 +101,7 @@ class ForceField extends IDObject {
             // from world
             delete this.world.vars[varid];
             // from master phyobj
-            index = ff_master_phyobj.vars.indexOf(varid);
+            var index = ff_master_phyobj.vars.indexOf(varid);
             if (index !== -1) {
                 ff_master_phyobj.vars.splice(index, 1);
             }
