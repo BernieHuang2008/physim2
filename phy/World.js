@@ -8,8 +8,10 @@ class World {
     vars = {};
     ffs = {};
     used_ids = new Set();
+    anchor = null;
 
     constructor() {
+        this.anchor = new WorldAnchorPhyObject(this);
     }
 
     _genid(prefix = "UNI") {

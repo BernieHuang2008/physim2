@@ -80,7 +80,7 @@ const translations = {
     "Application Scope": "适用范围",
     "Expression": "表达式",
     "Strength": "强度",
-    "Applies To": "适用于",
+    "Preview & Operation": "预览与操作",
     
     // Physics Constants and Properties
     "Gravity": "重力",

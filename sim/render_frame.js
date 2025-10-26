@@ -19,9 +19,17 @@ function revY(y) {
     return y;
 }
 
-function render_frame(world) {
+function render_frame(world, focus_id = null) {
     var content_area = render_phyobjs(world);
     render_displayArea(content_area);
+
+
+
+    // focus: scroll into view
+    const element = $("#phyobj-" + focus_id);
+    element.scrollIntoView({
+        behavior: 'smooth',
+    });
 }
 
 function render_phyobj(phyobj) {
@@ -119,8 +127,11 @@ function render_displayArea(content_area) {
     var anchor_pos_after = [sim_anchor.offsetLeft, sim_anchor.offsetTop];
     var delta_pos = [anchor_pos_after[0] - anchor_pos_before[0], anchor_pos_after[1] - anchor_pos_before[1]];
     var sim_area_div = document.getElementById("center-zone");
-    sim_area_div.scrollLeft += delta_pos[0];
-    sim_area_div.scrollTop += delta_pos[1];
+    sim_area_div.scrollBy({
+        left: delta_pos[0],
+        top: delta_pos[1],
+        behavior: 'instant',
+    });
 }
 
 export { render_frame, render_area, setZoomLevel, getZoomLevel };

@@ -290,13 +290,14 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
     }
 
     function handleMouseUp() {
+        var isOperating = (isDragging || isRotating);
         isDragging = false;
         isRotating = false;
         svg.style.cursor = 'default';
         
         // Trigger onChange callback if provided
-        if (onChange && typeof onChange === 'function') {
-            // onChange();
+        if (isOperating && onChange && typeof onChange === 'function') {
+            onChange();
         }
     }
 

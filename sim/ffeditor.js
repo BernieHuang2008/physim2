@@ -3,6 +3,7 @@ import { $, $$ } from '../utils.js';
 import { UIControls } from '../ui/controls/controls.js';
 import { FakeVar_FFExpression, FakeVar_FFCondition } from "../phy/ForceField.js";
 import { Variable } from "../phy/Var.js";
+import { visualize_ff_FL, visualize_ff_EPS, showVisualFieldCover, hideVisualFieldCover } from "../ui/visual_field.js";
 import { t } from "../i18n/i18n.js";
 
 const ffeditor_ui_section = new UI_Section(t("Force Field Editor"));
@@ -108,6 +109,43 @@ function edit_ff(world, ff_id, return_to=null) {
         <span class='small gray'> < ${ff.type} > </span>
         <hr>
     `);
+
+    ffeditor_ui_section
+        .addSubsection(t("Preview & Operation"), false)
+        .addUIControl(() => {
+            const buttonArea = document.createElement("div");
+            // View-A button
+            const viewAButton = document.createElement("span");
+            viewAButton.className = "small-button symbol";
+            viewAButton.innerHTML = "&#xE890;<sub>◎</sub>";
+            viewAButton.onmouseenter = () => {
+                visualize_ff_EPS(ff.world, ff.id);
+            };
+            viewAButton.onmouseleave = () => {
+                hideVisualFieldCover();
+            };
+            buttonArea.appendChild(viewAButton);
+            // View-B button
+            const viewBButton = document.createElement("span");
+            viewBButton.className = "small-button symbol";
+            viewBButton.innerHTML = "&#xE890;<sub>↙</sub>";
+            viewBButton.onmouseenter = () => {
+                visualize_ff_FL(ff.world, ff.id);
+            };
+            viewBButton.onmouseleave = () => {
+                hideVisualFieldCover();
+            };
+            buttonArea.appendChild(viewBButton);
+            // Delete button
+            const deleteButton = document.createElement("span");
+            deleteButton.className = "small-button symbol red alert-theme";
+            deleteButton.innerHTML = "&#xE74D;";
+            deleteButton.onclick = () => {
+                // TODO
+            };
+            buttonArea.appendChild(deleteButton);
+            return buttonArea;
+        });
 
     ffeditor_ui_section
         .addSubsection(t("Choose Template"), !(ff.template.type !== "custom"))
