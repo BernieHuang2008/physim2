@@ -19,7 +19,7 @@ var world = new World();
 var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
 var b = new ParticlePhyObject(world, "2*5", [10, 0], [0, 0]);
 
-var v = new Variable("q", "", "derived");
+var v = new Variable("example_var", "", "derived");
 b.vars.push(world.add_var(v));
 v.update("2*5");
 

@@ -31,6 +31,7 @@ const translations = {
     
     // UI Actions
     "copy": "copy",
+    "Add New": "Add New",
     "ID": "ID",
     "Error": "Error",
     "No data to display": "No data to display",

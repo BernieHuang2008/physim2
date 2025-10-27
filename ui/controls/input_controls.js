@@ -8,7 +8,7 @@ function InputNormal({ field, variable, disabled = false, onChange = null }) {
     // Generate unique ID for value display
     const uniqueId = 'normal_' + Math.random().toString(36).substr(2, 9);
 
-    dom.innerHTML = `<b class="field-title">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
+    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
     const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
@@ -80,7 +80,7 @@ function InputNumber({ field, variable, disabled = false, onChange = null }) {
     // Generate unique ID for value display
     const uniqueId = 'number_' + Math.random().toString(36).substr(2, 9);
 
-    dom.innerHTML = `<b class="field-title">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
+    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
     const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
@@ -135,7 +135,7 @@ function InputNumber({ field, variable, disabled = false, onChange = null }) {
 
 function InputRange({ field, variable, range = [0, 100], step = 1, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
-    dom.innerHTML = `<b class="field-title">${field}:</b> <input type="range" value="${variable.value}" ${disabled ? "disabled" : ""} min="${range[0]}" max="${range[1]}" step="${step}" /> <label id="value-disp">${variable.value}</label>`;
+    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="range" value="${variable.value}" ${disabled ? "disabled" : ""} min="${range[0]}" max="${range[1]}" step="${step}" /> <label id="value-disp">${variable.value}</label>`;
 
     dom.querySelector("input").addEventListener("input", (e) => {
         if (disabled) return;
@@ -167,7 +167,7 @@ function InputVector2({ field, variable, disabled = false, onChange = null }) {
     const infoAreaId = uniqueId + '_info';
 
     dom.innerHTML = `
-        <div><b class="field-title">${field}</b>:</div>
+        <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
         <div class="vector2-inputs">
             <div class="vector2-info-area ${disabled ? 'disabled' : ''}" id="${infoAreaId}"></div>
             <div class="vector2-visual-area" id="${visualAreaId}"></div>

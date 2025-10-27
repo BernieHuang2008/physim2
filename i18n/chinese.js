@@ -32,6 +32,7 @@ const translations = {
     "α": "α",
     
     // UI Actions
+    "Add New": "添加新项",
     "ID": "ID",
     "Error": "错误",
     "No data to display": "无数据显示",
@@ -93,7 +94,10 @@ const translations = {
     
     // Confirmation Messages
     "Use New Template? By doing this, current settings will be LOST.": "使用新模板？这样做会丢失当前设置。",
-    
+    "Are you sure you want to delete this force field?": "您确定要删除此力场吗？",
+    "Enter new variable nickname:": "新变量的名称：",
+    "new_var": "new_var",
+
     // Error Messages
     "Invalid expression": "无效的表达式",
     "Circular dependency detected": "检测到循环依赖",

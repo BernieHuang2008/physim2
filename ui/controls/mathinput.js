@@ -160,7 +160,7 @@ async function renderMathJax(element, latexExpression, world=null) {
             while (i < vardom.children[1].querySelectorAll("use").length) {
                 var c = parseInt(vardom.children[1].querySelectorAll("use")[i].dataset.c, 16);
                 if (isNaN(c)) break;
-                var_id += String.fromCharCode(c > 0x1D44E ? c - 0x1D3ED : c > 127 ? c - 0x1D3F3 : c);
+                var_id += String.fromCharCode(c >= 0x1D44E ? c - 0x1D3ED : c >= 127 ? c - 0x1D3F3 : c);
                 i++;
             }
 
@@ -187,7 +187,7 @@ async function renderMathJax(element, latexExpression, world=null) {
             while (i < targetdom.children[1].querySelectorAll("use").length) {
                 var c = parseInt(targetdom.children[1].querySelectorAll("use")[i].dataset.c, 16);
                 if (isNaN(c)) break;
-                target_name += String.fromCharCode(c > 0x1D44E ? c - 0x1D3ED : c > 127 ? c - 0x1D3F3 : c);
+                target_name += String.fromCharCode(c >= 0x1D44E ? c - 0x1D3ED : c >= 127 ? c - 0x1D3F3 : c);
                 i++;
             }
             // add foreignObject

@@ -4,6 +4,7 @@ import { UIControls } from '../ui/controls/controls.js';
 import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "../ui/visual_field.js";
 import { render_frame } from "./render_frame.js";
+import { Variable } from '../phy/Var.js';
 import { t } from "../i18n/i18n.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
@@ -34,7 +35,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     // Display the properties of the phyobject in the inspector panel
     inspector_ui_section.clearContent();
     inspector_ui_section.addHTML(`
-        <span class='big' id="nickname-display" style="user-select: none;"> ${phyobj.nickname} </span>
+        <span class='big' id="nickname-display" style="user-select: none;"></span>
         <span class='small gray cursor-pointer' alt="${t("Edit")}" id="edit-nickname">
             <span class='symbol'>&#xE70F;</span>
         </span>
@@ -47,6 +48,9 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
         <span class='small gray'> < ${phyobj.type} > </span>
         <hr>
     `, (dom) => {
+        // nickname display
+        dom.querySelector("#nickname-display").innerText = phyobj.nickname;
+
         // id copy
         dom.querySelector("#copy-id-btn").onclick = function () {
             navigator.clipboard.writeText(phyobj.id);
@@ -65,7 +69,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             nicknameDisplay.onblur = () => {
                 nicknameDisplay.contentEditable = "false";
                 phyobj.nickname = nicknameDisplay.innerText;
-                // inspector_ui_section.render();
+                inspector_ui_section.render();
             }
         }
     });
@@ -96,10 +100,12 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     inspector_ui_section.addSubsection(t("Vars"), !isWorldAnchor)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Variables"),
-            iterator: phyobj.vars.map(v_id => phyobj.world.vars[v_id]),
+            iterator: phyobj.vars,
             colums: [
                 // 第一列：显示变量昵称
-                (variable) => {
+                (var_id) => {
+                    const variable = phyobj.world.vars[var_id];
+
                     const span = document.createElement("span");
                     span.className = "var-nickname cursor-pointer";
 
@@ -122,21 +128,32 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                     return span;
                 },
                 // 第二列：显示变量的 math input
-                (variable) => UIControls.InputControls.InputMath({
+                (var_id) => UIControls.InputControls.InputMath({
                     field: "",
-                    variable: variable,
+                    variable: phyobj.world.vars[var_id],
                     onChange: () => inspector_ui_section.render()
                 }),
-            ]
+            ],
+            onAdd: () => {
+                // 添加新var
+                var new_var_name = prompt(t("Enter new variable nickname:"), t("new_var"));
+                if (new_var_name) {
+                    var v = new Variable(new_var_name, "", "derived");
+                    phyobj.vars.push(world.add_var(v));
+                    inspector_ui_section.render();
+                }
+            }
         })
 
     inspector_ui_section.addSubsection(t("Force Fields"), !isWorldAnchor)
         .addUIControl(UIControls.Tables.ColumedList, {
             field: t("Force Fields"),
-            iterator: phyobj.ffs.map(ff_id => phyobj.world.ffs[ff_id]),
+            iterator: phyobj.ffs,
             colums: [
                 // 第一列：显示ff昵称
-                (ff) => {
+                (ff_id) => {
+                    const ff = phyobj.world.ffs[ff_id];
+
                     const span = document.createElement("span");
                     span.className = "var-nickname cursor-pointer";
 
@@ -167,7 +184,9 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                 // }),
 
                 // 第二列：编辑按钮
-                (ff) => {
+                (ff_id) => {
+                    const ff = phyobj.world.ffs[ff_id];
+
                     const buttonArea = document.createElement("div");
                     // Edit button
                     const editButton = document.createElement("span");
@@ -202,7 +221,11 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                     deleteButton.className = "small-button symbol red alert-theme";
                     deleteButton.innerHTML = "&#xE74D;";
                     deleteButton.onclick = () => {
-                        // TODO
+                        if (confirm(t("Are you sure you want to delete this force field?"))) {
+                            delete world.ffs[ff_id];
+                            phyobj.ffs.pop(phyobj.ffs.indexOf(ff_id));
+                            inspector_ui_section.render();
+                        }
                     };
                     buttonArea.appendChild(deleteButton);
                     return buttonArea;

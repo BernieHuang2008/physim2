@@ -16,20 +16,23 @@ const templateUpdaters = {
     gravity: (ff) => {
         var params = ff.template.params;
         var condition = "true";
-        var expression = `mass * ${params.g} * ${params.direction} / norm(${params.direction})`;
+        var expression = `mass * ${params.g} * (${params.direction} / norm(${params.direction}))`;
 
         ff.reset(condition, expression);
     },
     universal_gravitational: (ff) => {
         var params = ff.template.params;
         var condition = "true";
-        var expression = `${params.G} * mass * ${ff.master_phyobj.mass.id} / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * ((pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id}))`;
+        var expression = `- ${params.G} * mass * ${ff.master_phyobj.mass.id} / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * ((pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id}))`;
 
         ff.reset(condition, expression);
     },
     electrostatic: (ff) => {
         var params = ff.template.params;
+        var condition = "TARGET_q";
+        var expression = `${params.k} * ${params.q} * TARGET_q / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * (-(pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id}))`;
 
+        ff.reset(condition, expression);
     }
 }
 
@@ -54,7 +57,8 @@ function defaultTemplates(template_type) {
                 break;
             case "electrostatic":
                 params = {
-                    k: new Variable('k', 8.9875517923e9, 'immediate')
+                    k: new Variable('k', 8.9875517923e9, 'immediate'),
+                    q: new Variable('q', 1.0, 'immediate')
                 };
                 break;
         }
