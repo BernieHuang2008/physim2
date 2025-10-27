@@ -36,6 +36,18 @@ const translations = {
     "Error": "Error",
     "No data to display": "No data to display",
     
+    // Error Messages
+    "Force Calculation Failed": "Force Calculation Failed",
+    "Force Field Not Found": "Force Field Not Found",
+    "Physics Object Not Found": "Physics Object Not Found",
+    "Potential Calculation Failed": "Potential Calculation Failed",
+    "Table Cell Error": "Table Cell Error",
+    "Circular Dependency Detected": "Circular Dependency Detected",
+    "MathJax Load Failed": "MathJax Load Failed",
+    "MathJax Init Failed": "MathJax Init Failed",
+    "MathJax Render Failed": "MathJax Render Failed",
+    "LaTeX Conversion Failed": "LaTeX Conversion Failed",
+    
     // Variable Types
     "immediate": "immediate",
     "derived": "derived",

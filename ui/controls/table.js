@@ -1,5 +1,6 @@
 
 import { t } from "../../i18n/i18n.js";
+import * as Noti from "../notification/notification.js";
 
 /**
  * 创建一个可配置的表格组件
@@ -84,6 +85,7 @@ function ColumedList({ field, iterator = [], colums = [], onAdd = null }) {
                     }
                 } catch (error) {
                     // 如果函数执行出错，显示错误信息
+                    Noti.error(t("Table Cell Error"), `Error in column ${colIndex} for row ${rowIndex}: ${error.message}`);
                     console.error(`Error in column ${colIndex} for row ${rowIndex}:`, error);
                     cell.textContent = t("Error");
                     cell.className += ' error';

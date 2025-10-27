@@ -1,4 +1,5 @@
 import { math } from '../../phyEngine/math.js';
+import * as Noti from '../notification/notification.js';
 import { t } from '../../i18n/i18n.js';
 
 const VAR_IN_MATH_SPECIAL_CHAR = "\u200B"; //"🥒";
@@ -55,12 +56,14 @@ async function initMathJax() {
                 // MathJax will call startup.ready when it's fully loaded
             };
             script.onerror = (error) => {
+                Noti.error(t("MathJax Load Failed"), "Failed to load MathJax script. Mathematical expressions may not display correctly.");
                 console.error('Failed to load MathJax script:', error);
                 reject(error);
             };
 
             document.head.appendChild(script);
         } catch (error) {
+            Noti.error(t("MathJax Init Failed"), "Failed to initialize MathJax. Mathematical expressions may not display correctly.");
             console.error('Failed to initialize MathJax:', error);
             reject(error);
         }
@@ -114,6 +117,7 @@ function expressionToLatex(expression, world=null) {
 
         return enhanceLatex(latex);
     } catch (error) {
+        Noti.warning(t("LaTeX Conversion Failed"), `Failed to convert expression "${expression}" to LaTeX. Using fallback display.`);
         console.warn('Failed to convert expression to LaTeX:', expression, error);
         // Fallback: return the original expression wrapped in text mode
         return `\\text{${expression}}`;
@@ -206,6 +210,7 @@ async function renderMathJax(element, latexExpression, world=null) {
 
         return Promise.resolve();
     } catch (error) {
+        Noti.warning(t("MathJax Render Failed"), "Failed to render mathematical expression. Showing raw LaTeX instead.");
         console.error('MathJax rendering error:', error);
         // Fallback: show the LaTeX code
         element.innerHTML = `<code>$${latexExpression}$</code>`;
@@ -304,6 +309,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
             }
         } catch (error) {
             valueDisplay.textContent = `= Error`;
+            Noti.error(t('Failed to evaluate variable value') + ': ' + error.message);
             throw error;
         }
     }
@@ -348,7 +354,7 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
                     } catch (error) {
                         // If the expression is invalid, revert and show error
                         input.value = "=" + variable.expression;
-                        alert(t('Invalid expression') + ': ' + error.message);
+                        Noti.error(t('Invalid expression'), error.message);
                     }
                 }
             } else {

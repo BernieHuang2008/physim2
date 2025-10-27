@@ -7,6 +7,7 @@ import { render_frame } from "../sim/render_frame.js";
 import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
+import * as Noti from "./notification/notification.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
@@ -29,6 +30,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     // Get the phyobject
     var phyobj = world.phyobjs[phyobj_id];
     if (!phyobj) {
+        Noti.error(t("Physics Object Not Found"), `No physics object found with ID: ${phyobj_id}`);
         console.error("No phyobj with id:", phyobj_id);
         return;
     }

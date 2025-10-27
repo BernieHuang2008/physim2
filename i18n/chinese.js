@@ -38,6 +38,16 @@ const translations = {
     "No data to display": "无数据显示",
     
     // Error Messages
+    "Force Calculation Failed": "力计算失败",
+    "Force Field Not Found": "力场未找到",
+    "Physics Object Not Found": "物理对象未找到",
+    "Potential Calculation Failed": "势能计算失败",
+    "Table Cell Error": "表格单元格错误",
+    "Circular Dependency Detected": "检测到循环依赖",
+    "MathJax Load Failed": "MathJax加载失败",
+    "MathJax Init Failed": "MathJax初始化失败",
+    "MathJax Render Failed": "MathJax渲染失败",
+    "LaTeX Conversion Failed": "LaTeX转换失败",
     "Invalid expression": "无效的表达式",
     "Circular dependency detected": "检测到循环依赖",
     "Expression reverted to previous valid state": "表达式已恢复到最近的有效状态",
@@ -97,7 +107,7 @@ const translations = {
     "Are you sure you want to delete this force field?": "您确定要删除此力场吗？",
     "Enter new variable nickname:": "新变量的名称：",
     "new_var": "new_var",
-    // "Handle Noti.": "处理通知",
+    "Handle Noti.": "处理通知",
 
     // Error Messages
     "Invalid expression": "无效的表达式",

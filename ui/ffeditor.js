@@ -5,6 +5,7 @@ import { FakeVar_FFExpression, FakeVar_FFCondition } from "../phy/ForceField.js"
 import { Variable } from "../phy/Var.js";
 import { visualize_ff_FL, visualize_ff_EPS, showVisualFieldCover, hideVisualFieldCover } from "./visual_field.js";
 import { t } from "../i18n/i18n.js";
+import * as Noti from "./notification/notification.js";
 
 const ffeditor_ui_section = new UI_Section(t("Force Field Editor"));
 ffeditor_ui_section.activateAt($("#right-bar"));
@@ -92,6 +93,7 @@ function edit_ff(world, ff_id, return_to=null) {
     // Get ff
     const ff = world.ffs[ff_id];
     if (!ff) {
+        Noti.error(t("Force Field Not Found"), `No force field found with ID: ${ff_id}`);
         console.error("No force field with id:", ff_id);
         return;
     }

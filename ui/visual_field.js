@@ -1,5 +1,7 @@
 import { BasicPhyObject } from "../phy/PhyObjects/basic.js";
 import { getZoomLevel, render_area } from "../sim/render_frame.js";
+import * as Noti from "./notification/notification.js";
+import { t } from "../i18n/i18n.js";
 
 /**
  * Coordinate System Notes:
@@ -48,6 +50,7 @@ function calculateForceAtPosition(ff, position) {
         const force = ff.compute_force(fake_po, 0);
         return force;
     } catch (error) {
+        Noti.warning(t("Force Calculation Failed"), `Unable to calculate force at position [${position[0]}, ${position[1]}]`);
         console.warn(`Force calculation failed at position [${position[0]}, ${position[1]}]:`, error);
         return null;
     }
@@ -438,6 +441,7 @@ function visualize_ff_FL(world, ff_id) {
 
     const ff = world.ffs[ff_id];
     if (!ff) {
+        Noti.error(t("Force Field Not Found"), `No force field found with ID: ${ff_id}`);
         console.error("Force field not found:", ff_id);
         return;
     }
@@ -511,6 +515,7 @@ function visualize_ff_EPS(world, ff_id) {
 
     const ff = world.ffs[ff_id];
     if (!ff) {
+        Noti.error(t("Force Field Not Found"), `No force field found with ID: ${ff_id}`);
         console.error("Force field not found:", ff_id);
         return;
     }
@@ -534,7 +539,7 @@ function visualize_ff_EPS(world, ff_id) {
     const potentialMatrix = Array(matrixWidth).fill(null).map(() => Array(matrixHeight).fill(0));   // size: [w][h]
 
     if (!potentialMatrix || potentialMatrix.length === 0) {
-        console.warn("无法计算势能数据");
+        Noti.warning(t("Potential Calculation Failed"), "Unable to calculate potential energy data");
         return;
     }
 

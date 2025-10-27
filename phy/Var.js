@@ -1,6 +1,7 @@
 import { math } from '../phyEngine/math.js';
 import { IDObject } from './idutils.js';
 import { t } from '../i18n/i18n.js';
+import * as Noti from '../ui/notification/notification.js';
 
 class Variable extends IDObject {
     // metadata
@@ -175,7 +176,7 @@ class Variable extends IDObject {
 
         if (result.hasCycle) {
             const message = `Circular dependency detected: ${result.cyclePath.join(' -> ')}`;
-            alert(message);
+            Noti.error(t("Circular Dependency Detected"), message);
             return {
                 hasCycle: true,
                 cyclePath: result.cyclePath,

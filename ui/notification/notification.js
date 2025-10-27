@@ -96,15 +96,15 @@ function notify(title, message, proceedFunc, type, duration) {
     _chState();
 }
 
-function info(title, message, proceedFunc = null, duration = 3000) {
+function info(title, message, proceedFunc = null, duration = 5000) {
     notify(title, message, proceedFunc, "info", duration);
 }
 
-function warning(title, message, proceedFunc = null, duration = 3000) {
+function warning(title, message, proceedFunc = null, duration = 10000) {
     notify(title, message, proceedFunc, "warning", duration);
 }
 
-function error(title, message, proceedFunc = null, duration = 3000) {
+function error(title, message, proceedFunc = null, duration = 10000) {
     notify(title, message, proceedFunc, "error", duration);
 }
 
