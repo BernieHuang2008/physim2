@@ -1,4 +1,4 @@
-import { t } from "../i18n/i18n.js";
+import { t } from "../../i18n/i18n.js";
 
 var all_sections = [];
 var area_sections_map = {};

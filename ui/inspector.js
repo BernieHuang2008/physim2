@@ -1,9 +1,9 @@
-import { UI_Section } from "../ui/ui_section.js";
+import { UI_Section } from "../ui/ui_section/ui_section.js";
 import { $, $$ } from '../utils.js';
-import { UIControls } from '../ui/controls/controls.js';
+import { UIControls } from './controls/controls.js';
 import { edit_ff } from "./ffeditor.js";
-import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "../ui/visual_field.js";
-import { render_frame } from "./render_frame.js";
+import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "./visual_field.js";
+import { render_frame } from "../sim/render_frame.js";
 import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";

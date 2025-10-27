@@ -29,6 +29,9 @@
     width: 100%;
     height: 1.5rem;
     background-color: #f3f3f3;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
 }
 
 #left-bar {
@@ -67,4 +70,12 @@
     right: 30%;
     bottom: 1.5rem;
     overflow: scroll;
+}
+
+#bottom-bar-left, #bottom-bar-right {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#notification-center {
 }

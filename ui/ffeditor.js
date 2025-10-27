@@ -1,9 +1,9 @@
-import { UI_Section } from "../ui/ui_section.js";
+import { UI_Section } from "../ui/ui_section/ui_section.js";
 import { $, $$ } from '../utils.js';
-import { UIControls } from '../ui/controls/controls.js';
+import { UIControls } from './controls/controls.js';
 import { FakeVar_FFExpression, FakeVar_FFCondition } from "../phy/ForceField.js";
 import { Variable } from "../phy/Var.js";
-import { visualize_ff_FL, visualize_ff_EPS, showVisualFieldCover, hideVisualFieldCover } from "../ui/visual_field.js";
+import { visualize_ff_FL, visualize_ff_EPS, showVisualFieldCover, hideVisualFieldCover } from "./visual_field.js";
 import { t } from "../i18n/i18n.js";
 
 const ffeditor_ui_section = new UI_Section(t("Force Field Editor"));

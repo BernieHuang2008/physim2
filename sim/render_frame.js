@@ -1,6 +1,6 @@
 import { $, $$ } from '../utils.js';
 import { PhyObjOnClickEvent } from './events.js';
-import { inspect_phyobj } from './inspector.js';
+import { inspect_phyobj } from '../ui/inspector.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
 
