@@ -5,6 +5,7 @@ import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "../ui/visual_field.js";
 import { render_frame } from "./render_frame.js";
 import { Variable } from '../phy/Var.js';
+import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
@@ -230,7 +231,14 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                     buttonArea.appendChild(deleteButton);
                     return buttonArea;
                 }
-            ]
+            ],
+            onAdd: () => {
+                // 添加新ff
+                var newff = new ForceField(world, "", "");
+                phyobj.ffs.push(newff.id);
+                inspector_ui_section.render();
+                edit_ff(world, newff.id, inspector_ui_section);
+            }
         })
 
     inspector_ui_section.render();
