@@ -97,6 +97,7 @@ const translations = {
     "Are you sure you want to delete this force field?": "您确定要删除此力场吗？",
     "Enter new variable nickname:": "新变量的名称：",
     "new_var": "new_var",
+    // "Handle Noti.": "处理通知",
 
     // Error Messages
     "Invalid expression": "无效的表达式",

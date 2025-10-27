@@ -1,12 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="ui/style/theme.css">
+    <link rel="stylesheet" href="ui/style/ui.css">
+    <link rel="stylesheet" href="ui/controls/vector_visualize.css">
+    <link rel="stylesheet" href="ui/controls/mathinput.css">
+    <link rel="stylesheet" href="ui/controls/table.css">
+    <link rel="stylesheet" href="ui/controls/radio.css">
+    <link rel="stylesheet" href="ui/style/layout.css">
+    <link rel="stylesheet" href="ui/ui_section/ui_section.css">
+    <link rel="stylesheet" href="ui/style/sim.css">
+    <link rel="stylesheet" href="ui/style/phyobj.css">
+    <link rel="stylesheet" href="ui/notification/notification.css">
+</head>
+
 <body>
     <div id="app">
         <div class="layout-lv1" id="top-bar"></div>
         <div class="layout-lv1" id="bottom-bar">
             <div id="bottom-bar-left"></div>
             <div id="bottom-bar-right">
-                <span class="symbol" id="notification-center">
-                    &#xED1E; &#xE7BA; &#xF13D;
-                </span>
+                <span class="symbol" id="notification-center"></span>
             </div>
         </div>
         <div class="layout-lv1" id="left-bar"></div>
@@ -16,18 +31,13 @@
             <div id="simulation-area-background"></div>
             <div id="simulation-area-anchor"></div>
         </div>
+
+        <div class="layout-lv0" id="floating-sections">
+            <div id="notification-bubbles-area"></div>
+        </div>
     </div>
 </body>
 
-<link rel="stylesheet" href="ui/style/theme.css">
-<link rel="stylesheet" href="ui/style/ui.css">
-<link rel="stylesheet" href="ui/controls/vector_visualize.css">
-<link rel="stylesheet" href="ui/controls/mathinput.css">
-<link rel="stylesheet" href="ui/controls/table.css">
-<link rel="stylesheet" href="ui/controls/radio.css">
-<link rel="stylesheet" href="ui/style/layout.css">
-<link rel="stylesheet" href="ui/ui_section/ui_section.css">
-<link rel="stylesheet" href="ui/style/sim.css">
-<link rel="stylesheet" href="ui/style/phyobj.css">
-
 <script type="module" src="test.js"></script>
+
+</html>

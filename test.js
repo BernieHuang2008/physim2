@@ -30,6 +30,7 @@ console.log(b);
 import { ForceField } from "./phy/ForceField.js";
 import { edit_ff } from "./ui/ffeditor.js";
 import { inspect_phyobj } from "./ui/inspector.js";
+import * as Noti from "./ui/notification/notification.js";
 
 // var ffi = new ForceField(world, "mass * [0, -10]", "true");
 // var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
@@ -41,3 +42,4 @@ render_frame(world);
 
 inspect_phyobj(world, b.id);
 // edit_ff(world, ffi.id);
+Noti.warning("hello", "This is a test notification!", console.log, -1);
