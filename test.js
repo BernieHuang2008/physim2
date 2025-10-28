@@ -42,7 +42,12 @@ render_frame(world);
 
 inspect_phyobj(world, b.id);
 // edit_ff(world, ffi.id);
-Noti.error("hello", "This is a test notification!", console.log, -1);
-Noti.warning("hello", "This is a test notification!", console.log, -1);
-Noti.info("hello", "This is a test notification!", console.log, -1);
-Noti.error("hello", "This is a test notification!", console.log, -1);
+// Noti.error("hello", "This is a test notification!", console.log, -1);
+// Noti.warning("hello", "This is a test notification!", console.log, -1);
+// Noti.info("hello", "This is a test notification!", console.log, -1);
+// Noti.error("hello", "This is a test notification!", console.log, -1);
+
+// ======
+import { Simulation } from "./sim/simulation.js";
+var sim = new Simulation(world);
+

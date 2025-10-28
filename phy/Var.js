@@ -243,6 +243,30 @@ class Variable extends IDObject {
 
         return this._value;
     }
+
+    toJSON() {
+        return {
+            id: this.id,
+            nickname: this.nickname,
+            type: this.type,
+            expression_or_value: this.type === "immediate" ? this._value : this.expression,
+        };
+    }
+
+    static fromJSON(json, world) {
+        const variable = new Variable(world);
+        variable.id = json.id;
+        variable.nickname = json.nickname;
+        variable.type = json.type;
+
+        if (variable.type === "immediate") {
+            variable._value = json.expression_or_value;
+        } else if (variable.type === "derived") {
+            variable.update_expression(json.expression_or_value);
+        }
+
+        return variable;
+    }
 }
 
 export { Variable };

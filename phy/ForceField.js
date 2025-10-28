@@ -109,6 +109,30 @@ class ForceField extends IDObject {
 
         this.template.params = {};
     }
+
+    toJSON() {
+        return {
+            id: this.id,
+            nickname: this.nickname,
+            expression: this.expression,
+            condition: this.condition,
+            template: this.template,
+        };
+    }
+    static fromJSON(json, world) {
+        const ff = new ForceField(world);
+        ff.id = json.id;
+        ff.nickname = json.nickname;
+        ff.expression = json.expression;
+        ff.condition = json.condition;
+        ff.compiled_expression = math.compile(ff.expression);
+        ff.compiled_condition = math.compile(ff.condition);
+        ff.template = json.template || {
+            type: "custom",
+            params: {}
+        };
+        return ff;
+    }
 }
 
 class FakeVar_FFExpression {

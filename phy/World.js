@@ -1,7 +1,7 @@
 import { BasicPhyObject } from "./PhyObjects/basic.js";
 import { Variable } from "./Var.js";
 import { ForceField } from "./ForceField.js";
-import {WorldAnchorPhyObject } from "./PhyObjects/WorldAnchor.js";
+import { WorldAnchorPhyObject } from "./PhyObjects/WorldAnchor.js";
 
 class World {
     phyobjs = {};
@@ -68,6 +68,60 @@ class World {
             return this.add_var(x);
         } else if (x instanceof ForceField) {
             return this.add_ff(x);
+        }
+    }
+
+    toJSON() {
+        const result = {};
+
+        // Convert phyobjs
+        result.phyobjs = {};
+        for (const [id, obj] of Object.entries(this.phyobjs)) {
+            result.phyobjs[id] = obj.toJSON();
+        }
+
+        // Convert vars
+        result.vars = {};
+        for (const [id, variable] of Object.entries(this.vars)) {
+            result.vars[id] = variable.toJSON();
+        }
+
+        // Convert force fields
+        result.ffs = {};
+        for (const [id, ff] of Object.entries(this.ffs)) {
+            result.ffs[id] = ff.toJSON();
+        }
+
+        result.used_ids = Array.from(this.used_ids);
+        result.anchor = this.anchor;
+
+        return result;
+    }
+
+    static fromJSON(json) {
+        const world = new World();
+
+        // Clear existing data
+        world.phyobjs = {};
+        world.vars = {};
+        world.ffs = {};
+        world.used_ids = new Set(json.used_ids);
+        world.anchor = json.anchor;
+
+        // Reconstruct phyobjs
+        for (const [id, objData] of Object.entries(json.phyobjs)) {
+            const obj = BasicPhyObject.fromJSON(objData, world);
+            world.phyobjs[id] = obj;
+        }
+        // Reconstruct vars
+        for (const [id, varData] of Object.entries(json.vars)) {
+            const variable = Variable.fromJSON(varData, world);
+            world.vars[id] = variable;
+        }
+        // Reconstruct force fields
+        for (const [id, ffData] of Object.entries(json.ffs)) {
+            const ff = ForceField.fromJSON(ffData, world);
+            world.ffs[id] = ff;
         }
     }
 }

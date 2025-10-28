@@ -31,6 +31,32 @@ class BasicPhyObject extends IDObject {
         world.add(this.pos);
         world.add(this.velocity);
     }
+
+    toJSON() {
+        return {
+            id: this.id,
+            nickname: this.nickname,
+            mass: this.mass.value,
+            pos: this.pos.value,
+            velocity: this.velocity.value,
+            vars: this.vars,
+            ffs: this.ffs
+        };
+    }
+
+    static fromJSON(json, world) {
+        const obj = new BasicPhyObject(
+            world,
+            json.mass,
+            json.pos,
+            json.velocity,
+            json.vars,
+            json.ffs
+        );
+        obj.id = json.id;
+        obj.nickname = json.nickname;
+        return obj;
+    }
 }
 
 export { BasicPhyObject };
