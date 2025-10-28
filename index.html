@@ -21,7 +21,7 @@
         <div class="layout-lv1" id="bottom-bar">
             <div id="bottom-bar-left"></div>
             <div id="bottom-bar-right">
-                <span class="symbol" id="notification-center"></span>
+                <span class="symbol noti state-nothing" id="notification-badge">&#xED1E;</span>
             </div>
         </div>
         <div class="layout-lv1" id="left-bar"></div>
@@ -34,10 +34,12 @@
 
         <div class="layout-lv0" id="floating-sections">
             <div id="notification-bubbles-area"></div>
+            <div id="notification-center" class="hide"></div>
         </div>
     </div>
 </body>
 
+<script type="module" src="init.js"></script>
 <script type="module" src="test.js"></script>
 
 </html>

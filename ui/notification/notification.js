@@ -1,16 +1,80 @@
 import { t } from "../../i18n/i18n.js";
 
+const notibadge_dom = document.getElementById("notification-badge");
+const notibubbles_dom = document.getElementById("notification-bubbles-area");
 const noticenter_dom = document.getElementById("notification-center");
-const notibubbles = document.getElementById("notification-bubbles-area");
 
 const notifications = [];
 
 function init() {
+    _chState();
+    notibadge_dom.onclick = showNotiCenter;
+    document.addEventListener("click", (event) => {
+        const isClickInside = noticenter_dom.contains(event.target) || notibadge_dom.contains(event.target);
+        if (!noticenter_dom.classList.contains("hide")) {
+            if (!isClickInside) {
+                noticenter_dom.classList.add("hide");
+                // event.stopPropagation();
+                // return false;
+            }
+        }
+    });
+}
 
+function renderNotiCenter() {
+    noticenter_dom.innerHTML = `
+        <div class="noti-center-header no-select">
+            <center>${t("Notifications")} 🔔</center>
+            <span class="symbol" id="clear-all">&#xE795;</span>
+            <br>
+        </div>
+    `;
+
+    // render notifications in the center
+    noticenter_dom.innerHTML += notifications.map(noti => `
+        <div class="notification noti state-${noti.type}">
+            <div class="operations">
+                <span class="symbol close-btn no-select" data-index="${notifications.indexOf(noti)}">
+                    &#xE711;
+                </span>
+            </div>
+            <div class="title">${noti.title}</div>
+            <div class="message">${noti.message}</div>
+        </div>
+    `).join("");
+
+    noticenter_dom.querySelector("#clear-all").onclick = function() {
+        notifications.splice(0, notifications.length);
+        renderNotiCenter();
+        _chState();
+    }
+
+    noticenter_dom.querySelectorAll(".close-btn").forEach(btn => {
+        const notification = notifications[parseInt(btn.getAttribute("data-index"))];
+        btn.onclick = function() {
+            // delay for "click outside noti-center" detection to finish
+            setTimeout(() => {
+                noticenter_dom.removeChild(btn.parentElement.parentElement);
+                rmNoti(notification);
+            }, 0);
+        };
+    });
+
+    // if no notifications
+    if (notifications.length === 0) {
+        noticenter_dom.innerHTML = `<center>${t("No notifications.")}</center>`;
+    }
+}
+
+function showNotiCenter() {
+    noticenter_dom.classList.toggle("hide");
+    renderNotiCenter();
+    // remove bubbles
+    notibubbles_dom.innerHTML = "";
 }
 
 /*
-    Change the state of the notification center icon (at bottom-bar)
+    Change the state of the notification badge icon (at bottom-bar)
     state: "nothing", "normal", "warning", "error"
 */
 function _chState() {
@@ -26,9 +90,9 @@ function _chState() {
         }
     });
 
-    // Change the state of the notification center icon (at bottom-bar)
-    noticenter_dom.className = `button symbol state-${state}`;
-    noticenter_dom.innerHTML = {
+    // Change the state of the notification badge icon (at bottom-bar)
+    notibadge_dom.className = `button symbol noti state-${state}`;
+    notibadge_dom.innerHTML = {
         "nothing": "&#xED1E;",
         "info": "&#xED1E;",
         "warning": "&#xE7BA;",
@@ -56,7 +120,7 @@ function notify(title, message, proceedFunc, type, duration) {
 
     // show bubble
     const bubble = document.createElement("div");
-    bubble.className = `notification-bubble state-${type}`;
+    bubble.className = `notification-bubble noti state-${type}`;
     bubble.innerHTML = `
         <div class='title'>${title}</div>
         <div class='message'>${message} <a style="${proceedFunc?'':'display: none;'}" href="javascript:void(0)">[${t("Handle Noti.")}]</a></div>
@@ -81,18 +145,15 @@ function notify(title, message, proceedFunc, type, duration) {
             rmNoti(notiItem);
         };
     }
-    notibubbles.appendChild(bubble);
+    notibubbles_dom.appendChild(bubble);
 
     if (duration > 0) {
         setTimeout(() => {
             bubble.remove();
-            if (proceedFunc === null) {
-
-            }
         }, duration);
     }
 
-    // change notification center state
+    // change notification badge state
     _chState();
 }
 

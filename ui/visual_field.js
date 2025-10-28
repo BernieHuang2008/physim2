@@ -50,7 +50,7 @@ function calculateForceAtPosition(ff, position) {
         const force = ff.compute_force(fake_po, 0);
         return force;
     } catch (error) {
-        Noti.warning(t("Force Calculation Failed"), `Unable to calculate force at position [${position[0]}, ${position[1]}]`);
+        // Noti.warning(t("Force Calculation Failed"), `Unable to calculate force at position [${position[0]}, ${position[1]}]`);
         console.warn(`Force calculation failed at position [${position[0]}, ${position[1]}]:`, error);
         return null;
     }

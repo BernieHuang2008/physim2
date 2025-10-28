@@ -92,6 +92,8 @@ const translations = {
     "Expression": "表达式",
     "Strength": "强度",
     "Preview & Operation": "预览与操作",
+    "Notifications": "通知",
+    "No notifications.": "暂无通知。",
     
     // Physics Constants and Properties
     "Gravity": "重力",
