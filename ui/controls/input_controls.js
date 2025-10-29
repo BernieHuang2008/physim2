@@ -184,6 +184,7 @@ function InputVector2({ field, variable, disabled = false, onChange = null }) {
 }
 
 function InputMath({ field, variable, disabled = false, onChange = null }) {
+    console.log(variable, variable.expression)
     var dom = document.createElement("div");
     dom.className = "input-math-container";
 

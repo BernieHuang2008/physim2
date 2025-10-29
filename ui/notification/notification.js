@@ -11,12 +11,8 @@ function init() {
     notibadge_dom.onclick = showNotiCenter;
     document.addEventListener("click", (event) => {
         const isClickInside = noticenter_dom.contains(event.target) || notibadge_dom.contains(event.target);
-        if (!noticenter_dom.classList.contains("hide")) {
-            if (!isClickInside) {
-                noticenter_dom.classList.add("hide");
-                // event.stopPropagation();
-                // return false;
-            }
+        if (!isClickInside) {
+            noticenter_dom.classList.add("hide");
         }
     });
 }
@@ -43,7 +39,7 @@ function renderNotiCenter() {
         </div>
     `).join("");
 
-    noticenter_dom.querySelector("#clear-all").onclick = function() {
+    noticenter_dom.querySelector("#clear-all").onclick = function () {
         notifications.splice(0, notifications.length);
         renderNotiCenter();
         _chState();
@@ -51,7 +47,7 @@ function renderNotiCenter() {
 
     noticenter_dom.querySelectorAll(".close-btn").forEach(btn => {
         const notification = notifications[parseInt(btn.getAttribute("data-index"))];
-        btn.onclick = function() {
+        btn.onclick = function () {
             // delay for "click outside noti-center" detection to finish
             setTimeout(() => {
                 noticenter_dom.removeChild(btn.parentElement.parentElement);
@@ -123,7 +119,7 @@ function notify(title, message, proceedFunc, type, duration) {
     bubble.className = `notification-bubble noti state-${type}`;
     bubble.innerHTML = `
         <div class='title'>${title}</div>
-        <div class='message'>${message} <a style="${proceedFunc?'':'display: none;'}" href="javascript:void(0)">[${t("Handle Noti.")}]</a></div>
+        <div class='message'>${message} <a style="${proceedFunc ? '' : 'display: none;'}" href="javascript:void(0)">[${t("Handle Noti.")}]</a></div>
     `;
     // close-btn
     const close_btn = document.createElement("button");

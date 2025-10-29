@@ -17,16 +17,23 @@ class BasicPhyObject extends IDObject {
     ffs;
     unreg_vars = [];
 
-    constructor(world, mass=0, pos=null, velocity=null, vars=[], ffs=[]) {
+    constructor(world, mass = 0, pos = null, velocity = null, vars = [], ffs = [], id = null) {
         super();
         this.world = world;
-        this.mass = new Variable('m', mass, 'immediate');
-        this.pos = new Variable('pos', pos || [0, 0], 'immediate');
-        this.velocity = new Variable('velocity', velocity || [0, 0], 'immediate');
+
+        if (id) {
+            this.id = id;
+            world.add_phyobject_with_id(id, this);
+        } else {
+            world.add_phyobject(this);
+        }
+
+        this.mass =     world.vars["VAR_" + this.id + "_mass"]      || new Variable('m', mass, 'immediate', "VAR_" + this.id + "_mass");
+        this.pos =      world.vars["VAR_" + this.id + "_pos"]       || new Variable('pos', pos || [0, 0], 'immediate', "VAR_" + this.id + "_pos");
+        this.velocity = world.vars["VAR_" + this.id + "_velocity"]  || new Variable('velocity', velocity || [0, 0], 'immediate', "VAR_" + this.id + "_velocity");
         this.vars = vars;
         this.ffs = ffs;
 
-        world.add(this);
         world.add(this.mass);
         world.add(this.pos);
         world.add(this.velocity);
@@ -35,6 +42,7 @@ class BasicPhyObject extends IDObject {
     toJSON() {
         return {
             id: this.id,
+            type: this.type,
             nickname: this.nickname,
             mass: this.mass.value,
             pos: this.pos.value,
@@ -42,20 +50,6 @@ class BasicPhyObject extends IDObject {
             vars: this.vars,
             ffs: this.ffs
         };
-    }
-
-    static fromJSON(json, world) {
-        const obj = new BasicPhyObject(
-            world,
-            json.mass,
-            json.pos,
-            json.velocity,
-            json.vars,
-            json.ffs
-        );
-        obj.id = json.id;
-        obj.nickname = json.nickname;
-        return obj;
     }
 }
 

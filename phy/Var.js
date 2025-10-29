@@ -25,8 +25,8 @@ class Variable extends IDObject {
     compiled_expression;
     dependencies = [];
 
-    constructor(nickname, value, type = "immediate") {
-        super();
+    constructor(nickname, value, type = "immediate", id=null) {
+        super(id);
         this.reset(nickname, value, type);
     }
 
@@ -254,10 +254,10 @@ class Variable extends IDObject {
     }
 
     static fromJSON(json, world) {
-        const variable = new Variable(world);
+        const variable = new Variable(json.nickname, json.expression_or_value, json.type);
         variable.id = json.id;
-        variable.nickname = json.nickname;
-        variable.type = json.type;
+
+        world.add_var(variable);
 
         if (variable.type === "immediate") {
             variable._value = json.expression_or_value;

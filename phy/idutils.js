@@ -2,6 +2,7 @@ import { t } from "../i18n/i18n.js";
 
 class IDObject {
     _id = "UNKNOWN";
+
     set id(newId) {
         if (this._id !== "UNKNOWN") {
             throw new Error("Cannot modify id after initialization");
@@ -10,6 +11,12 @@ class IDObject {
     }
     get id() {
         return this._id;
+    }
+
+    constructor(id = null) {
+        if (id) {
+            this.id = id;
+        }
     }
 }
 

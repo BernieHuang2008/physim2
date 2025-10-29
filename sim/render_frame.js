@@ -47,7 +47,7 @@ function render_phyobj(phyobj) {
         dom_element.dataset.phyobjid = phyobj.id;
 
         // bind events
-        dom_element.addEventListener("click", PhyObjOnClickEvent(phyobj.world, phyobj.id));
+        dom_element.onclick = PhyObjOnClickEvent(phyobj.world, phyobj.id);
 
         sim_anchor.appendChild(dom_element);
     }

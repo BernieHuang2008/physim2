@@ -1,7 +1,8 @@
 import { BasicPhyObject } from "./PhyObjects/basic.js";
 import { Variable } from "./Var.js";
 import { ForceField } from "./ForceField.js";
-import { WorldAnchorPhyObject } from "./PhyObjects/WorldAnchor.js";
+import { createPOFromJSON } from "./PhyObjects/create.js";
+import * as PhyObjects from './PhyObjects/phyobjects.js'
 
 class World {
     phyobjs = {};
@@ -11,7 +12,7 @@ class World {
     anchor = null;
 
     constructor() {
-        var anchor = new WorldAnchorPhyObject(this);
+        var anchor = new PhyObjects.WorldAnchorPhyObject(this);
         this.anchor = anchor.id;
     }
 
@@ -39,9 +40,13 @@ class World {
     }
 
     add_var(variable) {
-        let v_id = this._genid("VAR");
-        this.vars[v_id] = variable;
-        variable.id = v_id;
+        if (variable.id === "UNKNOWN") {
+            let v_id = this._genid("VAR");
+            this.vars[v_id] = variable;
+            variable.id = v_id;
+        } else {
+            this.vars[variable.id] = variable;
+        }
         variable.world = this;
 
         return variable.id;
@@ -108,21 +113,23 @@ class World {
         world.used_ids = new Set(json.used_ids);
         world.anchor = json.anchor;
 
-        // Reconstruct phyobjs
-        for (const [id, objData] of Object.entries(json.phyobjs)) {
-            const obj = BasicPhyObject.fromJSON(objData, world);
-            world.phyobjs[id] = obj;
-        }
         // Reconstruct vars
         for (const [id, varData] of Object.entries(json.vars)) {
             const variable = Variable.fromJSON(varData, world);
             world.vars[id] = variable;
+        }
+        // Reconstruct phyobjs
+        for (const [id, objData] of Object.entries(json.phyobjs)) {
+            const obj = createPOFromJSON(objData, world);
+            world.phyobjs[id] = obj;
         }
         // Reconstruct force fields
         for (const [id, ffData] of Object.entries(json.ffs)) {
             const ff = ForceField.fromJSON(ffData, world);
             world.ffs[id] = ff;
         }
+
+        return world;
     }
 }
 

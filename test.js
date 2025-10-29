@@ -15,7 +15,8 @@ import { ParticlePhyObject } from "./phy/PhyObjects/Particle.js";
 // setLanguage('zh'); // Switch to Chinese (when translations are added)
 // console.log("After switching - Translated 'Inspector':", t("Inspector"));
 
-var world = new World();
+window.world = new World();
+var world = window.world;
 var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
 var b = new ParticlePhyObject(world, "2*5", [10, 0], [0, 0]);
 

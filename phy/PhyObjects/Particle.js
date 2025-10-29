@@ -7,14 +7,16 @@ class ParticlePhyObject extends BasicPhyObject {
     nickname = t("Untitled Particle");
 
     // constructor
-    constructor(world, mass=1, pos=null, velocity=null, vars=[], ffs=[]) {
-        super(world, mass, pos, velocity, vars, ffs);
+    constructor(world, mass = 1, pos = null, velocity = null, vars = [], ffs = [], id = null) {
+        super(world, mass, pos, velocity, vars, ffs, id);
 
-        if (typeof mass === 'string') {
-            this.mass.reset('m', mass, 'derived');
-        }
-        else {
-            this.mass.reset('m', mass, 'immediate');
+        if (mass !== "DONTSET") {
+            if (typeof mass === 'string') {
+                this.mass.reset('m', mass, 'derived');
+            }
+            else {
+                this.mass.reset('m', mass, 'immediate');
+            }
         }
     }
 }

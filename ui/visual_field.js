@@ -1,6 +1,7 @@
 import { BasicPhyObject } from "../phy/PhyObjects/basic.js";
 import { getZoomLevel, render_area } from "../sim/render_frame.js";
 import * as Noti from "./notification/notification.js";
+import { World } from "../phy/world.js";
 import { t } from "../i18n/i18n.js";
 
 /**
@@ -31,7 +32,7 @@ function hideVisualFieldCover() {
 }
 
 // 创建假物体用于计算
-const fake_po = new BasicPhyObject({ add: () => { }, vars: [] }, 1, [0, 0], [0, 0], [], []);
+const fake_po = new BasicPhyObject(new World(), 1, [0, 0], [0, 0], [], []);
 
 /**
  * 计算指定位置的力场强度和方向

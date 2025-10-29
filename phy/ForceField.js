@@ -21,7 +21,7 @@ class ForceField extends IDObject {
     /*
     vars can be used: time, pos (target), v (target), mass (target), TARGET_varNickname (var of target), VAR_varid
     */
-    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field")) {
+    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field"), id=null) {
         super();
         this.world = world;
         this.expression = expression;
@@ -30,7 +30,12 @@ class ForceField extends IDObject {
         this.compiled_condition = math.compile(condition);
         this.nickname = nickname;
 
-        world.add(this);
+        if (id) {
+            this.id = id;
+            world.add_ff_with_id(id, this);
+        } else {
+            world.add_ff(this);
+        }
     }
 
     reset(condition, expression) {
@@ -120,8 +125,13 @@ class ForceField extends IDObject {
         };
     }
     static fromJSON(json, world) {
-        const ff = new ForceField(world);
-        ff.id = json.id;
+        const ff = new ForceField(
+            world,
+            json.expression,
+            json.condition,
+            json.nickname,
+            json.id
+        );
         ff.nickname = json.nickname;
         ff.expression = json.expression;
         ff.condition = json.condition;

@@ -7,8 +7,8 @@ class WorldAnchorPhyObject extends BasicPhyObject {
     nickname = t("World Settings");
 
     // constructor
-    constructor(world) {
-        super(world, Infinity, [0, 0], [0, 0], [], []);
+    constructor(world, id = null) {
+        super(world, Infinity, [0, 0], [0, 0], [], [], id);
     }
 }
 
