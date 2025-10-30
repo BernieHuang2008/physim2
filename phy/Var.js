@@ -224,17 +224,18 @@ class Variable extends IDObject {
         }
     }
 
-    calc(variableRegistry = {}) {
+    calc(variableRegistry = {}, time=0) {
         if (this.type === "immediate") {
             // do nothing
         } else if (this.type === "derived") {
-            const scope = {};
+            const scope = {
+                time: time
+            };
             // Populate scope with current values of dependencies
             for (const depName of this.dependencies) {
                 if (variableRegistry[depName]) {
                     scope[depName] = variableRegistry[depName].value;
-                }
-                else {
+                } else {
                     scope[depName] = undefined;
                 }
             }

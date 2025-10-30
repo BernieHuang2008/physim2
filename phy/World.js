@@ -131,6 +131,15 @@ class World {
 
         return world;
     }
+
+    reset(otherWorld) {
+        // set this world to otherWorld, with same reference
+        this.phyobjs = otherWorld.phyobjs;
+        this.vars = otherWorld.vars;
+        this.ffs = otherWorld.ffs;
+        this.used_ids = otherWorld.used_ids;
+        this.anchor = otherWorld.anchor;
+    }
 }
 
 export { World };

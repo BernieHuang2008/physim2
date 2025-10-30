@@ -46,6 +46,12 @@ class ForceField extends IDObject {
     }
 
     compute_force(phyobject, time, vars={}) {
+        // evaluate condition
+        var condition = this.compiled_condition.evaluate(scope);
+        if (condition === false) {
+            return null;
+        }
+
         // runtime states
         var scope = {
             pos: phyobject.pos.value,
@@ -56,7 +62,7 @@ class ForceField extends IDObject {
 
         // target vars (by nickname)
         var target_vars = {};
-        for (let varid in phyobject.vars) {
+        for (let varid of phyobject.vars) {
             let v = phyobject.world.vars[varid];
             target_vars["TARGET_" + v.nickname] = v.value;
         }
@@ -66,12 +72,6 @@ class ForceField extends IDObject {
         for (let varid in this.world.vars) {
             let v = this.world.vars[varid];
             scope[v.id] = v.value;
-        }
-
-        // evaluate condition
-        var condition = this.compiled_condition.evaluate(scope);
-        if (condition === false) {
-            return null;
         }
 
         // calculate force

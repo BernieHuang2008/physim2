@@ -39,8 +39,8 @@ mkMenu([
                                 try {
                                     var json = JSON.parse(e.target.result);
                                     var newWorld = World.fromJSON(json);
-                                    window.world = newWorld;
-                                    console.log("pLoaded world:", newWorld);
+                                    window.world.reset(newWorld);
+                                    console.log("Loaded world:", newWorld);
                                     render_frame(newWorld);
                                 } catch (error) {
                                     Noti.error(t("Failed to load world"), error.message);

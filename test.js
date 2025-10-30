@@ -15,8 +15,7 @@ import { ParticlePhyObject } from "./phy/PhyObjects/Particle.js";
 // setLanguage('zh'); // Switch to Chinese (when translations are added)
 // console.log("After switching - Translated 'Inspector':", t("Inspector"));
 
-window.world = new World();
-var world = window.world;
+var world = window.world = new World();
 var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
 var b = new ParticlePhyObject(world, "2*5", [10, 0], [0, 0]);
 
@@ -35,9 +34,13 @@ import * as Noti from "./ui/notification/notification.js";
 
 // var ffi = new ForceField(world, "mass * [0, -10]", "true");
 // var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
-var ffi = new ForceField(world, "100/(norm(pos - [10, 0])^2) * ((pos - [10, 0]) / norm(pos - [10, 0]))", "true");
+var ffi = new ForceField(world, "mass * [0, -10]", "true");
 b.ffs.push(ffi.id);
 console.log(ffi);
+
+var sim = new Simulation(world);
+sim.simulate_to(10.0);
+console.log(sim, world)
 
 render_frame(world);
 
