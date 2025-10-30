@@ -1,4 +1,5 @@
 import { t } from "../../i18n/i18n.js";
+import { floating_section_expand } from "../floatsec_utils.js";
 
 const notibadge_dom = document.getElementById("notification-badge");
 const notibubbles_dom = document.getElementById("notification-bubbles-area");
@@ -9,12 +10,6 @@ const notifications = [];
 function init() {
     _chState();
     notibadge_dom.onclick = showNotiCenter;
-    document.addEventListener("click", (event) => {
-        const isClickInside = noticenter_dom.contains(event.target) || notibadge_dom.contains(event.target);
-        if (!isClickInside) {
-            noticenter_dom.classList.add("hide");
-        }
-    });
 }
 
 function renderNotiCenter() {
@@ -48,11 +43,8 @@ function renderNotiCenter() {
     noticenter_dom.querySelectorAll(".close-btn").forEach(btn => {
         const notification = notifications[parseInt(btn.getAttribute("data-index"))];
         btn.onclick = function () {
-            // delay for "click outside noti-center" detection to finish
-            setTimeout(() => {
-                noticenter_dom.removeChild(btn.parentElement.parentElement);
-                rmNoti(notification);
-            }, 0);
+            noticenter_dom.removeChild(btn.parentElement.parentElement);
+            rmNoti(notification);
         };
     });
 
@@ -63,6 +55,7 @@ function renderNotiCenter() {
 }
 
 function showNotiCenter() {
+    floating_section_expand();
     noticenter_dom.classList.toggle("hide");
     renderNotiCenter();
     // remove bubbles

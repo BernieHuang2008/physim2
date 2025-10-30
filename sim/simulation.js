@@ -99,6 +99,6 @@ class Simulation {
             throw new Error("No backup found for time " + time);
         }
     }
-}
+};
 
-export { Simulation };
+export { Simulation, SETTINGS };

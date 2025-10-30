@@ -21,7 +21,18 @@
     z-index: 1e3;
 }
 
-#floating-sections>div {
+#floating-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#floating-section.expand {
+    width: 100vw;
+    height: 100vh;
+}
+
+#floating-section>div {
     position: absolute;
 }
 

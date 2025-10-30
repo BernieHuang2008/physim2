@@ -44,7 +44,7 @@ console.log(sim, world)
 
 render_frame(world);
 
-inspect_phyobj(world, b.id);
+inspect_phyobj(world, world.anchor);
 // edit_ff(world, ffi.id);
 // Noti.error("hello", "This is a test notification!", console.log, -1);
 // Noti.warning("hello", "This is a test notification!", console.log, -1);
