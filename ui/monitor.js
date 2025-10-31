@@ -90,7 +90,7 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
     monitor_ui_section
         .addSubsection(t("Force Analysis"))
         .addUIControl(UIControls.Display.displayVector2Multi, {
-            field: t("All Forces"),
+            field: t("All Component Forces"),
             getVectors: () => {
                 function _createV(v, n) {
                     return {

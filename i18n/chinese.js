@@ -95,6 +95,17 @@ const translations = {
     "Notifications": "通知",
     "No notifications.": "暂无通知。",
     
+    // Multi-Vector Display
+    "Vector Summary": "所有向量",
+    "Count": "数量",
+    "Magnitude": "大小",
+    "Angle": "角度",
+    "All Component Forces": "所有分力",
+    "Force Analysis": "受力分析",
+    "Monitor": "监视器",
+    "No vectors to display": "没有向量",
+    "Vector": "向量",
+    
     // Physics Constants and Properties
     "Gravity": "重力",
     "Universal Gravitational": "万有引力",

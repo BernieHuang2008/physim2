@@ -5,13 +5,10 @@ function InputNormal({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     var defaultValue = (variable.type == 'derived' ? '=' + variable.expression : variable.value);
 
-    // Generate unique ID for value display
-    const uniqueId = 'normal_' + Math.random().toString(36).substr(2, 9);
-
-    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
+    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
-    const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
+    const valueDisplay = dom.querySelector(`#value`);
 
     let isEditing = false;
 
@@ -77,13 +74,10 @@ function InputNormal({ field, variable, disabled = false, onChange = null }) {
 function InputNumber({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
 
-    // Generate unique ID for value display
-    const uniqueId = 'number_' + Math.random().toString(36).substr(2, 9);
-
-    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>`;
+    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="value">= ${variable.value}</span>`;
 
     const input = dom.querySelector("input");
-    const valueDisplay = dom.querySelector(`#${uniqueId}_value`);
+    const valueDisplay = dom.querySelector(`#value`);
 
     let isEditing = false;
 
@@ -161,21 +155,16 @@ function InputVector2({ field, variable, disabled = false, onChange = null }) {
     var dom = document.createElement("div");
     dom.className = "input-vector2-container";
 
-    // Generate unique IDs for this instance
-    const uniqueId = 'vector2_' + Math.random().toString(36).substr(2, 9);
-    const visualAreaId = uniqueId + '_visual';
-    const infoAreaId = uniqueId + '_info';
-
     dom.innerHTML = `
         <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
         <div class="vector2-inputs">
-            <div class="vector2-info-area ${disabled ? 'disabled' : ''}" id="${infoAreaId}"></div>
-            <div class="vector2-visual-area" id="${visualAreaId}"></div>
+            <div class="vector2-info-area ${disabled ? 'disabled' : ''}" id="info"></div>
+            <div class="vector2-visual-area" id="visual"></div>
         </div>
     `;
 
-    const visualArea = dom.querySelector(`#${visualAreaId}`);
-    const infoArea = dom.querySelector(`#${infoAreaId}`);
+    const visualArea = dom.querySelector(`#visual`);
+    const infoArea = dom.querySelector(`#info`);
 
     // Initialize the vector visualization
     createVectorVisualization(visualArea, infoArea, variable, disabled, onChange);
@@ -188,8 +177,6 @@ function InputMath({ field, variable, disabled = false, onChange = null }) {
     dom.className = "input-math-container";
 
     if (variable.type === 'derived') {
-        const uniqueId = 'math_' + Math.random().toString(36).substr(2, 9);
-
         dom.innerHTML = `
             <div class="math-field-container">
                 <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
@@ -200,7 +187,7 @@ function InputMath({ field, variable, disabled = false, onChange = null }) {
         const mathInputArea = dom.querySelector('.math-input-area');
 
         // Use the math input utilities to create and manage the math input
-        initializeMathInput(mathInputArea, variable, uniqueId, disabled, onChange);
+        initializeMathInput(mathInputArea, variable, disabled, onChange);
 
         return dom;
     } else {

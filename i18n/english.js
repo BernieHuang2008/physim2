@@ -120,6 +120,20 @@ const translations = {
     "Strength": "Strength",
     "Applies To": "Applies To",
     
+    // Multi-Vector Display
+    "Vector Summary": "Vector Summary",
+    "Count": "Count",
+    "Total Magnitude": "Total Magnitude",
+    "Avg Angle": "Average Angle",
+    "Magnitude": "Magnitude",
+    "Angle": "Angle",
+    "All Forces": "All Forces",
+    "Force Analysis": "Force Analysis",
+    "Monitor": "Monitor",
+    "Copy": "Copy",
+    "No vectors to display": "No vectors to display",
+    "Vector": "Vector",
+    
     // Physics Constants and Properties
     "Gravity": "Gravity",
     "Universal Gravitational": "Universal Gravitational", 

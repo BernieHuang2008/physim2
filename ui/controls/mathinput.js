@@ -270,25 +270,21 @@ function enhanceLatex(latex) {
  * Create and manage a mathematical input component with display and edit modes
  * @param {HTMLElement} container - The container element for the math input
  * @param {Object} variable - The variable object with value, expression, and type
- * @param {string} uniqueId - Unique identifier for this input instance
  * @param {boolean} disabled - Whether the input is disabled
  * @returns {Object} Object with methods to update and manage the math input
  */
-function createMathInput(container, variable, uniqueId, disabled = false, onChange = null) {
-    const mathDisplayId = uniqueId + '_display';
-    const inputId = uniqueId + '_input';
-
+function createMathInput(container, variable, disabled = false, onChange = null) {
     // Create the HTML structure
     container.innerHTML = `
-        <div class="math-display-area ${disabled ? 'disabled' : ''}" id="${mathDisplayId}"></div>
-        <input type="text" class="math-input hidden" id="${inputId}" 
+        <div class="math-display-area ${disabled ? 'disabled' : ''}" id="mathdisplay"></div>
+        <input type="text" class="math-input hidden" id="input" 
                value="=${variable.expression}" ${disabled ? "disabled" : ""} />
-        <span class="variable-value-display" id="${uniqueId}_value">= ${variable.value}</span>
+        <span class="variable-value-display" id="value">= ${variable.value}</span>
     `;
 
-    const mathDisplay = container.querySelector(`#${mathDisplayId}`);
-    const input = container.querySelector(`#${inputId}`);
-    const valueDisplay = container.querySelector(`#${uniqueId}_value`);
+    const mathDisplay = container.querySelector(`#mathdisplay`);
+    const input = container.querySelector(`#input`);
+    const valueDisplay = container.querySelector(`#value`);
 
     let isEditing = false;
 
@@ -415,16 +411,15 @@ function createMathInput(container, variable, uniqueId, disabled = false, onChan
  * Initialize a math input for a derived variable with rendering and editing capabilities
  * @param {HTMLElement} container - The container element
  * @param {Object} variable - The variable object
- * @param {string} uniqueId - Unique identifier
  * @param {boolean} disabled - Whether the input is disabled
  * @returns {Object} Math input management object
  */
-function initializeMathInput(container, variable, uniqueId, disabled = false, onChange = null) {
+function initializeMathInput(container, variable, disabled = false, onChange = null) {
     if (variable.type !== 'derived') {
         throw new Error('Math input can only be used with derived variables');
     }
 
-    return createMathInput(container, variable, uniqueId, disabled, onChange);
+    return createMathInput(container, variable, disabled, onChange);
 }
 
 export {

@@ -4,11 +4,6 @@ function displayVector2Multi({ field, getVectors, disabled = false, onChange = n
     var dom = document.createElement("div");
     dom.className = "display-vector2-multi-container";
 
-    // Generate unique ID for this instance
-    const uniqueId = 'vector_multi_' + Math.random().toString(36).substr(2, 9);
-    const visualAreaId = uniqueId + '_visual';
-    const infoAreaId = uniqueId + '_info';
-
     dom.innerHTML = `
         <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
         <div class="vector-multi-display">
@@ -163,11 +158,63 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
         return `#${hexColor}`;
     }
 
+    // Handle vector hover effects
+    function handleVectorHover(vectorIndex, isHovering) {
+        // Get the vector group in SVG
+        const vectorGroup = vectorsContainer.querySelector(`.vector-${vectorIndex}`);
+        if (vectorGroup) {
+            if (isHovering) {
+                // Scale up the vector
+                vectorGroup.style.transformOrigin = "center";
+                
+                // Increase opacity and stroke width
+                const vectorLine = vectorGroup.querySelector("line");
+                const vectorLabel = vectorGroup.querySelector("text");
+                
+                if (vectorLine) {
+                    vectorLine.setAttribute("stroke-width", "3");
+                }
+                if (vectorLabel) {
+                    vectorLabel.setAttribute("font-size", "12");
+                    vectorLabel.setAttribute("font-weight", "bold");
+                }
+            } else {
+                // Reset opacity and stroke width
+                const vectorLine = vectorGroup.querySelector("line");
+                const vectorLabel = vectorGroup.querySelector("text");
+                
+                if (vectorLine) {
+                    vectorLine.setAttribute("stroke-width", "2");
+                }
+                if (vectorLabel) {
+                    vectorLabel.setAttribute("font-size", "10");
+                    vectorLabel.setAttribute("font-weight", "normal");
+                }
+            }
+        }
+
+        // Highlight corresponding info panel item
+        const vectorDetail = infoArea.querySelector(`[data-vector-index="${vectorIndex}"]`);
+        if (vectorDetail) {
+            if (isHovering) {
+                vectorDetail.style.backgroundColor = "#f0f8ff";
+                vectorDetail.style.transform = "scale(1.02)";
+                vectorDetail.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                vectorDetail.style.transition = "all 0.2s ease";
+                vectorDetail.style.borderRadius = "6px";
+            } else {
+                vectorDetail.style.backgroundColor = "";
+                vectorDetail.style.boxShadow = "";
+                vectorDetail.style.borderRadius = "";
+            }
+        }
+    }
+
     function updateDisplay() {
         const vectors = getVectors();
         if (!vectors || vectors.length === 0) {
             vectorsContainer.innerHTML = '';
-            infoArea.innerHTML = '<div class="no-vectors">No vectors to display</div>';
+            infoArea.innerHTML = `<div class="no-vectors">${t("No vectors to display")}</div>`;
             return;
         }
 
@@ -191,6 +238,7 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
                 // Create vector group
                 const vectorGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
                 vectorGroup.setAttribute("class", `vector-${index}`);
+                vectorGroup.setAttribute("data-vector-index", index);
 
                 // Vector line
                 const vectorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -200,13 +248,11 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
                 vectorLine.setAttribute("y2", screenCoords.y);
                 vectorLine.setAttribute("stroke", color);
                 vectorLine.setAttribute("stroke-width", "2");
-                vectorLine.setAttribute("opacity", "0.8");
 
                 // Vector head
                 const vectorHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 vectorHead.setAttribute("points", createArrowHead(CENTER, CENTER, screenCoords.x, screenCoords.y, color));
                 vectorHead.setAttribute("fill", color);
-                vectorHead.setAttribute("opacity", "0.8");
 
                 // Vector label (show magnitude and name if available)
                 const labelX = screenCoords.x + (screenCoords.x > CENTER ? 10 : -30);
@@ -218,7 +264,11 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
                 vectorLabel.setAttribute("font-size", "10");
                 vectorLabel.setAttribute("fill", color);
                 vectorLabel.setAttribute("font-weight", "bold");
-                vectorLabel.textContent = vector.nickname ? `${vector.nickname}: ${magnitude.toFixed(2)}` : `V${index + 1}: ${magnitude.toFixed(2)}`;
+                vectorLabel.textContent = vector.nickname ? `${vector.nickname}: ${magnitude.toFixed(2)}` : `${t("Vector")}${index + 1}: ${magnitude.toFixed(2)}`;
+
+                // Add hover event listeners
+                vectorGroup.addEventListener("mouseenter", () => handleVectorHover(index, true));
+                vectorGroup.addEventListener("mouseleave", () => handleVectorHover(index, false));
 
                 vectorGroup.appendChild(vectorLine);
                 vectorGroup.appendChild(vectorHead);
@@ -233,7 +283,7 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
 
     function updateInfoArea(vectors) {
         if (!vectors || vectors.length === 0) {
-            infoArea.innerHTML = '<div class="no-vectors">No vectors to display</div>';
+            infoArea.innerHTML = `<div class="no-vectors">${t("No vectors to display")}</div>`;
             return;
         }
 
@@ -275,7 +325,7 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
             // const color = getVectorColor(index, vectors.length);
 
             infoHTML += `
-                <div class="vector-detail" style="border-left: 3px solid ${color};">
+                <div class="vector-detail" style="border-left: 3px solid ${color};" data-vector-index="${index}">
                     <div class="vector-name">
                         <svg width="2.5rem" height="2.5rem" viewBox="0 0 80 80" class="vector-arrow">
                             <defs>
@@ -288,7 +338,7 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
                                 <line x1="10" y1="40" x2="70" y2="40" stroke="${color}" stroke-width="2.5" marker-end="url(#arrowhead_${index})" />
                             </g>
                         </svg>
-                        <b>${vector.nickname || `Vector ${index + 1}`}</b>
+                        <b>${vector.nickname || `${t("Vector")} ${index + 1}`}</b>
                         <span style="font-weight: normal; font-size: 0.8em;">(${x.toFixed(2)}, ${y.toFixed(2)})</span>
                     </div>
                     <div class="vector-polar">
@@ -301,6 +351,15 @@ function createMultiVectorVisualization(visualArea, infoArea, getVectors, disabl
         infoHTML += '</div></div>';
 
         infoArea.innerHTML = infoHTML;
+
+        // Add hover event listeners to vector details in info area
+        const vectorDetails = infoArea.querySelectorAll('.vector-detail[data-vector-index]');
+        vectorDetails.forEach(detail => {
+            const vectorIndex = parseInt(detail.getAttribute('data-vector-index'));
+            
+            detail.addEventListener("mouseenter", () => handleVectorHover(vectorIndex, true));
+            detail.addEventListener("mouseleave", () => handleVectorHover(vectorIndex, false));
+        });
     }
 
     // Initial display update

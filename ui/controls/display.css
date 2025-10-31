@@ -96,6 +96,34 @@
     border-radius: 4px;
     border-left-width: 3px;
     border-left-style: solid;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.vector-detail:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* SVG Vector Hover Effects */
+.vector-multi-svg g[data-vector-index] {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.vector-multi-svg g[data-vector-index]:hover line {
+    stroke-width: 3 !important;
+    opacity: 1 !important;
+}
+
+.vector-multi-svg g[data-vector-index]:hover polygon {
+    opacity: 1 !important;
+}
+
+.vector-multi-svg g[data-vector-index]:hover text {
+    font-size: 12px !important;
+    font-weight: bold !important;
 }
 
 .vector-name {
