@@ -142,4 +142,6 @@ class World {
     }
 }
 
-export { World };
+const globalWorld = new World();
+
+export { World, globalWorld };

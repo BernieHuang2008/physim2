@@ -125,6 +125,39 @@ const translations = {
     "File": "文件",
     "Save World (static)": "保存世界（静态）",
     "Load World (static)": "加载世界（静态）",
+    "Failed to load world": "加载世界失败",
+    
+    // Simulation Menu
+    "Simulate": "仿真",
+    "Start Animation (60 FPS)": "开始动画 (60 FPS)",
+    "Stop Animation": "停止动画",
+    "Toggle Animation": "切换动画",
+    "Step Animation (1 step)": "步进动画 (1 步)",
+    "Step Animation (10 steps)": "步进动画 (10 步)",
+    "Simulate to 1 second": "仿真到 1 秒",
+    "Simulate to 5 seconds": "仿真到 5 秒",
+    "Reset Simulation": "重置仿真",
+    
+    // Simulation Notifications
+    "Animation Started": "动画已开始",
+    "Animation started at 60 FPS": "动画以 60 FPS 开始",
+    "Animation Stopped": "动画已停止",
+    "Animation has been stopped": "动画已被停止",
+    "Animation Toggled": "动画已切换",
+    "No Animation": "无动画",
+    "No animation is currently running": "当前没有运行的动画",
+    "Step Complete": "步进完成",
+    "Stepped 1 physics frame": "已步进 1 个物理帧",
+    "Stepped 10 physics frames": "已步进 10 个物理帧",
+    "Simulation Complete": "仿真完成",
+    "Simulated to 1 second": "已仿真到 1 秒",
+    "Simulated to 5 seconds": "已仿真到 5 秒",
+    "Simulation Reset": "仿真已重置",
+    "Simulation reset to time 0": "仿真已重置到时间 0",
+    "Animation Error": "动画错误",
+    "Step Error": "步进错误",
+    "Simulation Error": "仿真错误",
+    "Reset Error": "重置错误",
 };
 
 export default translations;

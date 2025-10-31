@@ -13,8 +13,14 @@ epsilon_init();
 
 /* ---- Top Menu ---- */
 import { mkMenu } from "./ui/menu.js";
-import { World } from "./phy/world.js";
+import { globalWorld, World } from "./phy/World.js";
 import { render_frame } from "./sim/render_frame.js";
+import { globalSimulation } from "./sim/simulation.js";
+import { AnimationController, stepAnimation, simulateToTime, resetSimulation } from "./sim/animation.js";
+
+// Global animation controller for menu access
+window.menuAnimationController = null;
+
 mkMenu([
     {
         title: t("File"),
@@ -26,7 +32,7 @@ mkMenu([
                 type: "submenu",
                 title: t("Save World (static)"),
                 action: function() {
-                    var json = window.world.toJSON();
+                    var json = globalWorld.toJSON();
                     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
                     var downloadAnchorNode = document.createElement('a');
                     downloadAnchorNode.setAttribute("href", dataStr);
@@ -51,7 +57,7 @@ mkMenu([
                                 try {
                                     var json = JSON.parse(e.target.result);
                                     var newWorld = World.fromJSON(json);
-                                    window.world.reset(newWorld);
+                                    globalWorld.reset(newWorld);
                                     console.log("Loaded world:", newWorld);
                                     render_frame(newWorld);
                                 } catch (error) {
@@ -65,6 +71,104 @@ mkMenu([
                     input.click();
                 }
             },
+        ]
+    },
+    {
+        title: t("Simulate"),
+        items: [
+            {
+                type: "submenu",
+                title: t("Start Animation (60 FPS)"),
+                action: function() {
+                    try {
+                        // Stop existing animation if running
+                        if (window.menuAnimationController && window.menuAnimationController.isRunning) {
+                            window.menuAnimationController.stop();
+                        }
+                        
+                        // Create new animation controller
+                        window.menuAnimationController = new AnimationController(globalSimulation);
+                        window.menuAnimationController.start(60);
+                        
+                        Noti.info(t("Animation Started"), t("Animation started at 60 FPS"));
+                        console.log("Started simulation animation at 60 FPS");
+                    } catch (error) {
+                        Noti.error(t("Animation Error"), error.message);
+                        console.error('Error starting animation:', error);
+                    }
+                }
+            },
+            {
+                type: "submenu",
+                title: t("Stop Animation"),
+                action: function() {
+                    try {
+                        if (window.menuAnimationController) {
+                            window.menuAnimationController.stop();
+                            Noti.info(t("Animation Stopped"), t("Animation has been stopped"));
+                            console.log("Animation stopped");
+                        } else {
+                            Noti.warning(t("No Animation"), t("No animation is currently running"));
+                        }
+                    } catch (error) {
+                        Noti.error(t("Animation Error"), error.message);
+                        console.error('Error stopping animation:', error);
+                    }
+                }
+            },
+            {
+                type: "hr"
+            },
+            {
+                type: "submenu",
+                title: t("Step Animation (1 step)"),
+                action: function() {
+                    try {
+                        stepAnimation(globalSimulation, 1);
+                        Noti.info(t("Step Complete"), t("Stepped 1 physics frame"));
+                        console.log(`Stepped 1 physics step. Simulation time: ${globalSimulation.time.toFixed(4)}s`);
+                    } catch (error) {
+                        Noti.error(t("Step Error"), error.message);
+                        console.error('Error stepping animation:', error);
+                    }
+                }
+            },
+            {
+                type: "submenu",
+                title: t("Step Animation (10 steps)"),
+                action: function() {
+                    try {
+                        stepAnimation(globalSimulation, 10);
+                        Noti.info(t("Step Complete"), t("Stepped 10 physics frames"));
+                        console.log(`Stepped 10 physics steps. Simulation time: ${globalSimulation.time.toFixed(4)}s`);
+                    } catch (error) {
+                        Noti.error(t("Step Error"), error.message);
+                        console.error('Error stepping animation:', error);
+                    }
+                }
+            },
+            {
+                type: "hr"
+            },
+            {
+                type: "submenu",
+                title: t("Reset Simulation"),
+                action: function() {
+                    try {
+                        // Stop animation if running
+                        if (window.menuAnimationController && window.menuAnimationController.isRunning) {
+                            window.menuAnimationController.stop();
+                        }
+                        
+                        resetSimulation(globalSimulation);
+                        Noti.info(t("Simulation Reset"), t("Simulation reset to time 0"));
+                        console.log("Simulation reset to time 0");
+                    } catch (error) {
+                        Noti.error(t("Reset Error"), error.message);
+                        console.error('Error resetting simulation:', error);
+                    }
+                }
+            }
         ]
     }
 ]);

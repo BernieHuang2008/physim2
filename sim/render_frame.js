@@ -3,8 +3,12 @@ import { PhyObjOnClickEvent } from './events.js';
 import { inspect_phyobj } from '../ui/inspector.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
-
 var zoom_level = 10.0;
+var default_focus_id = null;
+
+function setDefaultFocus(phyobj_id) {
+    default_focus_id = phyobj_id;
+}
 
 function setZoomLevel(level) {
     zoom_level = Math.max(0.1, Math.min(10.0, level)); // clamp between 0.1x and 10x
@@ -20,15 +24,15 @@ function revY(y) {
     return y;
 }
 
-function render_frame(world, focus_id = null) {
+function render_frame(world, focus_id = null, smooth_scroll = true) {
     var content_area = render_phyobjs(world);
     render_displayArea(content_area, world);
 
     // focus: scroll into view
-    if (focus_id) {
-        const element = $("#phyobj-" + focus_id);
+    if (focus_id || default_focus_id) {
+        const element = $("#phyobj-" + (focus_id || default_focus_id));
         element.scrollIntoView({
-            behavior: 'smooth',
+            behavior: smooth_scroll ? 'smooth' : 'instant',
         });
     }
 }
@@ -139,4 +143,4 @@ function render_displayArea(content_area, world) {
     });
 }
 
-export { render_frame, render_area, setZoomLevel, getZoomLevel };
+export { render_frame, render_area, setZoomLevel, getZoomLevel, setDefaultFocus };

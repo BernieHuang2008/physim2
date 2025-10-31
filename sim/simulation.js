@@ -1,4 +1,4 @@
-import { World } from "../phy/World.js";
+import { World, globalWorld } from "../phy/World.js";
 
 const SETTINGS = {
     backup_frequency: 30, // simulation steps
@@ -70,6 +70,10 @@ class Simulation {
         return false;
     }
 
+    backup(t = null) {
+        this.backups[t || this.time] = this.world.toJSON();
+    }
+
     simulate_to(target_time, dt = null) {
         dt = dt || SETTINGS.dt;
 
@@ -86,12 +90,13 @@ class Simulation {
             // counter
             counter += 1;
             if (counter % SETTINGS.backup_frequency === 0) {
-                this.backups[this.time] = this.world.toJSON();
+                this.backup();
             }
         }
     }
 
     restore_backup(time) {
+        console.log("Restoring backup for time", time, this.backups);
         if (this.backups[time]) {
             this.world.reset(World.fromJSON(this.backups[time]));
             this.time = time;
@@ -101,4 +106,6 @@ class Simulation {
     }
 };
 
-export { Simulation, SETTINGS };
+const globalSimulation = new Simulation(globalWorld);
+
+export { Simulation, SETTINGS, globalSimulation };

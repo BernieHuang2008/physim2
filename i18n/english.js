@@ -48,6 +48,44 @@ const translations = {
     "MathJax Render Failed": "MathJax Render Failed",
     "LaTeX Conversion Failed": "LaTeX Conversion Failed",
     
+    // Menu Items
+    "File": "File",
+    "Save World (static)": "Save World (static)",
+    "Load World (static)": "Load World (static)",
+    "Failed to load world": "Failed to load world",
+    
+    // Simulation Menu
+    "Simulate": "Simulate",
+    "Start Animation (60 FPS)": "Start Animation (60 FPS)",
+    "Stop Animation": "Stop Animation",
+    "Toggle Animation": "Toggle Animation",
+    "Step Animation (1 step)": "Step Animation (1 step)",
+    "Step Animation (10 steps)": "Step Animation (10 steps)",
+    "Simulate to 1 second": "Simulate to 1 second",
+    "Simulate to 5 seconds": "Simulate to 5 seconds",
+    "Reset Simulation": "Reset Simulation",
+    
+    // Simulation Notifications
+    "Animation Started": "Animation Started",
+    "Animation started at 60 FPS": "Animation started at 60 FPS",
+    "Animation Stopped": "Animation Stopped",
+    "Animation has been stopped": "Animation has been stopped",
+    "Animation Toggled": "Animation Toggled",
+    "No Animation": "No Animation",
+    "No animation is currently running": "No animation is currently running",
+    "Step Complete": "Step Complete",
+    "Stepped 1 physics frame": "Stepped 1 physics frame",
+    "Stepped 10 physics frames": "Stepped 10 physics frames",
+    "Simulation Complete": "Simulation Complete",
+    "Simulated to 1 second": "Simulated to 1 second",
+    "Simulated to 5 seconds": "Simulated to 5 seconds",
+    "Simulation Reset": "Simulation Reset",
+    "Simulation reset to time 0": "Simulation reset to time 0",
+    "Animation Error": "Animation Error",
+    "Step Error": "Step Error",
+    "Simulation Error": "Simulation Error",
+    "Reset Error": "Reset Error",
+    
     // Variable Types
     "immediate": "immediate",
     "derived": "derived",

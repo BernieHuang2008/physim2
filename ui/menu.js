@@ -1,5 +1,5 @@
 import { $, $$ } from "../utils.js";
-import { floating_section_expand } from "./floatsec_utils.js";
+import { floating_section_expand, floatsec_utils_hide_all } from "./floatsec_utils.js";
 
 const menu_dom = document.getElementById("top-bar");
 const menu_lv2_dom = document.createElement("div");
@@ -39,7 +39,10 @@ function showMenuLv2(lst, menu_lv1_dom) {
                 menu_lv2_item.textContent = item.title;
                 menu_lv2_dom.appendChild(menu_lv2_item);
 
-                menu_lv2_item.onclick = item.action;
+                menu_lv2_item.onclick = function() {
+                    floatsec_utils_hide_all();
+                    item.action();
+                }
                 break;
         }
     }

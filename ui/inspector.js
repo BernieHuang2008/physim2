@@ -3,7 +3,7 @@ import { $, $$ } from '../utils.js';
 import { UIControls } from './controls/controls.js';
 import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "./visual_field.js";
-import { render_frame } from "../sim/render_frame.js";
+import { render_frame, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
 import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
@@ -39,8 +39,11 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
     inspector_ui_section.clearContent();
     inspector_ui_section.addHTML(`
         <span class='big' id="nickname-display" style="user-select: none;"></span>
-        <span class='small gray cursor-pointer' alt="${t("Edit")}" id="edit-nickname">
+        <span class='small gray cursor-pointer no-select' alt="${t("Edit")}" id="edit-nickname">
             <span class='symbol'>&#xE70F;</span>
+        </span>
+        <span class='small gray cursor-pointer no-select' alt="${t("Focus")}" id="focus-po">
+            <span class='symbol'>&#xE78F;</span>
         </span>
 
         <br>
@@ -73,6 +76,18 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                 nicknameDisplay.contentEditable = "false";
                 phyobj.nickname = nicknameDisplay.innerText;
                 inspector_ui_section.render();
+            }
+        }
+
+        // po focus
+        rdframe_setDefaultFocus(null);
+        const focusPoBtn = dom.querySelector("#focus-po");
+        focusPoBtn.onclick = () => {
+            focusPoBtn.classList.toggle("on");
+            if (focusPoBtn.classList.contains("on")) {
+                rdframe_setDefaultFocus(phyobj.id);
+            } else {
+                rdframe_setDefaultFocus(null);
             }
         }
     });

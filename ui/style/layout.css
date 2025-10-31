@@ -50,6 +50,7 @@
     height: var(--top-bar-height);
     line-height: var(--top-bar-height);
     background-color: var(--color-700);
+    display: flex;
 }
 
 #bottom-bar {
