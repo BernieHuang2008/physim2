@@ -36,11 +36,19 @@
     position: absolute;
 }
 
+#app {
+    --top-bar-height: 28.2px;
+    --bottom-bar-height: 1.5rem;
+    --left-bar-width: 2.5rem;
+    --right-bar-width: 30%;
+}
+
 #top-bar {
     top: 0;
     left: 0;
     width: 100%;
-    height: 1.5rem;
+    height: var(--top-bar-height);
+    line-height: var(--top-bar-height);
     background-color: var(--color-700);
 }
 
@@ -48,7 +56,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 1.5rem;
+    height: var(--bottom-bar-height);
     background-color: #f3f3f3;
     user-select: none;
     display: flex;
@@ -56,18 +64,18 @@
 }
 
 #left-bar {
-    top: 1.5rem;
+    top: 28.2px;
     left: 0;
-    width: 2.5rem;
-    height: calc(100% - 3rem);
+    width: var(--left-bar-width);
+    height: calc(100% - var(--bottom-bar-height) - var(--top-bar-height));
     background-color: #e6e6e6;
 }
 
 #right-bar {
-    top: 1.5rem;
+    top: 28.2px;
     right: 0;
-    width: 30%;
-    height: calc(100% - 3rem);
+    width: var(--right-bar-width);
+    height: calc(100% - var(--bottom-bar-height) - var(--top-bar-height));
     overflow-y: auto;
     background-color: #e6e6e6;
 }
@@ -86,10 +94,10 @@
 
 #center-zone {
     position: absolute;
-    top: 1.5rem;
-    left: 2.5rem;
-    right: 30%;
-    bottom: 1.5rem;
+    top: var(--top-bar-height);
+    left: var(--left-bar-width);
+    right: var(--right-bar-width);
+    bottom: var(--bottom-bar-height);
     overflow: scroll;
 }
 

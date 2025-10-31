@@ -122,6 +122,9 @@ const translations = {
     "No force field with id": "未找到标识符对应的力场",
     "No phyobj with id": "未找到标识符对应的物理对象",
 
+    "File": "文件",
+    "Save World (static)": "保存世界（静态）",
+    "Load World (static)": "加载世界（静态）",
 };
 
 export default translations;

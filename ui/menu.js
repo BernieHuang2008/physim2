@@ -1,25 +1,21 @@
 import { $, $$ } from "../utils.js";
+import { floating_section_expand } from "./floatsec_utils.js";
 
 const menu_dom = document.getElementById("top-bar");
 const menu_lv2_dom = document.createElement("div");
 
 function mkMenu(lst) {
     $("#floating-section").appendChild(menu_lv2_dom);
-    menu_lv2_dom.className = "menu-lv2-container no-select hidden";
-    document.addEventListener("click", (event) => {
-        const isClickInside = menu_lv2_dom.contains(event.target) || menu_dom.contains(event.target);
-        if (!isClickInside) {
-            menu_lv2_dom.classList.add("hidden");
-        }
-    });
+    menu_lv2_dom.className = "menu-lv2-container no-select hide";
 
     for (let item of lst) {
         let menu_lv1 = document.createElement("div");
         menu_lv1.className = "menu-lv1";
         menu_lv1.textContent = item.title;
         menu_lv1.onclick = function () {
-            menu_lv2_dom.classList.remove("hidden");
+            menu_lv2_dom.classList.remove("hide");
             showMenuLv2(item.items, menu_lv1);
+            floating_section_expand();
         }
         menu_dom.appendChild(menu_lv1);
     }

@@ -20,6 +20,9 @@ mkMenu([
         title: t("File"),
         items: [
             {
+                type: "hr"
+            },
+            {
                 type: "submenu",
                 title: t("Save World (static)"),
                 action: function() {
@@ -62,9 +65,6 @@ mkMenu([
                     input.click();
                 }
             },
-            {
-                type: "hr"
-            }
         ]
     }
 ]);

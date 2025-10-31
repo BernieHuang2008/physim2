@@ -2,7 +2,7 @@ import { World } from "../phy/World.js";
 
 const SETTINGS = {
     backup_frequency: 30, // simulation steps
-    dt: 1 / 32,
+    dt: 1 / 128,
 }
 
 class Simulation {

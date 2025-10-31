@@ -34,13 +34,13 @@ import * as Noti from "./ui/notification/notification.js";
 
 // var ffi = new ForceField(world, "mass * [0, -10]", "true");
 // var ffi = new ForceField(world, "((pos - [0, 0]) * (pos - [0, 0])) * (pos / sqrt(pos * pos))", "true");
-var ffi = new ForceField(world, "mass * [0, -10]", "true");
+var ffi = new ForceField(world, "mass * [0, -9.8]", "true");
 b.ffs.push(ffi.id);
 console.log(ffi);
 
 var sim = new Simulation(world);
-sim.simulate_to(10.0);
-console.log(sim, world)
+sim.simulate_to(10.1);
+console.log(sim, world);
 
 render_frame(world);
 

@@ -1,7 +1,8 @@
 .menu-lv1 {
     color: white;
     width: max-content;
-    padding: 0 1rem;
+    /* padding: 0 1rem; */
+    padding: 0 calc(0.01 * 100vw + 10px);
     user-select: none;
     cursor: pointer;
 }
