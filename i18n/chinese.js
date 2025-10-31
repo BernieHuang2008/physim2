@@ -158,6 +158,14 @@ const translations = {
     "Step Error": "步进错误",
     "Simulation Error": "仿真错误",
     "Reset Error": "重置错误",
+
+    "EDIT": "编辑",
+    "SIMULATE": "仿真",
+    "KEYFRAME": "关键帧",
+    "Mode": "模式",
+    "Edit Mode": "编辑模式",
+    "Simulation Mode": "仿真模式",
+    "Keyframe Mode": "关键帧模式"
 };
 
 export default translations;

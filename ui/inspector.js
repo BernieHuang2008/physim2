@@ -8,6 +8,7 @@ import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
+import {assertMode, GlobalModes} from "../mode/global_mode.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
@@ -17,6 +18,8 @@ var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
 function inspect_phyobj(world, phyobj_id, return_to=null) {
+    assertMode([GlobalModes.EDIT, GlobalModes.KEYFRAME])
+
     inspector_ui_section.activate(return_to);
 
     // Prevent re-constructing
@@ -111,7 +114,7 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Velocity"),
             variable: phyobj.velocity,
-            disabled: true,
+            disabled: isWorldAnchor,
             onChange: () => inspector_ui_section.render()
         })
 

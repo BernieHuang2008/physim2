@@ -1,7 +1,7 @@
 import { BasicPhyObject } from "../phy/PhyObjects/basic.js";
 import { getZoomLevel, render_area } from "../sim/render_frame.js";
 import * as Noti from "./notification/notification.js";
-import { World } from "../phy/world.js";
+import { World } from "../phy/World.js";
 import { t } from "../i18n/i18n.js";
 
 /**

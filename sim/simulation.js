@@ -16,6 +16,7 @@ class Simulation {
     }
 
     simulate(dt = null) {
+        debugger;
         dt = dt || SETTINGS.dt;
 
         /* prev_state: this.world */

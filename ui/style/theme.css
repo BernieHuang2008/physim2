@@ -1,4 +1,4 @@
-body {
+body[data-mode=EDIT] {
     --color-50: #ddffee;
     --color-100: #d5fbe5;
     --color-200: #cdf3dd;
@@ -16,6 +16,58 @@ body {
     --tcolor-200: black;
     --tcolor-300: black;
     --tcolor-400: black;
+    --tcolor-500: white;
+    --tcolor-600: white;
+    --tcolor-700: white;
+    --tcolor-800: white;
+    --tcolor-900: white;
+    --tcolor-950: white;
+}
+
+body[data-mode=SIMULATE] {
+    --color-50: #ffd974;
+    --color-100: #ffc761;
+    --color-200: #ffb64e;
+    --color-300: #ffa438;
+    --color-400: #ff931d;
+    --color-500: #fb8b05;
+    --color-600: #c45900;
+    --color-700: #8f2500;
+    --color-800: #5b0000;
+    --color-900: #340000;
+    --color-950: #120000;
+
+    --tcolor-50: black;
+    --tcolor-100: black;
+    --tcolor-200: black;
+    --tcolor-300: black;
+    --tcolor-400: black;
+    --tcolor-500: white;
+    --tcolor-600: white;
+    --tcolor-700: white;
+    --tcolor-800: white;
+    --tcolor-900: white;
+    --tcolor-950: white;
+}
+
+body[data-mode=KEYFRAME] {
+    --color-50: #ffccff;
+    --color-100: #ffa3fc;
+    --color-200: #e57bd3;
+    --color-300: #bb54ab;
+    --color-400: #922d84;
+    --color-500: #7e1671;
+    --color-600: #630058;
+    --color-700: #490041;
+    --color-800: #2f002a;
+    --color-900: #1c001a;
+    --color-950: #0c000c;
+
+    --tcolor-50: black;
+    --tcolor-100: black;
+    --tcolor-200: black;
+    --tcolor-300: white;
+    --tcolor-400: white;
     --tcolor-500: white;
     --tcolor-600: white;
     --tcolor-700: white;

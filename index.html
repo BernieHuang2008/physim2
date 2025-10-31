@@ -15,13 +15,16 @@
     <link rel="stylesheet" href="ui/notification/notification.css">
     <link rel="stylesheet" href="ui/style/menu.css">
     <link rel="stylesheet" href="ui/epsilon_ctl/epsilon_ctl.css">
+    <link rel="stylesheet" href="ui/controls/display.css">
 </head>
 
 <body>
     <div id="app">
         <div class="layout-lv1" id="top-bar"></div>
         <div class="layout-lv1" id="bottom-bar">
-            <div id="bottom-bar-left"></div>
+            <div id="bottom-bar-left">
+                <span id="mode-badge">EDIT</span>
+            </div>
             <div id="bottom-bar-right">
                 <span class="button" id="epsilon-control">ε: 1/128</span>
                 <span class="symbol noti state-nothing" id="notification-badge">&#xED1E;</span>

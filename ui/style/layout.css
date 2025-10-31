@@ -111,11 +111,15 @@
     margin-right: 0.5rem;
 }
 
-#bottom-bar-right span.button {
+#bottom-bar-left {
+    margin-left: 0;
+}
+
+span.button {
     padding: 0 0.5rem;
     cursor: pointer;
 }
 
-#bottom-bar-right span.button:hover {
+span.button:hover {
     backdrop-filter: brightness(0.9);
 }

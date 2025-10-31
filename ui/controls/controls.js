@@ -2,6 +2,7 @@ import * as InputControls from './input_controls.js';
 import * as Labels from './label.js';
 import * as Tables from './table.js';
 import * as Radio from './radio.js';
+import * as Display from './display.js'
 
 function Dynamic(func) {
     // wrapper
@@ -27,6 +28,7 @@ const UIControls = {
     Labels,
     Tables,
     Radio,
+    Display,
     Dynamic
 };
 
