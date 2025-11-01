@@ -2,6 +2,7 @@ import { t } from "../i18n/i18n.js";
 
 var MODE = "EDIT"; // "EDIT" | "SIMULATE" | "KEYFRAME"
 const modeBadge = document.getElementById("mode-badge");
+const secondStateBadge = document.getElementById("second-statebadge");
 
 function getMode() {
     return MODE;

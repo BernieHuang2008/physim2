@@ -176,7 +176,7 @@ const translations = {
     "Mode": "模式",
     "Edit Mode": "编辑模式",
     "Simulation Mode": "仿真模式",
-    "Keyframe Mode": "关键帧模式"
+    "Keyframe Mode": "关键帧模式",
 };
 
 export default translations;

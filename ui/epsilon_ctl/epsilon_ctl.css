@@ -1,4 +1,12 @@
-#epsilon-dropdown {
+.epsilon-control {
+    display: none;
+}
+
+body[data-mode="SIMULATE"] .epsilon-control {
+    display: inline-block;
+}
+
+.epsilon-dropdown {
     position: absolute;
     bottom: 30px;
     right: 10px;
@@ -12,17 +20,17 @@
     width: max-content;
 }
 
-#epsilon-dropdown.hide {
+.epsilon-dropdown.hide {
     display: none;
 }
 
-#epsilon-dropdown .epsilon-option {
+.epsilon-dropdown .epsilon-option {
     padding: 0px 12px;
     cursor: pointer;
     border-radius: 4px;
     line-height: 1.5em;
 }
 
-#epsilon-dropdown .epsilon-option:hover {
+.epsilon-dropdown .epsilon-option:hover {
     background-color: var(--color-50);
 }

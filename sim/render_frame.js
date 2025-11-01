@@ -1,6 +1,7 @@
 import { $, $$ } from '../utils.js';
 import { PhyObjOnClickEvent } from './events.js';
 import { inspect_phyobj } from '../ui/inspector.js';
+import { globalWorld } from '../phy/World.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
 var zoom_level = 10.0;
@@ -11,7 +12,7 @@ function setDefaultFocus(phyobj_id) {
 }
 
 function setZoomLevel(level) {
-    zoom_level = Math.max(0.1, Math.min(10.0, level)); // clamp between 0.1x and 10x
+    zoom_level = level;
 }
 
 function getZoomLevel() {
@@ -25,6 +26,10 @@ function revY(y) {
 }
 
 function render_frame(world, focus_id = null, smooth_scroll = true) {
+    if (!world) {
+        world = globalWorld;
+    }
+
     var content_area = render_phyobjs(world);
     render_displayArea(content_area, world);
 

@@ -1,0 +1,103 @@
+.zoom-control {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    user-select: none;
+    height: 100%;
+}
+
+.zoom-control .zoom-btn {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0;
+    margin: 5px;
+}
+
+.zoom-control .zoom-btn:active {
+    background: var(--color-100, #e5e7eb);
+}
+
+.zoom-control .zoom-btn:disabled {
+    opacity: 0.5;
+    /* cursor: not-allowed; */
+}
+
+.zoom-control .zoom-slider-container {
+    position: relative;
+    width: 80px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.zoom-control .zoom-slider {
+    width: 100%;
+    height: 1px;
+    background: black;
+    position: relative;
+    /* cursor: default; */
+}
+
+.zoom-control .zoom-slider::before {
+    content: '';
+    width: 1px;
+    height: 6px;
+    display: block;
+    position: absolute;
+    left: 50%;
+    background: #666;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+/* 添加左右两段的背景色区别 */
+.zoom-control .zoom-slider::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+.zoom-control .zoom-slider-track {
+    height: 100%;
+    background: var(--color-primary, #3b82f6);
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.zoom-control .zoom-slider-thumb {
+    width: 3px;
+    height: 12px;
+    background: black;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /* cursor: grab; */
+}
+
+.zoom-control .zoom-slider-thumb:active {
+    /* cursor: grabbing; */
+}
+
+.zoom-control .zoom-percentage {
+    min-width: 35px;
+    text-align: center;
+    font-weight: 500;
+    color: black;
+    padding: 0;
+    /* cursor: pointer; */
+}

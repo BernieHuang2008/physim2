@@ -104,7 +104,6 @@
 
 #bottom-bar-left, #bottom-bar-right {
     display: flex;
-    gap: 0.5rem;
 }
 
 #bottom-bar-right {

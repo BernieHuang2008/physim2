@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="ui/notification/notification.css">
     <link rel="stylesheet" href="ui/style/menu.css">
     <link rel="stylesheet" href="ui/epsilon_ctl/epsilon_ctl.css">
+    <link rel="stylesheet" href="ui/zoom_ctl/zoom_ctl.css">
     <link rel="stylesheet" href="ui/controls/display.css">
 </head>
 
@@ -26,7 +27,9 @@
                 <span id="mode-badge">EDIT</span>
             </div>
             <div id="bottom-bar-right">
-                <span class="button" id="epsilon-control">ε: 1/128</span>
+                <span class="button epsilon-control" id="fps-control">FPS: 60</span>
+                <span class="button epsilon-control" id="epsilon-control">ε: 1/128</span>
+                <div id="zoom-control-container"></div>
                 <span class="symbol noti state-nothing" id="notification-badge">&#xED1E;</span>
             </div>
         </div>
@@ -39,7 +42,8 @@
         </div>
 
         <div class="layout-lv0" id="floating-section">
-            <div id="epsilon-dropdown" class="hide"></div>
+            <div id="epsilon-dropdown" class="hide epsilon-dropdown"></div>
+            <div id="fps-dropdown" class="hide epsilon-dropdown"></div>
             <div id="notification-bubbles-area"></div>
             <div id="notification-center" class="hide"></div>
         </div>

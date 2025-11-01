@@ -35,6 +35,7 @@ function epsilon_init() {
     epsilonControl.addEventListener("click", () => {
         if (epsilonDropdown.classList.contains("hide")) {
             // Show dropdown
+            epsilonDropdown.style.left = (epsilonControl.getBoundingClientRect().left) + "px";
             epsilonDropdown.classList.remove("hide");
             floating_section_expand();
         }
