@@ -1,3 +1,7 @@
+#zoom-control-container {
+    border-left: dashed #ccc 1px;
+}
+
 .zoom-control {
     display: flex;
     align-items: center;
