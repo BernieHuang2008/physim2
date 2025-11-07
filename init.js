@@ -8,6 +8,10 @@ switchMode(GlobalModes.EDIT);
 import { floating_section_init } from "./ui/floatsec_utils.js";
 floating_section_init();
 
+/* ---- About Page ---- */
+import { init_pg_about } from "./ui/pg_about.js";
+init_pg_about();
+
 /* ---- Notification ---- */
 import * as Noti from "./ui/notification/notification.js";
 Noti.init();

@@ -1,0 +1,26 @@
+#about-page {
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    display: flex;
+    flex-direction: row;
+}
+
+.pg-about-leftbar {
+    background-color: #217346;
+    font-size: calc(35px / 2000 * 100vh);
+    color: white;
+    height: 100%;
+    float: left;
+}
+
+.pg-about-leftbar>li:hover {
+    background-color: #0e5c2f !important;
+}
+.pg-about-leftbar>li {
+    list-style-type: none;
+    display: block;
+    padding: calc(30 / 2000 * 100vh) 0 calc(30 / 2000 * 100vh) 0;
+    text-align: center;
+    width: 100%;
+}
