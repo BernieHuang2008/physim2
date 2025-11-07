@@ -9,6 +9,8 @@ import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
 import {assertMode, GlobalModes} from "../mode/global_mode.js";
+import { globalSimulation } from "../sim/simulation.js";
+import { FakeVarFromFunction } from "../phy/FakeVarFromFunction.js";
 
 const monitor_ui_section = new UI_Section(t("Monitor"));
 monitor_ui_section.activateAt($("#right-bar"));
@@ -86,9 +88,48 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
             disabled: true,
             onChange: () => monitor_ui_section.render()
         })
+        .addUIControl(UIControls.InputControls.InputVector2, {
+            field: t("Acceleration"),
+            variable: new FakeVarFromFunction(() => {
+                // Calculate total force first
+                let totalForce = [0, 0];
+
+                // Sum forces from all force fields
+                for (let ffid in world.ffs) {
+                    let ff = world.ffs[ffid];
+                    try {
+                        let force = ff.compute_force(phyobj, globalSimulation.time, world.vars);
+                        if (force && Array.isArray(force) && force.length >= 2) {
+                            totalForce[0] += force[0] || 0;
+                            totalForce[1] += force[1] || 0;
+                        }
+                    } catch (error) {
+                        console.warn(`Error calculating force from ${ff.nickname}:`, error);
+                    }
+                }
+
+                // Calculate acceleration: F = ma, so a = F/m
+                const mass = phyobj.mass.value;
+                return mass > 0 ? [totalForce[0] / mass, totalForce[1] / mass] : [0, 0];
+            }),
+            disabled: true,
+            onChange: () => monitor_ui_section.render()
+        })
 
     monitor_ui_section
         .addSubsection(t("Force Analysis"))
+        .addUIControl(UIControls.Dynamic(() => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <b>${t("Current Time")}:</b> 
+                <span style="font-family: monospace; color: #666;">
+                    t = ${globalSimulation.time.toFixed(4)} s
+                </span>
+            `;
+            div.style.marginBottom = "10px";
+            div.style.fontSize = "0.9em";
+            return div;
+        }))
         .addUIControl(UIControls.Display.displayVector2Multi, {
             field: t("All Component Forces"),
             getVectors: () => {
@@ -98,13 +139,27 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
                         value: v
                     }
                 }
+
+                let forces = [];
                 
-                return [
-                    _createV([1,2], "E"),
-                    _createV([3, 5], "Gravity")
-                ]
+                // Calculate forces from each force field
+                for (let ffid in world.ffs) {
+                    let ff = world.ffs[ffid];
+                    try {
+                        let force = ff.compute_force(phyobj, globalSimulation.time, world.vars);
+                        if (force && Array.isArray(force) && force.length >= 2) {
+                            forces.push(_createV([force[0] || 0, force[1] || 0], ff.nickname));
+                            // forces.push(force);
+                        }
+                    } catch (error) {
+                        console.warn(`Error calculating force from ${ff.nickname}:`, error);
+                        forces.push(_createV([0, 0], ff.nickname + " (Error)"));
+                    }
+                }
+                
+                return forces;
             }
-        })
+        });
 
     monitor_ui_section.render();
 }
