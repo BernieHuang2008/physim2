@@ -116,21 +116,25 @@ document.addEventListener("mouseup", function () {
 
 // buttons events
 btnReset.onclick = function () {
+    toggleAnimation(false);
+    btnPlayPause.innerHTML = "▶"; // play icon
+
+    globalSimulation.restore_backup(0);
     globalSimulation.clear();
+
     setProgress(0, globalSimulation.maxTime);
     _rerenderFrame();
+    
     Noti.info(t("Simulation Reset"), t("The simulation has been reset to the initial state."), null, 3000);
 }
 
 btnPlayPause.onclick = function () {
-    if (document.body.dataset.simulation === "running") {
-        document.body.dataset.simulation = "paused";
-        btnPlayPause.innerHTML = "▶"; // play icon
+    if (isAnimationRunning === true) {
         toggleAnimation(false);
+        btnPlayPause.innerHTML = "▶"; // play icon
     } else {
-        document.body.dataset.simulation = "running";
-        btnPlayPause.innerHTML = "❚❚"; // pause icon
         toggleAnimation(true);
+        btnPlayPause.innerHTML = "❚❚"; // pause icon
     }
 }
 

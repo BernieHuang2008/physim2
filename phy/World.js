@@ -144,7 +144,8 @@ class World {
 
 function _dreplace(target, source) {
     // dynamic replace
-    for (const key of Object.keys(target)) {
+    var keys = new Set([...Object.keys(target), ...Object.keys(source)]);
+    for (const key of keys) {
         if (!(key in source)) {
             delete target[key];
         } else if (!(key in target)) {
