@@ -54,6 +54,10 @@ class Variable extends IDObject {
         }
     }
 
+    reset_to_other(variable) {
+        this.reset(variable.nickname, variable.type === "immediate" ? variable._value : variable.expression, variable.type);
+    }
+
     /**
      * Reset variable with named parameters
      * @param {Object} params - Named parameters object

@@ -180,6 +180,8 @@ const translations = {
 
     "About": "关于",
     "Acceleration": "加速度",
+    "Simulation Reset": "仿真重置",
+    "The simulation has been reset to the initial state.": "仿真已重置到初始状态",
 };
 
 export default translations;

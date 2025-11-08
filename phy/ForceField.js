@@ -4,7 +4,7 @@ import { t } from '../i18n/i18n.js';
 
 class ForceField extends IDObject {
     // metadata
-    type = "FF";
+    type = "FFI";
     nickname = t("Untitled Force Field");
     world = null;
 
@@ -45,13 +45,13 @@ class ForceField extends IDObject {
         this.compiled_expression = math.compile(expression);
     }
 
-    compute_force(phyobject, time, vars={}) {
-        // evaluate condition
-        var condition = this.compiled_condition.evaluate(scope);
-        if (condition === false) {
-            return null;
-        }
+    reset_to_other(forcefield) {
+        this.reset(forcefield.condition, forcefield.expression);
+        this.nickname = forcefield.nickname;
+        this.template = Object.assign({}, forcefield.template);
+    }
 
+    compute_force(phyobject, time, vars={}) {
         // runtime states
         var scope = {
             pos: phyobject.pos.value,
@@ -72,6 +72,12 @@ class ForceField extends IDObject {
         for (let varid in this.world.vars) {
             let v = this.world.vars[varid];
             scope[v.id] = v.value;
+        }
+
+        // evaluate condition
+        var condition = this.compiled_condition.evaluate(scope);
+        if (condition === false) {
+            return null;
         }
 
         // calculate force

@@ -1,3 +1,5 @@
 function initMode() {
     
 }
+
+export { initMode };

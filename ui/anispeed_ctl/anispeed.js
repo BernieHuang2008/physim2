@@ -1,24 +1,27 @@
+import { SETTINGS } from "../../sim/simulation.js";
 import { floating_section_expand, floatsec_utils_hide_all } from "../floatsec_utils.js";
 
-const fpsControl = document.getElementById("fps-control");
+const fpsControl = document.getElementById("aspd-control");
 const fpsDropdown = document.getElementById("fps-dropdown");
 
 const fps_options = {
-    "15 FPS": 15,
-    "30 FPS": 30,
-    "60 FPS": 60,
-    "90 FPS": 90,
-    "120 FPS": 120,
-    "144 FPS": 144,
-    "165 FPS": 165,
-    "240 FPS": 240
+    "0.5x": 0.5,
+    "1x": 1,
+    "2x": 2,
+    "4x": 4,
+    "10x": 10,
+    "100x": 100,
+
+    "1s=1d": 24 * 3600,
+    "1s=1m": 30 * 24 * 3600,
+    "1s=1y": 365 * 24 * 3600,
 }
 
 let currentFPS = 60; // 默认FPS值
 
-function fps_init() {
+function aspd_init() {
     // 初始化显示
-    fpsControl.textContent = `60 FPS`;
+    fpsControl.textContent = `⏭ 1x`;
     
     for (let label in fps_options) {
         const value = fps_options[label];
@@ -27,11 +30,11 @@ function fps_init() {
         option.textContent = label;
         option.addEventListener("click", () => {
             currentFPS = value;
-            fpsControl.textContent = `${label}`;
+            fpsControl.textContent = `⏭ ${label}`;
             floatsec_utils_hide_all();
             
-            // TODO: 在这里添加实际的FPS控制逻辑
-            console.log(`FPS changed to: ${value}`);
+            SETTINGS.aniSpeed = value;
+            console.log(`Animation speed changed to: ${value}`);
         });
         fpsDropdown.appendChild(option);
     }
@@ -46,8 +49,4 @@ function fps_init() {
     });
 }
 
-function getCurrentFPS() {
-    return currentFPS;
-}
-
-export { fps_init, getCurrentFPS };
+export { aspd_init };

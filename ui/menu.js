@@ -3,6 +3,9 @@ import { floating_section_expand, floatsec_utils_hide_all } from "./floatsec_uti
 import { t } from "../i18n/i18n.js";
 import { switchMode, GlobalModes } from "../mode/global_mode.js";
 import { pg_about_show } from "./pg_about.js";
+import { globalWorld, World } from "../phy/World.js";
+import { render_frame } from "../sim/render_frame.js";
+import * as Noti from "./notification/notification.js";
 
 const menu_dom = document.getElementById("top-bar");
 const menu_lv2_dom = document.createElement("div");

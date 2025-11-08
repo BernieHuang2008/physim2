@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="ui/zoom_ctl/zoom_ctl.css">
     <link rel="stylesheet" href="ui/controls/display.css">
     <link rel="stylesheet" href="ui/style/pg_about.css">
+    <link rel="stylesheet" href="ui/style/m_simulate.css">
 </head>
 
 <body>
@@ -27,8 +28,21 @@
             <div id="bottom-bar-left">
                 <span id="mode-badge">EDIT</span>
             </div>
+            <div id="bottom-bar-center">
+                <div id="simulation-progress">
+                    <div id="sim-prog-full" class="sim-prog">
+                        <div id="sim-prog-actual" class="sim-prog"></div>
+                        <div id="sim-prog-thumb" class="sim-prog"></div>
+                    </div>
+                    <!-- <input type="range" id="sim-prog-slider" min="0" max="100" value="0"> -->
+                </div>
+                <div id="simulation-ctls">
+                    <span class="button" id="sim-ctl-play-pause">▶</span>
+                    <span class="button" id="sim-ctl-reset">⟲</span>
+                </div>
+            </div>
             <div id="bottom-bar-right">
-                <span class="button epsilon-control" id="fps-control">FPS: 60</span>
+                <span class="button epsilon-control" id="aspd-control">FPS: 60</span>
                 <span class="button epsilon-control" id="epsilon-control">ε: 1/128</span>
                 <div id="zoom-control-container"></div>
                 <span class="symbol noti state-nothing" id="notification-badge">&#xED1E;</span>

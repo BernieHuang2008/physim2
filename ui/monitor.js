@@ -21,6 +21,7 @@ var last_rendered_phyobj_id = null;
 
 function monitor_phyobj(world, phyobj_id, return_to=null) {
     assertMode([GlobalModes.SIMULATE])
+    rdframe_setDefaultFocus(null);
 
     monitor_ui_section.activate(return_to);
 
@@ -40,10 +41,14 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
         return;
     }
 
+    var focusOn = false;
     // Display the properties of the phyobject in the inspector panel
     monitor_ui_section.clearContent();
     monitor_ui_section.addHTML(`
         <span class='big' id="nickname-display" style="user-select: none;"></span>
+        <span class='small gray cursor-pointer no-select' alt="${t("Focus")}" id="focus-po">
+            <span class='symbol'>&#xE78F;</span>
+        </span>
 
         <br>
         <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
@@ -63,6 +68,24 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
             setTimeout(() => { 
                 this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; 
             }, 1000);
+        }
+        
+        // po focus
+        const focusPoBtn = dom.querySelector("#focus-po");
+        focusPoBtn.onclick = () => {
+            focusPoBtn.classList.toggle("on");
+            if (focusPoBtn.classList.contains("on")) {
+                rdframe_setDefaultFocus(phyobj.id);
+                focusOn = true;
+            } else {
+                rdframe_setDefaultFocus(null);
+                focusOn = false;
+            }
+        }
+        if (focusOn) {
+            focusPoBtn.classList.add("on");
+        } else {
+            focusPoBtn.classList.remove("on");
         }
     });
 
@@ -165,4 +188,4 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
 }
 
 
-export { monitor_phyobj };
+export { monitor_phyobj, monitor_ui_section };

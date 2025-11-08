@@ -39,6 +39,14 @@ class BasicPhyObject extends IDObject {
         world.add(this.velocity);
     }
 
+    reset_to_other(phyobject) {
+        this.mass.reset_to_other(phyobject.mass);
+        this.pos.reset_to_other(phyobject.pos);
+        this.velocity.reset_to_other(phyobject.velocity);
+        this.vars = phyobject.vars;
+        this.ffs = phyobject.ffs;
+    }
+
     toJSON() {
         return {
             id: this.id,

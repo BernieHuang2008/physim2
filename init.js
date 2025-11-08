@@ -20,9 +20,9 @@ Noti.init();
 import { epsilon_init } from "./ui/epsilon_ctl/epsilon_ctl.js";
 epsilon_init();
 
-/* ---- FPS Control ---- */
-import { fps_init } from "./ui/fps_ctl/fps_ctl.js";
-fps_init();
+/* ---- Animation Speed Control ---- */
+import { aspd_init } from "./ui/anispeed_ctl/anispeed.js";
+aspd_init();
 
 /* ---- Zoom Control ---- */
 import { ZoomControl } from "./ui/zoom_ctl/zoom_ctl.js";

@@ -9,6 +9,13 @@ var default_focus_id = null;
 
 function setDefaultFocus(phyobj_id) {
     default_focus_id = phyobj_id;
+
+    if (default_focus_id) {
+        const element = $("#phyobj-" + (phyobj_id));
+        element.scrollIntoView({
+            behavior: 'smooth',
+        });
+    }
 }
 
 function setZoomLevel(level) {

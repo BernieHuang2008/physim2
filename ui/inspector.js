@@ -45,9 +45,6 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
         <span class='small gray cursor-pointer no-select' alt="${t("Edit")}" id="edit-nickname">
             <span class='symbol'>&#xE70F;</span>
         </span>
-        <span class='small gray cursor-pointer no-select' alt="${t("Focus")}" id="focus-po">
-            <span class='symbol'>&#xE78F;</span>
-        </span>
 
         <br>
         <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
@@ -79,18 +76,6 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
                 nicknameDisplay.contentEditable = "false";
                 phyobj.nickname = nicknameDisplay.innerText;
                 inspector_ui_section.render();
-            }
-        }
-
-        // po focus
-        rdframe_setDefaultFocus(null);
-        const focusPoBtn = dom.querySelector("#focus-po");
-        focusPoBtn.onclick = () => {
-            focusPoBtn.classList.toggle("on");
-            if (focusPoBtn.classList.contains("on")) {
-                rdframe_setDefaultFocus(phyobj.id);
-            } else {
-                rdframe_setDefaultFocus(null);
             }
         }
     });

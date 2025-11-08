@@ -134,11 +134,24 @@ class World {
 
     reset(otherWorld) {
         // set this world to otherWorld, with same reference
-        this.phyobjs = otherWorld.phyobjs;
-        this.vars = otherWorld.vars;
-        this.ffs = otherWorld.ffs;
-        this.used_ids = otherWorld.used_ids;
+        _dreplace(this.phyobjs, otherWorld.phyobjs);
+        _dreplace(this.vars, otherWorld.vars);
+        _dreplace(this.ffs, otherWorld.ffs);
+        this.used_ids = new Set(otherWorld.used_ids);
         this.anchor = otherWorld.anchor;
+    }
+}
+
+function _dreplace(target, source) {
+    // dynamic replace
+    for (const key of Object.keys(target)) {
+        if (!(key in source)) {
+            delete target[key];
+        } else if (!(key in target)) {
+            target[key] = source[key];
+        } else {
+            target[key].reset_to_other(source[key]);
+        }
     }
 }
 
