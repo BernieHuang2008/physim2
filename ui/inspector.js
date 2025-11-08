@@ -8,7 +8,7 @@ import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
-import {assertMode, GlobalModes} from "../mode/global_mode.js";
+import { assertMode, GlobalModes } from "../mode/global_mode.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
@@ -17,7 +17,7 @@ inspector_ui_section.deactivate();
 var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
-function inspect_phyobj(world, phyobj_id, return_to=null) {
+function inspect_phyobj(world, phyobj_id, return_to = null) {
     assertMode([GlobalModes.EDIT, GlobalModes.KEYFRAME])
 
     inspector_ui_section.activate(return_to);
@@ -61,8 +61,8 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
         dom.querySelector("#copy-id-btn").onclick = function () {
             navigator.clipboard.writeText(phyobj.id);
             this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => { 
-                this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; 
+            setTimeout(() => {
+                this.querySelector("#symbol1").innerHTML = "&#xE8C8;";
             }, 1000);
         }
 
@@ -88,13 +88,16 @@ function inspect_phyobj(world, phyobj_id, return_to=null) {
             field: t("Mass"),
             variable: phyobj.mass,
             disabled: isWorldAnchor,
-            onChange: () => inspector_ui_section.render()
+            onChange: () => inspector_ui_section.render(),
+            help: { 
+                content: t("HELP_MATHINPUT"),
+            }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Position"),
             variable: phyobj.pos,
             disabled: isWorldAnchor,
-            onChange: () => {inspector_ui_section.render(); render_frame(world, phyobj.id);}
+            onChange: () => { inspector_ui_section.render(); render_frame(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Velocity"),

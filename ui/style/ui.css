@@ -124,3 +124,9 @@ span.small-button {
     padding: 0.1em;
     font-size: 0.8em;
 }
+
+code {
+    background-color: #fff4;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+}

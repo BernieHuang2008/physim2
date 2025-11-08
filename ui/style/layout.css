@@ -25,6 +25,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    overflow: visible;
 }
 
 #floating-section.expand {
@@ -49,8 +50,9 @@
     width: 100%;
     height: var(--top-bar-height);
     line-height: var(--top-bar-height);
-    background-color: var(--color-700);
     display: flex;
+    background-color: var(--color-700);
+    transition: background-color .2s;
 }
 
 #bottom-bar {

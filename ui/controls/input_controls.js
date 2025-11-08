@@ -1,27 +1,21 @@
 import { createVectorVisualization } from './vector_visualizer.js';
 import { renderMathExpression, initializeMathInput } from './mathinput.js';
+import { mkHelp } from './help.js';
 
-function InputNormal({ field, variable, disabled = false, onChange = null }) {
+function InputNormal({ field, variable, disabled = false, onChange = null, help = null }) {
     var dom = document.createElement("div");
     var defaultValue = (variable.type == 'derived' ? '=' + variable.expression : variable.value);
 
-    dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input value="${defaultValue}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="value">= ${variable.value}</span>`;
+    dom.innerHTML = `
+        <b class="field-title ${field ? '' : 'hidden'}">${field}:</b> 
+        <input value="${defaultValue}" ${disabled ? "disabled" : ""} />
+        ${help ? `<div class="help symbol">&#xE9CE;</div>` : ''}
+    `;
 
     const input = dom.querySelector("input");
     const valueDisplay = dom.querySelector(`#value`);
 
     let isEditing = false;
-
-    // Function to update the value display
-    function updateValueDisplay() {
-        try {
-            const currentValue = variable.value;
-            valueDisplay.textContent = `= ${currentValue}`;
-        } catch (error) {
-            valueDisplay.textContent = `= Error`;
-        }
-    }
-
     // Show/hide value display based on focus
     input.addEventListener("focus", () => {
         isEditing = true;
@@ -31,7 +25,6 @@ function InputNormal({ field, variable, disabled = false, onChange = null }) {
     input.addEventListener("blur", () => {
         isEditing = false;
         valueDisplay.classList.remove('hidden');
-        updateValueDisplay();
     });
 
     input.addEventListener("change", (e) => {
@@ -56,17 +49,12 @@ function InputNormal({ field, variable, disabled = false, onChange = null }) {
             });
             defaultValue = e.target.value;
         }
-
-        updateValueDisplay();
         
         // Trigger onChange callback if provided
         if (onChange && typeof onChange === 'function') {
             onChange(variable, e.target.value);
         }
     });
-
-    // Initial value display update
-    updateValueDisplay();
 
     return dom;
 }
@@ -151,17 +139,21 @@ function InputRange({ field, variable, range = [0, 100], step = 1, disabled = fa
     return dom;
 }
 
-function InputVector2({ field, variable, disabled = false, onChange = null }) {
+function InputVector2({ field, variable, disabled = false, onChange = null, help = null }) {
     var dom = document.createElement("div");
     dom.className = "input-vector2-container";
 
     dom.innerHTML = `
-        <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
+        <b class="field-title ${field ? '' : 'hidden'}">${field}: ${help?'<div class="help symbol">&#xE9CE;</div>':''}</b>
         <div class="vector2-inputs">
             <div class="vector2-info-area ${disabled ? 'disabled' : ''}" id="info"></div>
             <div class="vector2-visual-area" id="visual"></div>
         </div>
     `;
+
+    if (help) {
+        mkHelp(dom.querySelector('.help'), help);
+    }
 
     const visualArea = dom.querySelector(`#visual`);
     const infoArea = dom.querySelector(`#info`);
@@ -172,7 +164,7 @@ function InputVector2({ field, variable, disabled = false, onChange = null }) {
     return dom;
 }
 
-function InputMath({ field, variable, disabled = false, onChange = null }) {
+function InputMath({ field, variable, disabled = false, onChange = null, help = null }) {
     var dom = document.createElement("div");
     dom.className = "input-math-container";
 
@@ -181,8 +173,13 @@ function InputMath({ field, variable, disabled = false, onChange = null }) {
             <div class="math-field-container">
                 <b class="field-title ${field ? '' : 'hidden'}">${field}:</b>
                 <div class="math-input-area"></div>
+                ${help ? `<div class="help symbol">&#xE9CE;</div>` : ''}
             </div>
         `;
+
+        if (help) {
+            mkHelp(dom.querySelector('.help'), help);
+        }
 
         const mathInputArea = dom.querySelector('.math-input-area');
 

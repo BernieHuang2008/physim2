@@ -156,6 +156,28 @@ const translations = {
     "Force field not found": "Force field not found",
     "No force field with id": "No force field with id",
     "No phyobj with id": "No phyobj with id",
+
+    "HELP_MATHINPUT": `
+        <b>Formula Input</b>
+        <hr>
+        Input mathematical expressions using <code>=</code> prefix.
+        Full support of <a h='#A/MathJsSyntax'>Standard MathJS Syntax</a> and <a h='#V/VarRef'>VAR Reference</a> in here.
+        <br>
+        e.g. <code>= 2 * pi</code>
+    `,
+    "MAN_MathJSSyntax": `
+        <h2>Standard MathJS Syntax</h2>
+        <p>MathJS is a powerful math library that supports a wide range of mathematical operations and functions.</p>
+        <p>For a comprehensive guide on the syntax and capabilities of MathJS, please refer to the official documentation: <a href="https://mathjs.org/docs/expressions/syntax.html" target="_blank">MathJS Syntax Documentation</a></
+        <p>This resource provides detailed information on how to construct mathematical expressions, use functions, and apply various operations supported by MathJS.</p>
+    `,
+    "MAN_VarRef": `
+        <h2>VAR Reference</h2>
+        <p>In expressions, you can reference variables (VAR) defined in the simulation environment.</p>
+        <p>To reference a variable, use its nickname prefixed with <code>TARGET_</code> for target-specific variables, or use the variable's ID for global variables.</p>
+        <p>For example, if you have a variable with the nickname <code>speed</code>, you can reference it in your expression as <code>TARGET_speed</code>.</p>
+        <p>For global variables, if the variable ID is <code>var123</code>, you can reference it directly as <code>var123</code>.</p>
+    `,
 };
 
 export default translations;

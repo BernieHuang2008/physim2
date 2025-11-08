@@ -252,12 +252,18 @@ function edit_ff(world, ff_id, return_to=null) {
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t("Application Scope"),
             variable: new FakeVar_FFCondition(ff),
-            onChange: () => ffeditor_ui_section.render()
+            onChange: () => ffeditor_ui_section.render(),
+            help: {
+                content: t("HELP_FFCOND"),
+            }
         })
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t("Expression"),
             variable: new FakeVar_FFExpression(ff),
-            onChange: () => ffeditor_ui_section.render()
+            onChange: () => ffeditor_ui_section.render(),
+            help: {
+                content: t("HELP_FFMATH"),
+            }
         });
 
     ffeditor_ui_section.render();
