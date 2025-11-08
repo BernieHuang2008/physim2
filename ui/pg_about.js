@@ -11,18 +11,18 @@ function init_pg_about() {
         </div>
         <div class="pg-about-content">
             <h1 style="">PhySim 2</h1>
-            <p>Version: 2025-11-8.1<br>(Beta 2.0.1)</p>
+            <p>Version: 2025-11-8.2<br>(Beta 2.0.1)</p>
             
             <h5>© 2025 BernieHuang</h5>
             
             
             <h2>Latest Updates</h2>
             <ul>
+                <li>[feat] add left bar with particle addition functionality and translations</li>
                 <li>[chore] update About page, update i18n</li>
                 <li>[feat] add help functionality with dynamic content and styling in UI controls</li>
                 <li>[fix] fix bugs</li>
                 <li>[feat] implement simulation controls and reset functionality with UI updates</li>
-                <li>[feat] add About page with dynamic content and styling</li>
             </ul>
             <hr>
 

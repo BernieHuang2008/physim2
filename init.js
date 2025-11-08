@@ -35,3 +35,8 @@ if (zoomContainer) {
 /* ---- Top Menu ---- */
 import { mkMenu, mainMenu } from "./ui/menu.js";
 mkMenu(mainMenu);
+
+/* ---- Left Bar ---- */
+import { createLeftBar } from "./ui/leftbar.js";
+createLeftBar();
+

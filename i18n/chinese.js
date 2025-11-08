@@ -79,6 +79,7 @@ const translations = {
     "Delete": "删除",
     "Close": "关闭",
     "Return": "返回",
+    "Add Particle": "添加质点",
 
     // 模板相关 (Template Related)
     "Choose Template": "选择模板",
@@ -110,6 +111,12 @@ const translations = {
     "Save World (static)": "保存世界（静态）",
     "Load World (static)": "加载世界（静态）",
     "Failed to load world": "加载世界失败",
+
+    // ===============================
+    // 通知消息 (Notification Messages)
+    // ===============================
+    // 成功消息 (Success Messages)
+    "A new particle has been added to the world.": "一个新的质点已被添加到世界中。",
 
     // ===============================
     // 确认消息 (Confirmation Messages)

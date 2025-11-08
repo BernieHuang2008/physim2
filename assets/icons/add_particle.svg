@@ -1,0 +1,9 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>Layer 1</title>
+  <ellipse ry="15" rx="15" id="svg_1" cy="34.75003" cx="35" stroke="#000" fill="#000000"/>
+  <line stroke="#a50da5" stroke-width="7" id="svg_2" y2="73.41592" x2="87.54565" y1="73.41592" x1="51.24999" fill="none"/>
+  <line transform="rotate(90 69.3978 73.4159)" stroke="#a50da5" stroke-width="7" id="svg_4" y2="73.41592" x2="87.54565" y1="73.41592" x1="51.24999" fill="none"/>
+ </g>
+</svg>

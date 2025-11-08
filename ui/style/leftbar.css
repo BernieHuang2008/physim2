@@ -1,0 +1,13 @@
+.left-bar-btn {
+    width: var(--left-bar-width);
+    height: var(--left-bar-width);
+    overflow: hidden;
+    padding: 0;
+}
+
+.left-bar-btn img {
+    width: var(--left-bar-width);
+    height: var(--left-bar-width);
+    filter: var(--icon-filter);
+    transform: translateX(-2px) translateY(-2px);
+}
