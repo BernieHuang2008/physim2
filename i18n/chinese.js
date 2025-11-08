@@ -1,5 +1,7 @@
 const translations = {
-    // General Terms
+    // ===============================
+    // 基础术语 (General Terms)
+    // ===============================
     "Untitled": "未命名",
     "Particle": "质点",
     "Untitled Section": "未命名部分",
@@ -8,75 +10,69 @@ const translations = {
     "World Settings": "世界设置",
     "Untitled Force Field": "未命名力场",
 
-    // UI Section Names
-    "Inspector": "检查器",
-    "Force Field Editor": "力场编辑器",
-
-    // Property Labels
+    // ===============================
+    // 物理量与属性 (Physical Properties)
+    // ===============================
     "Basic Properties": "基本属性",
     "Mass": "质量",
     "Position": "位置",
     "Velocity": "速度",
+    "Acceleration": "加速度",
     "Variables": "变量",
+    "Vars": "变量",
     "Force Fields": "力场",
     "Application Scope": "适用范围",
     "Expression": "表达式",
-    "Advanced Settings": "高级设置",
-    "Vars": "变量",
-    "Choose Template": "选择模板",
+    "Strength": "强度",
+    "Direction": "方向",
 
-    // Vector Component Labels
+    // 向量组件标签 (Vector Component Labels)
     "X": "X",
     "Y": "Y",
     "Len": "长度",
     "α": "α",
+    "Magnitude": "大小",
+    "Angle": "角度",
 
-    // UI Actions
-    "Add New": "添加新项",
-    "ID": "ID",
-    "Error": "错误",
-    "No data to display": "无数据显示",
+    // 物理常数 (Physics Constants)
+    "Gravity": "重力",
+    "Universal Gravitational": "万有引力",
+    "Electrostatic": "静电力",
+    "Gravitational Acceleration (g)": "重力加速度 (g)",
+    "Gravitational Constant (G)": "引力常数 (G)",
+    "Coulomb's Constant (k)": "库仑常数 (k)",
 
-    // Error Messages
-    "Force Calculation Failed": "力计算失败",
-    "Force Field Not Found": "力场未找到",
-    "Physics Object Not Found": "物理对象未找到",
-    "Potential Calculation Failed": "势能计算失败",
-    "Table Cell Error": "表格单元格错误",
-    "Circular Dependency Detected": "检测到循环依赖",
-    "MathJax Load Failed": "MathJax加载失败",
-    "MathJax Init Failed": "MathJax初始化失败",
-    "MathJax Render Failed": "MathJax渲染失败",
-    "LaTeX Conversion Failed": "LaTeX转换失败",
-    "Invalid expression": "无效的表达式",
-    "Circular dependency detected": "检测到循环依赖",
-    "Expression reverted to previous valid state": "表达式已恢复到最近的有效状态",
-    "No circular dependency found": "未发现循环依赖",
-    "Cannot modify id after initialization": "初始化后无法修改标识符",
-    "Math input can only be used with derived variables": "数学输入只能用于派生变量",
-    "Force field not found": "未找到力场",
-    "No force field with id": "未找到标识符对应的力场",
-    "No phyobj with id": "未找到标识符对应的物理对象",
-
-    // Variable Types
+    // ===============================
+    // 数据类型 (Data Types)
+    // ===============================
+    // 变量类型 (Variable Types)
     "immediate": "立即值",
     "derived": "派生值",
 
-    // Force Field Types
+    // 力场类型 (Force Field Types)
     "FF": "力场",
 
-    // Physics Object Types
+    // 物理对象类型 (Physics Object Types)
     "BasicPO": "基础物理对象",
     "ParticlePO": "质点",
     "WorldAnchorPO": "世界锚点",
 
-    // UI Element Types
+    // UI元素类型 (UI Element Types)
     "section": "章节",
     "subsection": "子章节",
     "html": "HTML",
     "ui-control": "UI控件",
 
-    // Button Labels and Actions
+    // ===============================
+    // 用户界面 (User Interface)
+    // ===============================
+    // UI区域名称 (UI Section Names)
+    "Inspector": "检查器",
+    "Force Field Editor": "力场编辑器",
+    "Monitor": "监视器",
+
+    // 按钮标签和操作 (Button Labels and Actions)
+    "Add New": "添加新项",
     "Copy": "复制",
     "Edit": "编辑",
     "View": "查看",
@@ -84,61 +80,93 @@ const translations = {
     "Close": "关闭",
     "Return": "返回",
 
-    // Force Field Template Related
+    // 模板相关 (Template Related)
     "Choose Template": "选择模板",
     "Template Settings": "模板设置",
     "Advanced Settings": "高级设置",
-    "Application Scope": "适用范围",
-    "Expression": "表达式",
-    "Strength": "强度",
     "Preview & Operation": "预览与操作",
+
+    // 通用UI (General UI)
+    "ID": "ID",
+    "Error": "错误",
+    "No data to display": "无数据显示",
     "Notifications": "通知",
     "No notifications.": "暂无通知。",
 
-    // Multi-Vector Display
+    // ===============================
+    // 向量显示 (Vector Display)
+    // ===============================
     "Vector Summary": "所有向量",
     "Count": "数量",
-    "Magnitude": "大小",
-    "Angle": "角度",
     "All Component Forces": "所有分力",
     "Force Analysis": "受力分析",
-    "Monitor": "监视器",
     "No vectors to display": "没有向量",
     "Vector": "向量",
 
-    // Physics Constants and Properties
-    "Gravity": "重力",
-    "Universal Gravitational": "万有引力",
-    "Electrostatic": "静电力",
-    "Gravitational Acceleration (g)": "重力加速度 (g)",
-    "Direction": "方向",
-    "Gravitational Constant (G)": "引力常数 (G)",
-    "Coulomb's Constant (k)": "库仑常数 (k)",
+    // ===============================
+    // 文件操作 (File Operations)
+    // ===============================
+    "File": "文件",
+    "Save World (static)": "保存世界（静态）",
+    "Load World (static)": "加载世界（静态）",
+    "Failed to load world": "加载世界失败",
 
-    // Confirmation Messages
+    // ===============================
+    // 确认消息 (Confirmation Messages)
+    // ===============================
     "Use New Template? By doing this, current settings will be LOST.": "使用新模板？这样做会丢失当前设置。",
     "Are you sure you want to delete this force field?": "您确定要删除此力场吗？",
     "Enter new variable nickname:": "新变量的名称：",
     "new_var": "new_var",
     "Handle Noti.": "处理通知",
 
-    // Error Messages
+    // ===============================
+    // 错误消息 (Error Messages)
+    // ===============================
+    // 计算错误 (Calculation Errors)
+    "Force Calculation Failed": "力计算失败",
+    "Potential Calculation Failed": "势能计算失败",
     "Invalid expression": "无效的表达式",
+    "Table Cell Error": "表格单元格错误",
+
+    // 依赖错误 (Dependency Errors)
+    "Circular Dependency Detected": "检测到循环依赖",
     "Circular dependency detected": "检测到循环依赖",
     "Expression reverted to previous valid state": "表达式已恢复到最近的有效状态",
     "No circular dependency found": "未发现循环依赖",
-    "Cannot modify id after initialization": "初始化后无法修改标识符",
-    "Math input can only be used with derived variables": "数学输入只能用于派生变量",
+
+    // 对象查找错误 (Object Not Found Errors)
+    "Force Field Not Found": "力场未找到",
+    "Physics Object Not Found": "物理对象未找到",
     "Force field not found": "未找到力场",
     "No force field with id": "未找到标识符对应的力场",
     "No phyobj with id": "未找到标识符对应的物理对象",
 
-    "File": "文件",
-    "Save World (static)": "保存世界（静态）",
-    "Load World (static)": "加载世界（静态）",
-    "Failed to load world": "加载世界失败",
+    // 操作限制错误 (Operation Restriction Errors)
+    "Cannot modify id after initialization": "初始化后无法修改标识符",
+    "Math input can only be used with derived variables": "数学输入只能用于派生变量",
 
-    // Simulation Menu
+    // 渲染错误 (Rendering Errors)
+    "MathJax Load Failed": "MathJax加载失败",
+    "MathJax Init Failed": "MathJax初始化失败",
+    "MathJax Render Failed": "MathJax渲染失败",
+    "LaTeX Conversion Failed": "LaTeX转换失败",
+
+    // ===============================
+    // 模式切换 (Mode Switching)
+    // ===============================
+    "EDIT": "编辑",
+    "SIMULATE": "仿真",
+    "KEYFRAME": "关键帧",
+    "Mode": "模式",
+    "Edit Mode": "编辑模式",
+    "Simulation Mode": "仿真模式",
+    "Keyframe Mode": "关键帧模式",
+
+    // ===============================
+    // 仿真控制 (Simulation Control)
+    // ===============================
+    // 仿真菜单 (Simulation Menu)
     "Simulate": "仿真",
     "Start Animation (60 FPS)": "开始动画 (60 FPS)",
     "Stop Animation": "停止动画",
@@ -149,7 +177,7 @@ const translations = {
     "Simulate to 5 seconds": "仿真到 5 秒",
     "Reset Simulation": "重置仿真",
 
-    // Simulation Notifications
+    // 仿真通知 (Simulation Notifications)
     "Animation Started": "动画已开始",
     "Animation started at 60 FPS": "动画以 60 FPS 开始",
     "Animation Stopped": "动画已停止",
@@ -165,24 +193,23 @@ const translations = {
     "Simulated to 5 seconds": "已仿真到 5 秒",
     "Simulation Reset": "仿真已重置",
     "Simulation reset to time 0": "仿真已重置到时间 0",
+    "The simulation has been reset to the initial state.": "仿真已重置到初始状态",
+
+    // 仿真错误 (Simulation Errors)
     "Animation Error": "动画错误",
     "Step Error": "步进错误",
     "Simulation Error": "仿真错误",
     "Reset Error": "重置错误",
 
-    "EDIT": "编辑",
-    "SIMULATE": "仿真",
-    "KEYFRAME": "关键帧",
-    "Mode": "模式",
-    "Edit Mode": "编辑模式",
-    "Simulation Mode": "仿真模式",
-    "Keyframe Mode": "关键帧模式",
-
+    // ===============================
+    // 其他页面 (Other Pages)
+    // ===============================
     "About": "关于",
-    "Acceleration": "加速度",
-    "Simulation Reset": "仿真重置",
-    "The simulation has been reset to the initial state.": "仿真已重置到初始状态",
 
+    // ===============================
+    // 帮助文档 (Help Documentation)
+    // ===============================
+    // 帮助内容 (Help Content)
     "HELP_MATHINPUT": `
         <b>公式输入</b>
         <hr>
@@ -215,6 +242,10 @@ const translations = {
         示例： <code>= norm(pos) != 0</code>
     `,
 
+    // ===============================
+    // 手册文档 (Manual Documentation)
+    // ===============================
+    // MathJS语法手册 (MathJS Syntax Manual)
     "MAN_MathJsSyntax": `
         <h2>标准 MathJS 语法</h2>
         <hr>
@@ -332,6 +363,8 @@ const translations = {
 
         <p>以上仅为 MathJS 支持的部分运算符和函数。有关完整列表，请参阅 <a href="https://mathjs.org/docs/reference/functions.html" target="_blank">MathJS 函数参考</a>。</p>
         `,
+
+    // 变量引用手册 (Variable Reference Manual)
     "MAN_VarRef": `
         <h2>数学表达式中的变量引用</h2>
         <hr>
@@ -339,6 +372,8 @@ const translations = {
         <p>要引用变量，请使用其ID。ID可以在变量定义处复制，由<code>VAR_</code>前缀开始。
         例如，如果您有一个ID为 <code>VAR_123456789</code> 的变量，您可以在表达式中对其进行平方操作： <code>= VAR_123456789 ^ 2</code>。</p>
         `,
+
+    // 扩展变量引用手册 (Extended Variable Reference Manual)
     "MAN_VarTarRef": `
         <h2>数学表达式中的拓展 VAR/TARGET 引用</h2>
         <hr>
