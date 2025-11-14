@@ -9,6 +9,7 @@ import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
 import { assertMode, GlobalModes } from "../mode/global_mode.js";
+import { FakeVarFromFunction } from "../phy/FakeVarFromFunction.js";
 
 const inspector_ui_section = new UI_Section(t("Inspector"));
 inspector_ui_section.activateAt($("#right-bar"));
@@ -38,8 +39,17 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
         return;
     }
 
+    // flags
+    var isWorldAnchor = (phyobj.type === "WorldAnchorPO");
+
     // Display the properties of the phyobject in the inspector panel
     inspector_ui_section.clearContent();
+
+    /* 
+    ========================================
+        UI Section: Header
+    ========================================
+    */
     inspector_ui_section.addHTML(`
         <span class='big' id="nickname-display" style="user-select: none;"></span>
         <span class='small gray cursor-pointer no-select' alt="${t("Edit")}" id="edit-nickname">
@@ -80,7 +90,11 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
         }
     });
 
-    var isWorldAnchor = (phyobj.type === "WorldAnchorPO");
+    /*
+    ========================================
+        UI Section: Basic Properties
+    ========================================
+    */
 
     inspector_ui_section
         .addSubsection(t("Basic Properties"), isWorldAnchor)
@@ -89,7 +103,7 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
             variable: phyobj.mass,
             disabled: isWorldAnchor,
             onChange: () => inspector_ui_section.render(),
-            help: { 
+            help: {
                 content: t("HELP_MATHINPUT"),
             }
         })
@@ -105,6 +119,31 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
             disabled: isWorldAnchor,
             onChange: () => inspector_ui_section.render()
         })
+
+    /*
+    ========================================
+        UI Section: Style
+    ========================================
+    */
+
+    if (!isWorldAnchor) inspector_ui_section
+        .addSubsection(t("Style"), isWorldAnchor)
+        .addUIControl(UIControls.InputControls.InputColor, {
+            field: t("Color"),
+            variable: new FakeVarFromFunction(() => phyobj.style.color),
+            hide: !Boolean(phyobj.style.color),
+            onChange: (newColor) => {
+                phyobj.style.color = newColor.value;
+                inspector_ui_section.render();
+                render_frame(world, phyobj.id);
+            }
+        });
+
+    /* 
+    ========================================
+        UI Section: Vars & FFs
+    ========================================
+    */
 
     inspector_ui_section.addSubsection(t("Vars"), !isWorldAnchor)
         .addUIControl(UIControls.Tables.ColumedList, {

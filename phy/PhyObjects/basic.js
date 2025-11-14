@@ -17,7 +17,13 @@ class BasicPhyObject extends IDObject {
     ffs;
     unreg_vars = [];
 
-    constructor(world, mass = 0, pos = null, velocity = null, vars = [], ffs = [], id = null) {
+    // display property
+    style = {
+        color: "#ff0000",
+        size: 1.0
+    }
+
+    constructor(world, mass = 0, pos = null, velocity = null, vars = [], ffs = [], style = null, id = null) {
         super();
         this.world = world;
 
@@ -34,6 +40,10 @@ class BasicPhyObject extends IDObject {
         this.vars = vars;
         this.ffs = ffs;
 
+        if (style) {
+            this.style = Object.assign({}, this.style, style);
+        }
+
         world.add(this.mass);
         world.add(this.pos);
         world.add(this.velocity);
@@ -45,6 +55,7 @@ class BasicPhyObject extends IDObject {
         this.velocity.reset_to_other(phyobject.velocity);
         this.vars = phyobject.vars;
         this.ffs = phyobject.ffs;
+        this.style = phyobject.style;
     }
 
     toJSON() {
@@ -56,7 +67,8 @@ class BasicPhyObject extends IDObject {
             pos: this.pos.value,
             velocity: this.velocity.value,
             vars: this.vars,
-            ffs: this.ffs
+            ffs: this.ffs,
+            style: this.style
         };
     }
 }

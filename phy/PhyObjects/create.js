@@ -12,6 +12,7 @@ function createPOFromJSON(json, world) {
                 "DONTSET",
                 json.vars,
                 json.ffs,
+                json.style,
                 json.id
             );
             break;
@@ -26,6 +27,7 @@ function createPOFromJSON(json, world) {
                 json.velocity,
                 json.vars,
                 json.ffs,
+                json.style,
                 json.id
             );
     }

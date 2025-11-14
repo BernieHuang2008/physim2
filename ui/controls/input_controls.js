@@ -2,7 +2,11 @@ import { createVectorVisualization } from './vector_visualizer.js';
 import { renderMathExpression, initializeMathInput } from './mathinput.js';
 import { mkHelp } from './help.js';
 
-function InputNormal({ field, variable, disabled = false, onChange = null, help = null }) {
+function InputNormal({ field, variable, disabled = false, onChange = null, help = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
     var dom = document.createElement("div");
     var defaultValue = (variable.type == 'derived' ? '=' + variable.expression : variable.value);
 
@@ -59,7 +63,11 @@ function InputNormal({ field, variable, disabled = false, onChange = null, help 
     return dom;
 }
 
-function InputNumber({ field, variable, disabled = false, onChange = null }) {
+function InputNumber({ field, variable, disabled = false, onChange = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
     var dom = document.createElement("div");
 
     dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="number" value="${variable.value}" ${disabled ? "disabled" : ""} /> <span class="variable-value-display" id="value">= ${variable.value}</span>`;
@@ -115,7 +123,11 @@ function InputNumber({ field, variable, disabled = false, onChange = null }) {
     return dom;
 }
 
-function InputRange({ field, variable, range = [0, 100], step = 1, disabled = false, onChange = null }) {
+function InputRange({ field, variable, range = [0, 100], step = 1, disabled = false, onChange = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
     var dom = document.createElement("div");
     dom.innerHTML = `<b class="field-title ${field ? '' : 'hidden'}">${field}:</b> <input type="range" value="${variable.value}" ${disabled ? "disabled" : ""} min="${range[0]}" max="${range[1]}" step="${step}" /> <label id="value-disp">${variable.value}</label>`;
 
@@ -139,7 +151,11 @@ function InputRange({ field, variable, range = [0, 100], step = 1, disabled = fa
     return dom;
 }
 
-function InputVector2({ field, variable, disabled = false, onChange = null, help = null }) {
+function InputVector2({ field, variable, disabled = false, onChange = null, help = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
     var dom = document.createElement("div");
     dom.className = "input-vector2-container";
 
@@ -164,7 +180,11 @@ function InputVector2({ field, variable, disabled = false, onChange = null, help
     return dom;
 }
 
-function InputMath({ field, variable, disabled = false, onChange = null, help = null }) {
+function InputMath({ field, variable, disabled = false, onChange = null, help = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
     var dom = document.createElement("div");
     dom.className = "input-math-container";
 
@@ -188,8 +208,37 @@ function InputMath({ field, variable, disabled = false, onChange = null, help = 
 
         return dom;
     } else {
-        return InputNormal({ field: field, variable: variable, disabled: disabled, onChange: onChange });
+        return InputNormal({ field: field, variable: variable, disabled: disabled, onChange: onChange, hide: hide });
     }
 }
 
-export { InputNormal, InputNumber, InputRange, InputVector2, InputMath };
+function InputColor({ field, variable, disabled = false, onChange = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    
+    var dom = document.createElement("div");
+    dom.innerHTML = `
+        <b class="field-title ${field ? '' : 'hidden'}">${field}:</b> 
+        <input type="color" value="${variable.value}" ${disabled ? "disabled" : ""} />
+    `;
+    const input = dom.querySelector("input");
+
+    input.addEventListener("change", (e) => {
+        if (disabled) return;
+        const newValue = e.target.value;
+        variable.resetWithParams({
+            value: newValue,
+            type: 'immediate',
+        });
+
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, newValue);
+        }
+    });
+
+    return dom;
+}
+
+export { InputNormal, InputNumber, InputRange, InputVector2, InputMath, InputColor };

@@ -169,6 +169,8 @@ const translations = {
     "Edit Mode": "编辑模式",
     "Simulation Mode": "仿真模式",
     "Keyframe Mode": "关键帧模式",
+    "Mode Switch Aborted": "模式切换失败",
+    "Current mode failed to clean up properly: ": "当前模式未能正确关闭：",
 
     // ===============================
     // 仿真控制 (Simulation Control)

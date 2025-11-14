@@ -1,8 +1,10 @@
 import { t } from "./i18n/i18n.js";
 
 /* ---- Global mode ---- */
+import { render_frame } from "./sim/render_frame.js";
 import { switchMode, GlobalModes } from "./mode/global_mode.js";
 switchMode(GlobalModes.EDIT);
+document.getElementById("mode-badge").onclick = () => render_frame();
 
 /* ---- Floating Section ---- */
 import { floating_section_init } from "./ui/floatsec_utils.js";

@@ -68,6 +68,11 @@ function render_phyobj(phyobj) {
         sim_anchor.appendChild(dom_element);
     }
 
+    // apply styles
+    for (let style_key in phyobj.style) {
+        dom_element.style.setProperty("--postyle-" + style_key, phyobj.style[style_key]);
+    }
+
     switch (phyobj.type) {
         case 'ParticlePO':
             {

@@ -6,7 +6,7 @@
 .phyobj.phyobj-particle {
     width: 10px;
     height: 10px;
-    background-color: red;
+    background-color: var(--postyle-color, #ff0000);
     border-radius: 50%;
     transform: translate(-50%, -50%);
 }

@@ -2,6 +2,7 @@ import { t } from "../i18n/i18n.js";
 import * as EditModeUtils from "./m_editMode.js";
 import * as SimuModeUtils from "./m_simuMode.js";
 import * as KeyframeModeUtils from "./m_kfMode.js";
+import * as Noti from "../ui/notification/notification.js";
 
 var MODE = "EDIT"; // "EDIT" | "SIMULATE" | "KEYFRAME"
 const modeBadge = document.getElementById("mode-badge");
@@ -18,6 +19,14 @@ function getMode() {
 }
 
 function switchMode(newMode) {
+    var isOK = modeutils[MODE].deinitMode();
+
+    if (!isOK) {
+        Noti.error(t("Mode Switch Aborted"), t("Current mode failed to clean up properly: ")+t(MODE));
+        console.warn("Mode Switch Aborted.");
+        return;
+    }
+    
     console.log("Mode Switch to:", newMode);
 
     MODE = newMode;

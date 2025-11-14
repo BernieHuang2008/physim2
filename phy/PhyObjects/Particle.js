@@ -7,8 +7,8 @@ class ParticlePhyObject extends BasicPhyObject {
     nickname = t("Untitled Particle");
 
     // constructor
-    constructor(world, mass = 1, pos = null, velocity = null, vars = [], ffs = [], id = null) {
-        super(world, mass, pos, velocity, vars, ffs, id);
+    constructor(world, mass = 1, pos = null, velocity = null, vars = [], ffs = [], style = null, id = null) {
+        super(world, mass, pos, velocity, vars, ffs, style, id);
 
         if (mass !== "DONTSET") {
             if (typeof mass === 'string') {

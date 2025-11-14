@@ -5,6 +5,18 @@ import { t } from "../i18n/i18n.js";
 import { render_frame } from "../sim/render_frame.js";
 import { monitor_ui_section } from "../ui/monitor.js";
 
+function initMode() {
+    // init progress bar
+    globalSimulation.clear();
+    setProgress(globalSimulation.time / globalSimulation.maxTime, globalSimulation.maxTime);
+}
+
+function deinitMode() {
+    toggleAnimation(false);
+
+    return true;
+}
+
 const progressFull = $("#sim-prog-full");
 const progressActual = $("#sim-prog-actual");
 const progressThumb = $("#sim-prog-thumb");
@@ -31,12 +43,6 @@ function setProgress(progress, max) {
 function _rerenderFrame() {
     render_frame();
     monitor_ui_section.render();
-}
-
-function initMode() {
-    // init progress bar
-    globalSimulation.clear();
-    setProgress(globalSimulation.time / globalSimulation.maxTime, globalSimulation.maxTime);
 }
 
 function toggleAnimation(shouldRun) {
@@ -138,4 +144,4 @@ btnPlayPause.onclick = function () {
     }
 }
 
-export { initMode };
+export { initMode, deinitMode };

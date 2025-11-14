@@ -6,4 +6,9 @@ function initMode() {
     render_frame();
 }
 
-export { initMode };
+function deinitMode() {
+    // nothing to clean up for edit mode
+    return true;
+}
+
+export { initMode, deinitMode };

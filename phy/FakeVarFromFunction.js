@@ -1,7 +1,7 @@
 import { Variable } from "./Var.js";
 
 class FakeVarFromFunction extends Variable {
-    constructor (calc_func, nickname="Derived Variable", id=null) {
+    constructor (calc_func, nickname="FakeVar from Func", id=null) {
         super(nickname, null, "derived", id);
         this.calc = calc_func;
         this.world = {vars: {}};
