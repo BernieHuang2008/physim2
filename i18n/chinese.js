@@ -94,6 +94,13 @@ const translations = {
     "Notifications": "通知",
     "No notifications.": "暂无通知。",
 
+    // Var info display
+    "VAR": "变量",
+    "Master": "宿主对象",
+    "Type": "类型",
+    "Value": "值",
+    "Expression": "表达式",
+
     // ===============================
     // 向量显示 (Vector Display)
     // ===============================

@@ -1,11 +1,34 @@
 import { math } from '../../phyEngine/math.js';
 import * as Noti from '../notification/notification.js';
 import { t } from '../../i18n/i18n.js';
+import { mkHelp } from './help.js';
 
 const VAR_IN_MATH_SPECIAL_CHAR = "\u200B"; //"🥒";
 const VAR_IN_MATH_SPECIAL_CHAR_HEX = "200B";
 const TARGET_IN_MATH_SPECIAL_CHAR = "\u200A";
 const TARGET_IN_MATH_SPECIAL_CHAR_HEX = "200A";
+
+const BIN_0 = "\u200B";
+const BIN_1 = "\u200C";
+
+function _encodeBin(str) {
+    let encoded = "";
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        const b = c.toString(2).padStart(8, '0');
+        encoded += b.replaceAll('0', BIN_0).replaceAll('1', BIN_1);
+    }
+    return encoded;
+}
+function _decodeBin(str) {
+    let decoded = "";
+    for (let i = 0; i < str.length; i += 8) {
+        const byte = str.slice(i, i + 8);
+        const b = byte.replaceAll(BIN_0, '0').replaceAll(BIN_1, '1');
+        decoded += String.fromCharCode(parseInt(b, 2));
+    }
+    return decoded;
+}
 
 
 // MathJax initialization
@@ -77,7 +100,7 @@ async function initMathJax() {
  * @param {string} expression - The mathematical expression in MathJS format
  * @returns {string} LaTeX representation of the expression
  */
-function expressionToLatex(expression, world=null) {
+function expressionToLatex(expression, world = null) {
     const keywords = ['pos', 'v', 'mass', 'time', /VAR\\_([a-zA-Z0-9]+(\\_)*)*/g, /TARGET\\_([a-zA-Z0-9]+(\\_)*)*/g];
 
     try {
@@ -99,10 +122,15 @@ function expressionToLatex(expression, world=null) {
         keywords.forEach(keyword => {
             if (keyword instanceof RegExp) {
                 latex = latex.replace(keyword, match => {
+                    // extract header and var_id
                     var header = match.split('\\_')[0];
                     var var_id = _unescape(match.slice(header.length + 2));
                     var placeholder = "";   // to prevent layout issues
 
+                    // binary info of var_id will be stored in the superscript
+                    var binaryVarId = _encodeBin(header + "_" + var_id);
+
+                    // determin the special character
                     switch (header) {
                         case 'TARGET':
                             header = TARGET_IN_MATH_SPECIAL_CHAR;
@@ -111,11 +139,13 @@ function expressionToLatex(expression, world=null) {
                         case 'VAR':
                             header = VAR_IN_MATH_SPECIAL_CHAR;
                             placeholder = "x";
-                            var_id = (world && world.vars["VAR_"+var_id]) ? world.vars["VAR_"+var_id].nickname : var_id;
+                            // var_id will just be holding place.
+                            // the binaryVarId will be the real identifier.
+                            var_id = (world && world.vars["VAR_" + var_id]) ? world.vars["VAR_" + var_id].nickname : var_id;
                             break;
                     }
 
-                    return `{${header}${placeholder}}_{${_escape(var_id)}}`;
+                    return `{${header}${placeholder}}^{${binaryVarId}}_{${_escape(var_id)}}`;
                 });
             } else {
                 const regex = new RegExp(`\\b${keyword}\\b`, 'g');
@@ -138,7 +168,7 @@ function expressionToLatex(expression, world=null) {
  * @param {string} latexExpression - The LaTeX expression to render
  * @returns {Promise} Promise that resolves when rendering is complete
  */
-async function renderMathJax(element, latexExpression, world=null) {
+async function renderMathJax(element, latexExpression, world = null) {
     try {
         const MathJax = await initMathJax();
 
@@ -151,11 +181,11 @@ async function renderMathJax(element, latexExpression, world=null) {
         });
 
         // add comments to the variables
-        var vardoms = Array.from(svgNode.querySelectorAll('g[data-mml-node="msub"]')).filter(g => {
+        var vardoms = Array.from(svgNode.querySelectorAll('g[data-mml-node="msubsup"]')).filter(g => {
             if (!g.children[0].querySelectorAll("use") || g.children[0].querySelectorAll("use")[0].dataset.c !== VAR_IN_MATH_SPECIAL_CHAR_HEX) return false;
             return true;
         });
-        var targetdoms = Array.from(svgNode.querySelectorAll('g[data-mml-node="msub"]')).filter(g => {
+        var targetdoms = Array.from(svgNode.querySelectorAll('g[data-mml-node="msubsup"]')).filter(g => {
             if (!g.children[0].querySelectorAll("use") || g.children[0].querySelectorAll("use")[0].dataset.c !== TARGET_IN_MATH_SPECIAL_CHAR_HEX) return false;
             return true;
         });
@@ -168,17 +198,16 @@ async function renderMathJax(element, latexExpression, world=null) {
             //     var_id += String.fromCharCode(c > 127 ? c - 0x1D3F3 : c);
             // }
             var var_id = "";
-            var i = 0;
-            while (i < vardom.children[1].querySelectorAll("use").length) {
+            // .children[1] for the superscript part (binaryVarId)
+            for (let i = 0; i < vardom.children[1].querySelectorAll("use").length; i++) {
                 var c = parseInt(vardom.children[1].querySelectorAll("use")[i].dataset.c, 16);
                 if (isNaN(c)) break;
-                var_id += String.fromCharCode(c >= 0x1D44E ? c - 0x1D3ED : c >= 127 ? c - 0x1D3F3 : c);
-                i++;
+                var_id += String.fromCharCode(c);
             }
+            var_id = _decodeBin(var_id);
 
-            // find the variable in the registry 
-            var nickname = var_id;
-            // var nickname = world.vars["VAR_"+var_id].nickname;
+            // find the variable in the registry
+            var nickname = (world && world.vars[var_id]) ? world.vars[var_id].nickname : var_id;
 
             // add foreignObject
             vardom.innerHTML = `
@@ -189,18 +218,20 @@ async function renderMathJax(element, latexExpression, world=null) {
                     </span>
                 </foreignObject>
             `;
+
+            // add Click event Listener
+            mkVariableDetails(world, var_id, vardom.querySelector('.var-in-math'));
         });
 
         // add comments to the TARGETs
         targetdoms.forEach(targetdom => {
             // extract target name
             var target_name = "";
-            var i = 0;
-            while (i < targetdom.children[1].querySelectorAll("use").length) {
-                var c = parseInt(targetdom.children[1].querySelectorAll("use")[i].dataset.c, 16);
+            // .children[2] for the subscript part (nickname display)
+            for (let i = 0; i < targetdom.children[2].querySelectorAll("use").length; i++) {
+                var c = parseInt(targetdom.children[2].querySelectorAll("use")[i].dataset.c, 16);
                 if (isNaN(c)) break;
                 target_name += String.fromCharCode(c >= 0x1D44E ? c - 0x1D3ED : c >= 127 ? c - 0x1D3F3 : c);
-                i++;
             }
             // add foreignObject
             targetdom.innerHTML = `
@@ -232,7 +263,7 @@ async function renderMathJax(element, latexExpression, world=null) {
  * @param {string} expression - The MathJS expression
  * @returns {Promise} Promise that resolves when rendering is complete
  */
-async function renderMathExpression(element, expression, world=null) {
+async function renderMathExpression(element, expression, world = null) {
     const latex = expressionToLatex(expression, world);
     return renderMathJax(element, "=" + latex, world);
 }
@@ -428,6 +459,33 @@ function initializeMathInput(container, variable, disabled = false, onChange = n
     }
 
     return createMathInput(container, variable, disabled, onChange);
+}
+
+function mkVariableDetails(world, var_id, targetElement) {
+    const variable = world.vars[var_id];
+    if (!variable) {
+        Noti.error(t("Variable Not Found"), `Variable with ID "${var_id}" not found.`);
+        return;
+    }
+
+    const master_id = variable.master_phyobj.id;
+    console.log(master_id)
+    const master_name = master_id ? (world.phyobjs[master_id] ? world.phyobjs[master_id].nickname : "N/A") : "N/A";
+
+    const details = `
+        <b>${t("VAR")} - ${variable.nickname}</b>
+        <table>
+        <tr><td><b>${t('ID')}:</b></td><td>${var_id}</td></tr>
+        <tr><td><b>${t('Master')}:</b></td><td>${(master_name + " (" + master_id + ")") || 'N/A'}</td></tr>
+        <tr><td><b>${t('Type')}:</b></td><td>${variable.type}</td></tr>
+        <tr><td><b>${t('Value')}:</b></td><td>${variable.value}</td></tr>
+        <tr><td><b>${t('Expression')}:</b></td><td>${variable.expression || 'N/A'}</td></tr>
+        </table>
+    `;
+
+    mkHelp(targetElement, {
+        content: details
+    });
 }
 
 export {

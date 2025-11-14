@@ -41,3 +41,14 @@
     border-left: none;
     border-top: none;
 }
+
+.help-box table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.help-box th, .help-box td {
+    border: 1px solid #555;
+    padding: 0.2rem 0.4rem;
+    text-align: left;
+    word-break: break-word;
+}

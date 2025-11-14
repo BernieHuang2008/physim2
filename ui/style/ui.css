@@ -130,3 +130,9 @@ code {
     padding: 0.2rem 0.4rem;
     border-radius: 0.3rem;
 }
+
+mjx-assistive-mml {
+    display: none !important;
+    max-width: 0;
+    overflow: hidden;
+}

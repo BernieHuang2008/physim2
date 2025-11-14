@@ -272,6 +272,28 @@ class Variable extends IDObject {
 
         return variable;
     }
+
+    _master=null;
+    get master_phyobj() {
+        if (this._master) {
+            return this._master;
+        }
+
+        if (this.id.startsWith("VAR_OBJ_")) {
+            this._master = this.world.phyobjs[this.id.slice(this.id.indexOf("_")+1, this.id.lastIndexOf("_"))];
+            return this._master;
+        }
+
+        for (let phyobj_id in this.world.phyobjs) {
+            let phyobj = this.world.phyobjs[phyobj_id];
+            if (phyobj.vars.includes(this.id)) {
+                this._master = phyobj;
+                break;
+            }
+        }
+
+        return this._master;
+    }
 }
 
 export { Variable };
