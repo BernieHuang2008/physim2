@@ -74,12 +74,6 @@ class Simulation {
             forces[obj_id] = total_force;
         }
 
-        // 2.5. Process FFD if any
-        if (ffd_id !== null) {
-            var ffd = this.world.ffs[ffd_id];
-            ffd.compute_force(forces, this.time, vars, dt);
-        }
-
         // 3. Update object velocity & pos based on forces
         for (let obj_id in this.world.phyobjs) {
             var obj = this.world.phyobjs[obj_id];

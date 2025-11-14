@@ -8,7 +8,7 @@ class WorldAnchorPhyObject extends BasicPhyObject {
 
     // constructor
     constructor(world, id = null) {
-        super(world, Infinity, [0, 0], [0, 0], [], [], id);
+        super(world, Infinity, [0, 0], [0, 0], [], [], null, id);
     }
 }
 

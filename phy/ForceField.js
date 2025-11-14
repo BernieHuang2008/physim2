@@ -51,7 +51,7 @@ class ForceField extends IDObject {
         this.template = Object.assign({}, forcefield.template);
     }
 
-    compute_force(phyobject, time, vars={}, total_force=null) {
+    _compute_force(phyobject, time, vars = {}, total_force=null) {
         // runtime states
         var scope = {
             pos: phyobject.pos.value,
@@ -74,13 +74,14 @@ class ForceField extends IDObject {
             let v = phyobject.world.vars[varid];
             target_vars["TARGET_" + v.nickname] = v.value;
         }
-        scope = Object.assign(scope, vars);
+        scope = Object.assign(scope, target_vars);
 
         // world vars (by id)
-        for (let varid in this.world.vars) {
-            let v = this.world.vars[varid];
-            scope[v.id] = v.value;
-        }
+        scope = Object.assign({}, scope, vars);
+        // for (let varid in this.world.vars) {
+        //     let v = this.world.vars[varid];
+        //     scope[v.id] = v.value;
+        // }
 
         // evaluate condition
         var condition = this.compiled_condition.evaluate(scope);
@@ -91,6 +92,13 @@ class ForceField extends IDObject {
         // calculate force
         var force = this.compiled_expression.evaluate(scope);
         return Array.isArray(force) ? force : force._data;
+    }
+
+    compute_force(phyobject, time, vars = {}) {
+        if (this.type !== "FFI") {
+            throw new Error("ForceField.compute_force() should not be called on derived ForceField types!");
+        }
+        return this._compute_force(phyobject, time, vars);
     }
 
     _master=null;
@@ -169,7 +177,7 @@ class ForceFieldDerived extends ForceField {
     }
 
     compute_force_ffd(phyobject, time, vars={}, total_force=[0, 0]) {
-        return this.compute_force(phyobject, time, vars, total_force);
+        return this._compute_force(phyobject, time, vars, total_force);
     }
 }
 

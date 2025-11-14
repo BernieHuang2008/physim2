@@ -118,10 +118,16 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
                 let totalForce = [0, 0];
 
                 // Sum forces from all force fields
+                var vars = {};
+                for (let var_id in world.vars) {
+                    vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
+                }
+                
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
                     try {
-                        let force = ff.compute_force(phyobj, globalSimulation.time, world.vars);
+
+                        let force = ff.compute_force(phyobj, globalSimulation.time, vars);
                         if (force && Array.isArray(force) && force.length >= 2) {
                             totalForce[0] += force[0] || 0;
                             totalForce[1] += force[1] || 0;
@@ -164,12 +170,17 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
                 }
 
                 let forces = [];
+
+                var vars = {};
+                for (let var_id in world.vars) {
+                    vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
+                }
                 
                 // Calculate forces from each force field
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
                     try {
-                        let force = ff.compute_force(phyobj, globalSimulation.time, world.vars);
+                        let force = ff.compute_force(phyobj, globalSimulation.time, vars);
                         if (force && Array.isArray(force) && force.length >= 2) {
                             forces.push(_createV([force[0] || 0, force[1] || 0], ff.nickname));
                             // forces.push(force);
