@@ -51,14 +51,22 @@ class ForceField extends IDObject {
         this.template = Object.assign({}, forcefield.template);
     }
 
-    compute_force(phyobject, time, vars={}) {
+    compute_force(phyobject, time, vars={}, total_force=null) {
         // runtime states
         var scope = {
             pos: phyobject.pos.value,
             v: phyobject.velocity.value,
             mass: phyobject.mass.value,
-            time: time,
+            time: time
         };
+
+        if (total_force) {
+            scope.F = total_force;
+            scope.a = [
+                total_force[0] / phyobject.mass.value || 0,
+                total_force[1] / phyobject.mass.value || 0
+            ];
+        }
 
         // target vars (by nickname)
         var target_vars = {};
@@ -151,6 +159,20 @@ class ForceField extends IDObject {
     }
 }
 
+// FFD will mostly be processed outside ForceField class
+// 1. in 'Simulation' class, FFD is the last FF to be processed in each step
+// 2. FFD can use extra info (F for total force, a for acceleration) in its expression
+class ForceFieldDerived extends ForceField {
+    type = "FFD";
+    constructor(world, expression = "", condition = "", nickname = t("Untitled Derived Force Field"), id=null) {
+        super(world, expression, condition, nickname, id);
+    }
+
+    compute_force_ffd(phyobject, time, vars={}, total_force=[0, 0]) {
+        return this.compute_force(phyobject, time, vars, total_force);
+    }
+}
+
 class FakeVar_FFExpression {
     type = "derived";
     nickname;
@@ -215,4 +237,4 @@ class FakeVar_FFCondition extends FakeVar_FFExpression {
     }
 }
 
-export { ForceField, FakeVar_FFExpression, FakeVar_FFCondition };
+export { ForceField, ForceFieldDerived, FakeVar_FFExpression, FakeVar_FFCondition };

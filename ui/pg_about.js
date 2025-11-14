@@ -18,11 +18,7 @@ function init_pg_about() {
             
             <h2>Latest Updates</h2>
             <ul>
-                <li>[feat] add left bar with particle addition functionality and translations</li>
-                <li>[chore] update About page, update i18n</li>
-                <li>[feat] add help functionality with dynamic content and styling in UI controls</li>
-                <li>[fix] fix bugs</li>
-                <li>[feat] implement simulation controls and reset functionality with UI updates</li>
+                <li>FFD logic</li>
             </ul>
             <hr>
 

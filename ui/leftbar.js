@@ -18,6 +18,11 @@ const leftBarShortcuts = [
         name: t("Add Particle"),
         icon: "add_particle.svg",
         action: add_particle,
+    },
+    {
+        name: t("Add Particle"),
+        icon: "add_rigidbody.svg",
+        action: add_particle,
     }
 ];
 

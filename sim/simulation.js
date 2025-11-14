@@ -1,4 +1,5 @@
 import { World, globalWorld } from "../phy/World.js";
+import * as Noti from "../ui/notification/notification.js";
 
 const SETTINGS = {
     // backup_frequency: 30, // simulation steps
@@ -41,17 +42,42 @@ class Simulation {
         // 2. Calculate forces on all objects
         var forces = {};
         for (let obj_id in this.world.phyobjs) {
+            // for each PhyObj:
             var obj = this.world.phyobjs[obj_id];
             var total_force = [0, 0];
+            var ffd_id = null;
+
             for (let ff_id in this.world.ffs) {
                 var ff = this.world.ffs[ff_id];
                 var force = ff.compute_force(obj, this.time, vars);
-                if (force) {
+                if (force !== null && ff.type === "FFD") {
+                    if (ffd_id !== null) {
+                        Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                        throw new Error("Multiple FFDs detected in simulation step!");
+                    }
+                    ffd_id = ff_id; // record FFD id
+                } else if (force) {
                     total_force[0] += force[0] || 0;
                     total_force[1] += force[1] || 0;
                 }
             }
+            
+            // post process FFD
+            if (ffd_id !== null) {
+                var ffd_force = this.world.ffs[ffd_id].compute_force_ffd(obj, this.time, vars, total_force);
+                if (ffd_force) {
+                    total_force[0] += ffd_force[0] || 0;
+                    total_force[1] += ffd_force[1] || 0;
+                }
+            }
+
             forces[obj_id] = total_force;
+        }
+
+        // 2.5. Process FFD if any
+        if (ffd_id !== null) {
+            var ffd = this.world.ffs[ffd_id];
+            ffd.compute_force(forces, this.time, vars, dt);
         }
 
         // 3. Update object velocity & pos based on forces

@@ -2,7 +2,9 @@ import { dynamicImport } from './../utils.js';
 
 const mathSources = [
     'https://cdn.jsdelivr.net/npm/mathjs@15.0/+esm',
-    'https://unpkg.com/mathjs@15.0/esm',
+    // 'https://unpkg.com/mathjs@15.1.0/lib/esm',
+    "https://fastly.jsdelivr.net/npm/mathjs@15.0/+esm",
+    "https://testingcf.jsdelivr.net/npm/mathjs@15.0/+esm",
     'https://cdn.skypack.dev/mathjs@15.0'
 ];
 
