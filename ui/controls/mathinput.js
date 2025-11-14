@@ -78,7 +78,7 @@ async function initMathJax() {
  * @returns {string} LaTeX representation of the expression
  */
 function expressionToLatex(expression, world=null) {
-    const keywords = ['pos', 'v', 'mass', 'time', /VAR\\_[0-9A-Z]{9,9}/g, /TARGET\\_[a-zA-Z0-9_]+/g];
+    const keywords = ['pos', 'v', 'mass', 'time', /VAR\\_([a-zA-Z0-9]+(\\_)*)*/g, /TARGET\\_([a-zA-Z0-9]+(\\_)*)*/g];
 
     try {
         // Parse the expression using MathJS
@@ -87,12 +87,20 @@ function expressionToLatex(expression, world=null) {
         // Convert to LaTeX using MathJS built-in toTex method
         let latex = node.toTex();
 
+        // latex 转义 & 反转义 helper function
+        function _escape(str) {
+            return str.replaceAll("_", "\\_");
+        }
+        function _unescape(str) {
+            return str.replaceAll("\\_", "_");
+        }
+
         // Replace keywords with \text{} format
         keywords.forEach(keyword => {
             if (keyword instanceof RegExp) {
                 latex = latex.replace(keyword, match => {
                     var header = match.split('\\_')[0];
-                    var var_id = match.split('\\_')[1];
+                    var var_id = _unescape(match.slice(header.length + 2));
                     var placeholder = "";   // to prevent layout issues
 
                     switch (header) {
@@ -103,11 +111,11 @@ function expressionToLatex(expression, world=null) {
                         case 'VAR':
                             header = VAR_IN_MATH_SPECIAL_CHAR;
                             placeholder = "x";
-                            var_id = world?world.vars["VAR_"+var_id].nickname:var_id;
+                            var_id = (world && world.vars["VAR_"+var_id]) ? world.vars["VAR_"+var_id].nickname : var_id;
                             break;
                     }
 
-                    return `{${header}${placeholder}}_{${var_id}}`;
+                    return `{${header}${placeholder}}_{${_escape(var_id)}}`;
                 });
             } else {
                 const regex = new RegExp(`\\b${keyword}\\b`, 'g');
