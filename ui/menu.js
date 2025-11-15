@@ -1,4 +1,4 @@
-import { $, $$ } from "../utils.js";
+import { $, $$, specialJsonStringifyReplacer, specialJsonStringifyReviver } from "../utils.js";
 import { floating_section_expand, floatsec_utils_hide_all } from "./floatsec_utils.js";
 import { t } from "../i18n/i18n.js";
 import { switchMode, GlobalModes } from "../mode/global_mode.js";
@@ -77,7 +77,7 @@ const mainMenu = [
                 title: t("Save World (static)"),
                 action: function () {
                     var json = globalWorld.toJSON();
-                    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
+                    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json, specialJsonStringifyReplacer));
                     var downloadAnchorNode = document.createElement('a');
                     downloadAnchorNode.setAttribute("href", dataStr);
                     downloadAnchorNode.setAttribute("download", "physim_world_static.json");
@@ -99,7 +99,7 @@ const mainMenu = [
                             var reader = new FileReader();
                             reader.onload = function (e) {
                                 try {
-                                    var json = JSON.parse(e.target.result);
+                                    var json = JSON.parse(e.target.result, specialJsonStringifyReviver);
                                     var newWorld = World.fromJSON(json);
                                     globalWorld.reset(newWorld);
                                     console.log("Loaded world:", newWorld);

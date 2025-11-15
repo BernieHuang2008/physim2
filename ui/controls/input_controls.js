@@ -205,7 +205,7 @@ function InputMath({ field, variable, disabled = false, onChange = null, help = 
 
         return dom;
     } else {
-        return InputNormal({ field: field, variable: variable, disabled: disabled, onChange: onChange, hide: hide });
+        return InputNumber({ field: field, variable: variable, disabled: disabled, onChange: onChange, hide: hide });
     }
 }
 

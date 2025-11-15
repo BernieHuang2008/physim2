@@ -80,7 +80,7 @@ function simuLoop(frame_ms) {
         }
     } else {
         aniFPS = aniFPS_Default;
-        SETTINGS.aniSpeed = bkupAniSpeed;
+        SETTINGS.aniSpeed = bkupAniSpeed || 0;
         aspdControl.textContent = `⏭ ${SETTINGS.aniSpeed.toFixed(1)}x`;
     }
 }

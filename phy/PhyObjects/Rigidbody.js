@@ -50,8 +50,8 @@ class RigidbodyPhyObject extends ParticlePhyObject {
         //               ^ not at same pos                     ^ particle-rigidbody collision: d < r                                                                  ^ rigidbody-rigidbody collision: d < r1 + r2
 
         {   // Add acc-neutralize FFD
-            let ffd_expression = `max(-a * ((pos - ${this.pos.id})/norm(pos - ${this.pos.id})), 0)       *     ((pos - ${this.pos.id})/norm(pos - ${this.pos.id}))    *   mass`;
-            //                        ^ acc dot product to get radial-acc                                       ^ direction                                                ^ F=ma
+            let ffd_expression = `max(-F * ((pos - ${this.pos.id})/norm(pos - ${this.pos.id})), 0)       *     ((pos - ${this.pos.id})/norm(pos - ${this.pos.id}))`;
+            //                        ^ F dot product to get radial-F                                          ^ direction
 
             let ffd_nickname = t("Rigidbody Collision FFD (acc-neutralize)");
             let ffd = new ForceFieldDerived(this.world, ffd_expression, condition, ffd_nickname);
@@ -66,6 +66,15 @@ class RigidbodyPhyObject extends ParticlePhyObject {
             let ffi = new ForceField(this.world, ffi_expression, condition, ffi_nickname);
             this.ffs.push(ffi.id);
         }
+
+        // {   // Add pos-neutralize FFD
+        //     let ffi_expression = `(max(${this.radius.id} - norm(pos - ${this.pos.id}), 0) / dt / dt)       *     ((pos - ${this.pos.id})/norm(pos - ${this.pos.id}))    *   mass`;
+        //     //                        ^ penetration depth / dt^2                                               ^ direction                                                ^ F=ma
+
+        //     let ffi_nickname = t("Rigidbody Collision FFD (pos-neutralize)");
+        //     let ffi = new ForceField(this.world, ffi_expression, condition, ffi_nickname);
+        //     this.ffs.push(ffi.id);
+        // }
     }
 
     reset_to_other(phyobject) {
