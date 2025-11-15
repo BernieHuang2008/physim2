@@ -1,5 +1,6 @@
 import { World, globalWorld } from "../phy/World.js";
 import * as Noti from "../ui/notification/notification.js";
+import { t } from "../i18n/i18n.js";
 
 const SETTINGS = {
     // backup_frequency: 30, // simulation steps

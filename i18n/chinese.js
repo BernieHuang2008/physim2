@@ -142,6 +142,8 @@ const translations = {
     "Potential Calculation Failed": "势能计算失败",
     "Invalid expression": "无效的表达式",
     "Table Cell Error": "表格单元格错误",
+    "Simulation Error: Overlapping FFDs": "仿真错误：多重FFD",
+    "Detected multiple FFDs on one object!": "检测到一个对象上同时作用多个 FF Derived（被动力场）！",
 
     // 依赖错误 (Dependency Errors)
     "Circular Dependency Detected": "检测到循环依赖",

@@ -61,7 +61,14 @@ function simuLoop(frame_ms) {
     if (!isAnimationRunning) return;
 
     var start_time = performance.now();
-    var last_backup_time = globalSimulation.simulate_to(globalSimulation.time + (frame_ms / 1000) * SETTINGS.aniSpeed, SETTINGS.dt, 0.1, start_time-last_backup_elapsed);
+    try {
+        var last_backup_time = globalSimulation.simulate_to(globalSimulation.time + (frame_ms / 1000) * SETTINGS.aniSpeed, SETTINGS.dt, 0.1, start_time - last_backup_elapsed);
+    } catch (e) {
+        toggleAnimation(false);
+        btnPlayPause.innerHTML = "▶"; // play icon
+        Noti.error(t("Simulation Error"), e.message, null, 5000);
+        throw e;
+    }
     var end_time = performance.now();
     last_backup_elapsed = end_time - last_backup_time;
 
@@ -130,7 +137,7 @@ btnReset.onclick = function () {
 
     setProgress(0, globalSimulation.maxTime);
     _rerenderFrame();
-    
+
     Noti.info(t("Simulation Reset"), t("The simulation has been reset to the initial state."), null, 3000);
 }
 

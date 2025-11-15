@@ -137,7 +137,16 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
                 inspector_ui_section.render();
                 render_frame(world, phyobj.id);
             }
-        });
+        })
+        .addUIControl(UIControls.InputControls.InputNumber, {
+            field: t("Size"),
+            variable: phyobj.style.size_var,
+            hide: !Boolean(phyobj.style.size_var),
+            onChange: (newSize) => {
+                inspector_ui_section.render();
+                render_frame(world, phyobj.id);
+            }
+        })
 
     /* 
     ========================================
