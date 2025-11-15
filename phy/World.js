@@ -1,6 +1,6 @@
 import { BasicPhyObject } from "./PhyObjects/basic.js";
 import { Variable } from "./Var.js";
-import { ForceField } from "./ForceField.js";
+import { ForceField, ForceFieldDerived } from "./ForceField.js";
 import { createPOFromJSON } from "./PhyObjects/create.js";
 import * as PhyObjects from './PhyObjects/phyobjects.js'
 
@@ -125,7 +125,19 @@ class World {
         }
         // Reconstruct force fields
         for (const [id, ffData] of Object.entries(json.ffs)) {
-            const ff = ForceField.fromJSON(ffData, world);
+            var ff = null;
+
+            switch (ffData.type) {
+                case "FFD":
+                    ff = ForceFieldDerived.fromJSON(ffData, world);
+                    break;
+                case "FFI":
+                    ff = ForceField.fromJSON(ffData, world);
+                    break;
+                default:
+                    throw new Error(`Unknown ForceField type: ${ffData.type}`);
+            }
+            
             world.ffs[id] = ff;
         }
 

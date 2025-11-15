@@ -17,18 +17,15 @@ function InputNormal({ field, variable, disabled = false, onChange = null, help 
     `;
 
     const input = dom.querySelector("input");
-    const valueDisplay = dom.querySelector(`#value`);
 
     let isEditing = false;
     // Show/hide value display based on focus
     input.addEventListener("focus", () => {
         isEditing = true;
-        valueDisplay.classList.add('hidden');
     });
 
     input.addEventListener("blur", () => {
         isEditing = false;
-        valueDisplay.classList.remove('hidden');
     });
 
     input.addEventListener("change", (e) => {

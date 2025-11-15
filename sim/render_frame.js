@@ -80,6 +80,15 @@ function render_phyobj(phyobj) {
                 dom_element.style.left = (phyobj.pos.value[0] * zoom_level) + "px";
                 dom_element.style.top = revY(-phyobj.pos.value[1] * zoom_level) + "px";
             }
+            break;
+        case 'RigidbodyPO':
+            {
+                dom_element.classList.add("phyobj-rigidbody");
+                dom_element.style.left = (phyobj.pos.value[0] * zoom_level) + "px";
+                dom_element.style.top = revY(-phyobj.pos.value[1] * zoom_level) + "px";
+                dom_element.style.width = dom_element.style.height = (2 * phyobj.style.size_var.value * zoom_level) + "px";
+            }
+            break;
     }
 
     return phyobj.pos.value;

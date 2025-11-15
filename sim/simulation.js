@@ -34,7 +34,9 @@ class Simulation {
         this.maxTime = Math.max(this.maxTime, this.time);
 
         // 1. Calculate variable values
-        var vars = {};
+        var vars = {
+            dt: dt,
+        };
         for (let var_id in this.world.vars) {
             vars[var_id] = this.world.vars[var_id].calc(this.world.vars, this.time);
         }
@@ -49,14 +51,16 @@ class Simulation {
 
             for (let ff_id in this.world.ffs) {
                 var ff = this.world.ffs[ff_id];
-                var force = ff.compute_force(obj, this.time, vars);
-                if (force !== null && ff.type === "FFD") {
+                if (!ff.judge_condition(obj, this.time, vars)) continue;
+
+                if (ff.type === "FFD") {
                     if (ffd_id !== null) {
                         Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
                         throw new Error("Multiple FFDs detected in simulation step!");
                     }
                     ffd_id = ff_id; // record FFD id
-                } else if (force) {
+                } else {
+                    var force = ff.compute_force(obj, this.time, vars);
                     total_force[0] += force[0] || 0;
                     total_force[1] += force[1] || 0;
                 }

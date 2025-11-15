@@ -82,7 +82,7 @@ class Variable extends IDObject {
                     'e', 'E', 'i', 'Infinity', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'NaN',
                     'null', 'phi', 'pi', 'PI', 'SQRT1_2', 'SQRT2', 'tau', 'undefined',
                     // runtime vars
-                    'pos', 'v', 'mass', 'time',
+                    'type', 'pos', 'v', 'mass', 'time', 'dt', 'F', 'a'
                 ];
 
                 if (!exclude_list.includes(node.name)) {

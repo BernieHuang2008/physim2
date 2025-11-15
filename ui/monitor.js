@@ -8,8 +8,8 @@ import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
-import {assertMode, GlobalModes} from "../mode/global_mode.js";
-import { globalSimulation } from "../sim/simulation.js";
+import { assertMode, GlobalModes } from "../mode/global_mode.js";
+import { globalSimulation, SETTINGS } from "../sim/simulation.js";
 import { FakeVarFromFunction } from "../phy/FakeVarFromFunction.js";
 
 const monitor_ui_section = new UI_Section(t("Monitor"));
@@ -19,7 +19,7 @@ monitor_ui_section.deactivate();
 var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
-function monitor_phyobj(world, phyobj_id, return_to=null) {
+function monitor_phyobj(world, phyobj_id, return_to = null) {
     assertMode([GlobalModes.SIMULATE])
     rdframe_setDefaultFocus(null);
 
@@ -65,11 +65,11 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
         dom.querySelector("#copy-id-btn").onclick = function () {
             navigator.clipboard.writeText(phyobj.id);
             this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => { 
-                this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; 
+            setTimeout(() => {
+                this.querySelector("#symbol1").innerHTML = "&#xE8C8;";
             }, 1000);
         }
-        
+
         // po focus
         const focusPoBtn = dom.querySelector("#focus-po");
         focusPoBtn.onclick = () => {
@@ -103,7 +103,7 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
             field: t("Position"),
             variable: phyobj.pos,
             disabled: true,
-            onChange: () => {monitor_ui_section.render(); render_frame(world, phyobj.id);}
+            onChange: () => { monitor_ui_section.render(); render_frame(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Velocity"),
@@ -118,22 +118,39 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
                 let totalForce = [0, 0];
 
                 // Sum forces from all force fields
-                var vars = {};
+                var vars = {
+                    dt: SETTINGS.dt,
+                };
                 for (let var_id in world.vars) {
                     vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
                 }
-                
+
+                var ffd_id = null;
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
-                    try {
+                    if (!ff.judge_condition(phyobj, globalSimulation.time, vars)) continue;
 
+                    if (ff.type === "FFD") {
+                        if (ffd_id !== null) {
+                            Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                            throw new Error("Multiple FFDs detected in acceleration calculation!");
+                        }
+                        ffd_id = ffid;
+                    } else {
                         let force = ff.compute_force(phyobj, globalSimulation.time, vars);
                         if (force && Array.isArray(force) && force.length >= 2) {
                             totalForce[0] += force[0] || 0;
                             totalForce[1] += force[1] || 0;
                         }
-                    } catch (error) {
-                        console.warn(`Error calculating force from ${ff.nickname}:`, error);
+                    }
+                }
+
+                // post-process FFD
+                if (ffd_id !== null) {
+                    let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                    if (ffd_force) {
+                        totalForce[0] += ffd_force[0] || 0;
+                        totalForce[1] += ffd_force[1] || 0;
                     }
                 }
 
@@ -170,27 +187,52 @@ function monitor_phyobj(world, phyobj_id, return_to=null) {
                 }
 
                 let forces = [];
+                let totalForce = [0, 0];
 
-                var vars = {};
+                var vars = {
+                    dt: SETTINGS.dt,
+                };
                 for (let var_id in world.vars) {
                     vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
                 }
-                
+
                 // Calculate forces from each force field
+                var ffd_id = null;
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
-                    try {
-                        let force = ff.compute_force(phyobj, globalSimulation.time, vars);
-                        if (force && Array.isArray(force) && force.length >= 2) {
-                            forces.push(_createV([force[0] || 0, force[1] || 0], ff.nickname));
-                            // forces.push(force);
+                    if (!ff.judge_condition(phyobj, globalSimulation.time, vars)) continue;
+
+                    if (ff.type === "FFD") {
+                        if (ffd_id !== null) {
+                            Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                            throw new Error("Multiple FFDs detected in acceleration calculation!");
                         }
-                    } catch (error) {
-                        console.warn(`Error calculating force from ${ff.nickname}:`, error);
-                        forces.push(_createV([0, 0], ff.nickname + " (Error)"));
+                        ffd_id = ffid;
+                    } else {
+
+                        try {
+                            let force = ff.compute_force(phyobj, globalSimulation.time, vars);
+                            if (force && Array.isArray(force) && force.length >= 2) {
+                                forces.push(_createV([force[0] || 0, force[1] || 0], ff.nickname));
+                                totalForce[0] += force[0] || 0;
+                                totalForce[1] += force[1] || 0;
+                                // forces.push(force);
+                            }
+                        } catch (error) {
+                            console.warn(`Error calculating force from ${ff.nickname}:`, error);
+                            forces.push(_createV([0, 0], ff.nickname + " (Error)"));
+                        }
                     }
                 }
-                
+
+                // post-process FFD
+                if (ffd_id !== null) {
+                    let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                    if (ffd_force) {
+                        forces.push(_createV([ffd_force[0] || 0, ffd_force[1] || 0], world.ffs[ffd_id].nickname + ` [${t("FFD")}]`));
+                    }
+                }
+
                 return forces;
             }
         });

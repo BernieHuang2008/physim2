@@ -24,6 +24,7 @@ const templateUpdaters = {
     universal_gravitational: (ff) => {
         var params = ff.template.params;
         var condition = "true";
+        // var condition = "norm(pos - " + ff.master_phyobj.pos.id + ")";
         var expression = `- ${params.G} * mass * ${ff.master_phyobj.mass.id} / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * ((pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id}))`;
 
         ff.reset(condition, expression);

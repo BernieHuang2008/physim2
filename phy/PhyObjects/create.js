@@ -16,6 +16,19 @@ function createPOFromJSON(json, world) {
                 json.id
             );
             break;
+        case 'RigidbodyPO':
+            obj = new PhyObjects.RigidbodyPhyObject(
+                world,
+                json.radius,
+                "DONTSET",
+                "DONTSET",
+                "DONTSET",
+                json.vars,
+                json.ffs,
+                json.style,
+                json.id
+            );
+            break;
         case 'WorldAnchorPO':
             obj = new PhyObjects.WorldAnchorPhyObject(world, json.id);
             break;

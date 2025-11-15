@@ -1,6 +1,7 @@
 import { math } from '../phyEngine/math.js';
 import { IDObject } from './idutils.js';
 import { t } from '../i18n/i18n.js';
+import { po_type_encode } from '../utils.js';
 
 class ForceField extends IDObject {
     // metadata
@@ -21,7 +22,7 @@ class ForceField extends IDObject {
     /*
     vars can be used: time, pos (target), v (target), mass (target), TARGET_varNickname (var of target), VAR_varid
     */
-    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field"), id=null) {
+    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field"), id = null) {
         super();
         this.world = world;
         this.expression = expression;
@@ -51,13 +52,15 @@ class ForceField extends IDObject {
         this.template = Object.assign({}, forcefield.template);
     }
 
-    _compute_force(phyobject, time, vars = {}, total_force=null) {
+    _compute_scope(phyobject, time, vars = {}, total_force = null) {
         // runtime states
         var scope = {
             pos: phyobject.pos.value,
             v: phyobject.velocity.value,
             mass: phyobject.mass.value,
-            time: time
+            time: time,
+            dt: 1 / 128, // precise dt will be passed in vars
+            type: po_type_encode(phyobject.type),
         };
 
         if (total_force) {
@@ -83,6 +86,20 @@ class ForceField extends IDObject {
         //     scope[v.id] = v.value;
         // }
 
+        return scope;
+    }
+
+    judge_condition(phyobject, time, vars = {}) {
+        var scope = this._compute_scope(phyobject, time, vars);
+
+        // evaluate condition
+        var condition = this.compiled_condition.evaluate(scope);
+        return condition === true;
+    }
+
+    _compute_force(phyobject, time, vars = {}, total_force = null) {
+        var scope = this._compute_scope(phyobject, time, vars, total_force);
+
         // evaluate condition
         var condition = this.compiled_condition.evaluate(scope);
         if (condition === false) {
@@ -101,7 +118,7 @@ class ForceField extends IDObject {
         return this._compute_force(phyobject, time, vars);
     }
 
-    _master=null;
+    _master = null;
     get master_phyobj() {
         if (this._master) {
             return this._master;
@@ -140,6 +157,7 @@ class ForceField extends IDObject {
     toJSON() {
         return {
             id: this.id,
+            type: this.type,
             nickname: this.nickname,
             expression: this.expression,
             condition: this.condition,
@@ -172,12 +190,28 @@ class ForceField extends IDObject {
 // 2. FFD can use extra info (F for total force, a for acceleration) in its expression
 class ForceFieldDerived extends ForceField {
     type = "FFD";
-    constructor(world, expression = "", condition = "", nickname = t("Untitled Derived Force Field"), id=null) {
+    constructor(world, expression = "", condition = "", nickname = t("Untitled Derived Force Field"), id = null) {
         super(world, expression, condition, nickname, id);
     }
 
-    compute_force_ffd(phyobject, time, vars={}, total_force=[0, 0]) {
+    compute_force_ffd(phyobject, time, vars = {}, total_force = [0, 0]) {
         return this._compute_force(phyobject, time, vars, total_force);
+    }
+
+    static fromJSON(json, world) {
+        const ff = new ForceFieldDerived(
+            world, json.expression, json.condition, json.nickname, json.id
+        );
+        ff.nickname = json.nickname;
+        ff.expression = json.expression;
+        ff.condition = json.condition;
+        ff.compiled_expression = math.compile(ff.expression);
+        ff.compiled_condition = math.compile(ff.condition);
+        ff.template = json.template || {
+            type: "custom",
+            params: {}
+        };
+        return ff;
     }
 }
 

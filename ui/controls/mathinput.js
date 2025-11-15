@@ -101,7 +101,7 @@ async function initMathJax() {
  * @returns {string} LaTeX representation of the expression
  */
 function expressionToLatex(expression, world = null) {
-    const keywords = ['pos', 'v', 'mass', 'time', /VAR\\_([a-zA-Z0-9]+(\\_)*)*/g, /TARGET\\_([a-zA-Z0-9]+(\\_)*)*/g];
+    const keywords = ['type', 'pos', 'v', 'mass', 'time', 'dt', 'F', 'a', /VAR\\_([a-zA-Z0-9]+(\\_)*)*/g, /TARGET\\_([a-zA-Z0-9]+(\\_)*)*/g];
 
     try {
         // Parse the expression using MathJS
