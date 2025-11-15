@@ -11,7 +11,7 @@ function init_pg_about() {
         </div>
         <div class="pg-about-content">
             <h1 style="">PhySim 2</h1>
-            <p>Version: 2025-11-8.2<br>(Beta 2.0.1)</p>
+            <p>Version: 2025-11-15.3<br>(Beta 2.0.2)</p>
             
             <h5>© 2025 BernieHuang</h5>
             
