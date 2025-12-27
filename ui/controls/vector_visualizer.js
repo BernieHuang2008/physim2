@@ -5,6 +5,7 @@
  */
 
 import { t } from "../../i18n/i18n.js";
+import { render_frame } from "../../sim/render_frame.js";
 
 function revY(y) {
     return y;
@@ -319,6 +320,8 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const x = parseFloat(coordXInput.value) || 0;
         const y = parseFloat(coordYInput.value) || 0;
         setVectorValue(x, y);
+
+        render_frame();
     }
 
     function handleMagnitudeChange() {
@@ -336,6 +339,8 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             // If no current vector, create one pointing right
             setVectorValue(newMagnitude, 0);
         }
+
+        render_frame();
     }
 
     function handleAngleChange() {
@@ -350,6 +355,8 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const newX = magnitude * Math.cos(radians);
         const newY = magnitude * Math.sin(radians);
         setVectorValue(newX, newY);
+
+        render_frame();
     }
 
     // Attach event listeners
@@ -358,10 +365,10 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         svg.onmousemove = handleMouseMove;
         document.addEventListener('mouseup', handleMouseUp);
 
-        coordXInput.addEventListener('input', handleInputChange);
-        coordYInput.addEventListener('input', handleInputChange);
-        magnitudeInput.addEventListener('input', handleMagnitudeChange);
-        angleInput.addEventListener('input', handleAngleChange);
+        coordXInput.addEventListener('change', handleInputChange);
+        coordYInput.addEventListener('change', handleInputChange);
+        magnitudeInput.addEventListener('change', handleMagnitudeChange);
+        angleInput.addEventListener('change', handleAngleChange);
     }
 
     // Initial display update
