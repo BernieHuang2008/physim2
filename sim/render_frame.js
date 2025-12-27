@@ -1,5 +1,6 @@
 import { $, $$ } from '../utils.js';
 import { PhyObjOnClickEvent } from './events.js';
+import { display_layer_select } from '../ui/layer_select.js';
 import { inspect_phyobj } from '../ui/inspector.js';
 import { globalWorld } from '../phy/World.js';
 
@@ -33,6 +34,8 @@ function revY(y) {
 }
 
 function render_frame(world, focus_id = null, smooth_scroll = true) {
+    console.log("Rendering frame...");
+
     if (!world) {
         world = globalWorld;
     }
@@ -64,6 +67,8 @@ function render_phyobj(phyobj) {
 
         // bind events
         dom_element.onclick = PhyObjOnClickEvent(phyobj.world, phyobj.id);
+        dom_element.onmousewheel = display_layer_select;
+        console.log(dom_element)
 
         sim_anchor.appendChild(dom_element);
     }

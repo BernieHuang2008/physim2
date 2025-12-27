@@ -1,4 +1,5 @@
 import { t } from "./i18n/i18n.js";
+import { $, $$ } from "./utils.js";
 
 /* ---- Global mode ---- */
 import { render_frame } from "./sim/render_frame.js";
@@ -33,6 +34,12 @@ const zoomContainer = document.getElementById('zoom-control-container');
 if (zoomContainer) {
     zoomContainer.appendChild(zoomControl.getElement());
 }
+
+/* ---- Layer Select Cleanup on Click ---- */
+import { end_LSsession, preventDocScrollDuringLS } from "./ui/layer_select.js";
+$("#center-zone").addEventListener('wheel', preventDocScrollDuringLS);
+document.addEventListener('click', end_LSsession);
+document.addEventListener('mousemove', end_LSsession);
 
 /* ---- Top Menu ---- */
 import { mkMenu, mainMenu } from "./ui/menu.js";

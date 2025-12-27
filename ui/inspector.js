@@ -39,6 +39,10 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
         return;
     }
 
+    // focus it
+    document.getElementsByClassName("po-focused").item(0)?.classList.remove("po-focused");
+    document.getElementById("phyobj-" + phyobj_id).classList.add("po-focused");
+
     // flags
     var isWorldAnchor = (phyobj.type === "WorldAnchorPO");
 

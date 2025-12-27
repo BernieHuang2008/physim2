@@ -1,6 +1,7 @@
 .phyobj {
     position: absolute;
     cursor: pointer;
+    translate: -50% -50%;  /* center the phyobj */
 }
 
 .phyobj.phyobj-particle {
@@ -8,7 +9,6 @@
     height: 10px;
     background-color: var(--postyle-color, #ff0000);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .phyobj.phyobj-rigidbody {
@@ -16,6 +16,10 @@
     border-color: var(--postyle-color, #0b870b);
     background-image: radial-gradient(circle at center, transparent 10%, var(--postyle-color, #0b870b) 80%);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
     box-sizing: border-box;
+}
+
+body[data-mode=EDIT] .po-focused {
+    outline: 2px dashed var(--color-500);
+    outline-offset: 2px;
 }

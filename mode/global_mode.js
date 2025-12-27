@@ -4,7 +4,7 @@ import * as SimuModeUtils from "./m_simuMode.js";
 import * as KeyframeModeUtils from "./m_kfMode.js";
 import * as Noti from "../ui/notification/notification.js";
 
-var MODE = "EDIT"; // "EDIT" | "SIMULATE" | "KEYFRAME"
+var MODE = "NOT_INITIALIZED"; // "EDIT" | "SIMULATE" | "KEYFRAME"
 const modeBadge = document.getElementById("mode-badge");
 const secondStateBadge = document.getElementById("second-statebadge");
 
@@ -12,6 +12,9 @@ const modeutils = {
     "EDIT": EditModeUtils,
     "SIMULATE": SimuModeUtils,
     "KEYFRAME": KeyframeModeUtils,
+    "NOT_INITIALIZED": {
+        deinitMode: () => { return true; }
+    }
 }
 
 function getMode() {
@@ -19,6 +22,11 @@ function getMode() {
 }
 
 function switchMode(newMode) {
+    if (newMode === MODE) {
+        console.log("Already in mode:", newMode);
+        return;
+    }
+
     var isOK = modeutils[MODE].deinitMode();
 
     if (!isOK) {

@@ -18,18 +18,20 @@ import { RigidbodyPhyObject } from "./phy/PhyObjects/Rigidbody.js";
 
 var world = window.world = globalWorld;
 console.log("globalWorld:", globalWorld);
+switchMode("EDIT");
+
 var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
-var b = new ParticlePhyObject(world, "2*5", [10, 0], [0, 0]);
-var c = new RigidbodyPhyObject(world, 2, 4, [5, 5], [0, 0]);
+var b = new ParticlePhyObject(world, "2*5", [0, 0], [0, 0]);
+// var c = new RigidbodyPhyObject(world, 2, 4, [5, 5], [0, 0]);
 
-var v = new Variable("example_var", "", "derived");
-b.vars.push(world.add_var(v));
-v.update("2*5");
+// var v = new Variable("example_var", "", "derived");
+// b.vars.push(world.add_var(v));
+// v.update("2*5");
 
 
-console.log(a);
-console.log(b);
-console.log(c);
+// console.log(a);
+// console.log(b);
+// console.log(c);
 
 import { ForceField } from "./phy/ForceField.js";
 import { edit_ff } from "./ui/ffeditor.js";
@@ -53,6 +55,7 @@ inspect_phyobj(world, world.anchor);
 
 // ======
 import { globalSimulation, Simulation } from "./sim/simulation.js";
+import { switchMode } from "./mode/global_mode.js";
 
 var sim = globalSimulation;
 sim.backup(0);

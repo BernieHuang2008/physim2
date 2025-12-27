@@ -1,0 +1,4 @@
+.in_ls {
+    transform: skew(0, -15deg);
+    transition: all 0.2s ease;
+}
