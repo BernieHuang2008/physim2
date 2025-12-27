@@ -125,17 +125,17 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
                     vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
                 }
 
-                var ffd_id = null;
+                var ffd_ids = [];
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
                     if (!ff.judge_condition(phyobj, globalSimulation.time, vars)) continue;
 
                     if (ff.type === "FFD") {
-                        if (ffd_id !== null) {
-                            Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
-                            throw new Error("Multiple FFDs detected in acceleration calculation!");
-                        }
-                        ffd_id = ffid;
+                        ffd_ids.push(ffid);
+                        // if (ffd_ids.length > 1) {
+                        //     Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                        //     throw new Error("Multiple FFDs detected in acceleration calculation!");
+                        // }
                     } else {
                         let force = ff.compute_force(phyobj, globalSimulation.time, vars);
                         if (force && Array.isArray(force) && force.length >= 2) {
@@ -146,12 +146,25 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
                 }
 
                 // post-process FFD
-                if (ffd_id !== null) {
-                    let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                if (ffd_ids.length === 1) {
+                    let ffd_force = world.ffs[ffd_ids[0]].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
                     if (ffd_force) {
                         totalForce[0] += ffd_force[0] || 0;
                         totalForce[1] += ffd_force[1] || 0;
                     }
+                } else if (ffd_ids.length > 1) {
+                    // multiple FFDs
+                    // try1: 1000 iterations
+                    for (let iter = 0; iter < 1; iter++) {
+                        for (let ffd_id of ffd_ids) {
+                            let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                            if (ffd_force) {
+                                totalForce[0] += ffd_force[0] || 0;
+                                totalForce[1] += ffd_force[1] || 0;
+                            }
+                        }
+                    }
+                    // throw new Error("Multiple FFDs detected in acceleration calculation!");
                 }
 
                 // Calculate acceleration: F = ma, so a = F/m
@@ -197,17 +210,17 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
                 }
 
                 // Calculate forces from each force field
-                var ffd_id = null;
+                var ffd_ids = [];
                 for (let ffid in world.ffs) {
                     let ff = world.ffs[ffid];
                     if (!ff.judge_condition(phyobj, globalSimulation.time, vars)) continue;
 
                     if (ff.type === "FFD") {
-                        if (ffd_id !== null) {
-                            Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
-                            throw new Error("Multiple FFDs detected in acceleration calculation!");
-                        }
-                        ffd_id = ffid;
+                        ffd_ids.push(ffid);
+                        // if (ffd_ids.length > 1) {
+                        //     Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                        //     throw new Error("Multiple FFDs detected in acceleration calculation!");
+                        // }
                     } else {
 
                         try {
@@ -226,11 +239,32 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
                 }
 
                 // post-process FFD
-                if (ffd_id !== null) {
-                    let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                if (ffd_ids.length === 1) {
+                    var ffd_force = world.ffs[ffd_ids[0]].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
                     if (ffd_force) {
-                        forces.push(_createV([ffd_force[0] || 0, ffd_force[1] || 0], world.ffs[ffd_id].nickname + ` [${t("FFD")}]`));
+                        forces.push(_createV([ffd_force[0] || 0, ffd_force[1] || 0], world.ffs[ffd_ids[0]].nickname + ` [${t("FFD")}]`));
                     }
+                } else if (ffd_ids.length > 1) {
+                    var ffd_forces = {};
+                    // multiple FFDs
+                    // try1: 1000 iterations
+                    for (let iter = 0; iter < 1; iter++) {
+                        for (let ffd_id of ffd_ids) {
+                            let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
+                            if (ffd_force) {
+                                totalForce[0] += ffd_force[0] || 0;
+                                totalForce[1] += ffd_force[1] || 0;
+                            }
+                            ffd_forces[ffd_id] = ffd_force;
+                        }
+                    }
+                    for (let ffd_id of ffd_ids) {
+                        let ffd_force = ffd_forces[ffd_id];
+                        if (ffd_force) {
+                            forces.push(_createV([ffd_force[0] || 0, ffd_force[1] || 0], world.ffs[ffd_id].nickname + ` [${t("FFD")}]`));
+                        }
+                    }
+                    // throw new Error("Multiple FFDs detected in acceleration calculation!");
                 }
 
                 return forces;

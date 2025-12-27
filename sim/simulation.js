@@ -48,18 +48,18 @@ class Simulation {
             // for each PhyObj:
             var obj = this.world.phyobjs[obj_id];
             var total_force = [0, 0];
-            var ffd_id = null;
+            var ffd_ids = [];
 
             for (let ff_id in this.world.ffs) {
                 var ff = this.world.ffs[ff_id];
                 if (!ff.judge_condition(obj, this.time, vars)) continue;
 
                 if (ff.type === "FFD") {
-                    if (ffd_id !== null) {
-                        Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
-                        throw new Error("Multiple FFDs detected in simulation step!");
-                    }
-                    ffd_id = ff_id; // record FFD id
+                    ffd_ids.push(ff_id);
+                    // if (ffd_ids.length > 1) {
+                    //     Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
+                    //     throw new Error("Multiple FFDs detected in simulation step!");
+                    // }
                 } else {
                     var force = ff.compute_force(obj, this.time, vars);
                     total_force[0] += force[0] || 0;
@@ -68,12 +68,25 @@ class Simulation {
             }
             
             // post process FFD
-            if (ffd_id !== null) {
-                var ffd_force = this.world.ffs[ffd_id].compute_force_ffd(obj, this.time, vars, total_force);
+            if (ffd_ids.length === 1) {
+                var ffd_force = this.world.ffs[ffd_ids[0]].compute_force_ffd(obj, this.time, vars, total_force);
                 if (ffd_force) {
                     total_force[0] += ffd_force[0] || 0;
                     total_force[1] += ffd_force[1] || 0;
                 }
+            } else if (ffd_ids.length > 1) {
+                // multiple FFDs
+                // try1: 1000 iterations
+                for (let iter = 0; iter < 1; iter++) {
+                    for (let ffd_id of ffd_ids) {
+                        var ffd_force = this.world.ffs[ffd_id].compute_force_ffd(obj, this.time, vars, total_force);
+                        if (ffd_force) {
+                            total_force[0] += ffd_force[0] || 0;
+                            total_force[1] += ffd_force[1] || 0;
+                        }
+                    }
+                }
+                // throw new Error("Multiple FFDs detected in simulation step!");
             }
 
             forces[obj_id] = total_force;
