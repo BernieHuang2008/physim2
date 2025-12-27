@@ -20,8 +20,8 @@ var world = window.world = globalWorld;
 console.log("globalWorld:", globalWorld);
 switchMode("EDIT");
 
-var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
-var b = new ParticlePhyObject(world, "2*5", [0, 0], [0, 0]);
+// var a = new ParticlePhyObject(world, 3, [0, 0], [0, 0]);
+// var b = new ParticlePhyObject(world, "2*5", [0, 0], [0, 0]);
 // var c = new RigidbodyPhyObject(world, 2, 4, [5, 5], [0, 0]);
 
 // var v = new Variable("example_var", "", "derived");
