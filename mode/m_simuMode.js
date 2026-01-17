@@ -4,15 +4,42 @@ import * as Noti from '../ui/notification/notification.js';
 import { t } from "../i18n/i18n.js";
 import { render_frame } from "../sim/render_frame.js";
 import { monitor_ui_section } from "../ui/monitor.js";
+import { mainMenu, mkMenu } from "../ui/menu.js";
+import { livemon_reset } from "../ui/live_monitor.js";
+
+const simuMenu = [
+    ...mainMenu,
+    {
+        title: t("Monit"),
+        items: [
+            {
+                type: "submenu",
+                title: t("Open External Monitor"),
+                action: function () {
+                    monitor_ui_section.open_external_window();
+                }
+            }
+        ],
+        style: {
+            background: "linear-gradient(0deg, var(--color-600) -20%, var(--color-700) 70%)",
+        }
+    }
+];
 
 function initMode() {
+    // init menu
+    mkMenu(simuMenu);
     // init progress bar
     globalSimulation.clear();
     setProgress(globalSimulation.time / globalSimulation.maxTime, globalSimulation.maxTime);
 }
 
 function deinitMode() {
+    // stop animation
     toggleAnimation(false);
+
+    // deinit menu
+    mkMenu(mainMenu);
 
     return true;
 }
@@ -137,6 +164,7 @@ btnReset.onclick = function () {
 
     setProgress(0, globalSimulation.maxTime);
     _rerenderFrame();
+    livemon_reset();
 
     Noti.info(t("Simulation Reset"), t("The simulation has been reset to the initial state."), null, 3000);
 }

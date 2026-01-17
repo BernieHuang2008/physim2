@@ -1,6 +1,7 @@
 import { World, globalWorld } from "../phy/World.js";
 import * as Noti from "../ui/notification/notification.js";
 import { t } from "../i18n/i18n.js";
+import { livemon_report_simend, livemon_report_vars, livemon_report_ff, livemon_reset } from "../ui/live_monitor.js";
 
 const SETTINGS = {
     // backup_frequency: 30, // simulation steps
@@ -25,6 +26,8 @@ class Simulation {
         this.maxTime = 0;
         // initial backup
         this.backups[0] = this.world.toJSON();
+        // reset Live Monitor
+        livemon_reset();
     }
 
     simulate(dt = null) {
@@ -41,6 +44,8 @@ class Simulation {
         for (let var_id in this.world.vars) {
             vars[var_id] = this.world.vars[var_id].calc(this.world.vars, this.time);
         }
+        // Live Monitor Reporting
+        livemon_report_vars(this.world, this.time, vars);
 
         // 2. Calculate forces on all objects
         var forces = {};
@@ -64,6 +69,9 @@ class Simulation {
                     var force = ff.compute_force(obj, this.time, vars);
                     total_force[0] += force[0] || 0;
                     total_force[1] += force[1] || 0;
+
+                    // Live Monitor Reporting
+                    livemon_report_ff(this.world, this.time, ff_id, Math.hypot(force[0], force[1]));
                 }
             }
             
@@ -73,6 +81,11 @@ class Simulation {
                 if (ffd_force) {
                     total_force[0] += ffd_force[0] || 0;
                     total_force[1] += ffd_force[1] || 0;
+
+                    // Live Monitor Reporting
+                    livemon_report_ff(this.world, this.time, ffd_id, Math.hypot(ffd_force[0] || 0, ffd_force[1] || 0));
+                } else {
+                    console.log("TODO: FFD force is null");
                 }
             }
 
@@ -94,6 +107,9 @@ class Simulation {
             var dvy = ay * dt;
             if (dvx != NaN && dvy != NaN) obj.velocity.update([obj.velocity.value[0] + dvx, obj.velocity.value[1] + dvy]);
         }
+
+        // 4. Live Monitor Reporting
+        livemon_report_simend(this);
     }
 
     _near(now, target, dt) {

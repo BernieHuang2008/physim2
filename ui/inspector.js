@@ -88,7 +88,7 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
 
             nicknameDisplay.onblur = () => {
                 nicknameDisplay.contentEditable = "false";
-                phyobj.nickname = nicknameDisplay.innerText;
+                phyobj.nickname = nicknameDisplay.innerText.trim();
                 inspector_ui_section.render();
             }
         }

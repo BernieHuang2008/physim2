@@ -3,6 +3,7 @@ import { PhyObjOnClickEvent } from './events.js';
 import { display_layer_select } from '../ui/layer_select.js';
 import { inspect_phyobj } from '../ui/inspector.js';
 import { globalWorld } from '../phy/World.js';
+import { livemon_update_frame } from '../ui/live_monitor.js';
 
 var render_area = [0, 0, 0, 0]; // xmin, xmax, ymin, ymax
 var zoom_level = 10.0;
@@ -50,6 +51,9 @@ function render_frame(world, focus_id = null, smooth_scroll = true) {
             behavior: smooth_scroll ? 'smooth' : 'instant',
         });
     }
+
+    // update live monitor
+    livemon_update_frame();
 }
 
 function render_phyobj(phyobj) {

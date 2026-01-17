@@ -11,6 +11,7 @@ import * as Noti from "./notification/notification.js";
 import { assertMode, GlobalModes } from "../mode/global_mode.js";
 import { globalSimulation, SETTINGS } from "../sim/simulation.js";
 import { FakeVarFromFunction } from "../phy/FakeVarFromFunction.js";
+import { livemon_add } from "./live_monitor.js";
 
 const monitor_ui_section = new UI_Section(t("Monitor"));
 monitor_ui_section.activateAt($("#right-bar"));
@@ -18,6 +19,21 @@ monitor_ui_section.deactivate();
 
 var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
+
+// "Monit Var" Controls
+function mvc(var_id) {
+    return `
+        <span class="small gray cursor-pointer no-select" alt="${t('Monit')}" onclick="window.mvc_helper(this)" data-livemon-id="${var_id}">
+            <span class="symbol">&#xE9F9;</span>
+        </span>
+        `;
+}
+window.mvc_helper = function (elem) {
+    const id = elem.getAttribute("data-livemon-id");
+    livemon_add(id, id, id);
+
+    Noti.info(t("Live Monitor"), t("Added to Live Monitor"));
+}
 
 function monitor_phyobj(world, phyobj_id, return_to = null) {
     assertMode([GlobalModes.SIMULATE])
@@ -94,19 +110,19 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
     monitor_ui_section
         .addSubsection(t("Basic Properties"), isWorldAnchor)
         .addUIControl(UIControls.InputControls.InputMath, {
-            field: t("Mass"),
+            field: t("Mass") + mvc(phyobj.mass.id),
             variable: phyobj.mass,
             disabled: true,
             onChange: () => monitor_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Position"),
+            field: t("Position") + mvc(phyobj.pos.id),
             variable: phyobj.pos,
             disabled: true,
             onChange: () => { monitor_ui_section.render(); render_frame(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Velocity"),
+            field: t("Velocity") + mvc(phyobj.velocity.id),
             variable: phyobj.velocity,
             disabled: true,
             onChange: () => monitor_ui_section.render()

@@ -194,6 +194,8 @@ const translations = {
     "Simulate to 1 second": "仿真到 1 秒",
     "Simulate to 5 seconds": "仿真到 5 秒",
     "Reset Simulation": "重置仿真",
+    "Monit": "监视",
+    "Open External Monitor": "打开外置监视器",
 
     // 仿真通知 (Simulation Notifications)
     "Animation Started": "动画已开始",
@@ -223,6 +225,7 @@ const translations = {
     // 其他页面 (Other Pages)
     // ===============================
     "About": "关于",
+    "Time / s": "时间 / 秒",
 
     // ===============================
     // 帮助文档 (Help Documentation)

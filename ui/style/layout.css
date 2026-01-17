@@ -6,7 +6,7 @@
 
 .layout-lv0 {
     position: fixed;
-    z-index: 1e5;
+    z-index: 100000;
     overflow: hidden;
 }
 

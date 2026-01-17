@@ -18,7 +18,15 @@ function mkMenu(lst) {
     for (let item of lst) {
         let menu_lv1 = document.createElement("div");
         menu_lv1.className = "menu-lv1";
+        // title
         menu_lv1.textContent = item.title;
+        // style
+        if (item.style) {
+            for (let key in item.style) {
+                menu_lv1.style[key] = item.style[key];
+            }
+        }
+        // action
         menu_lv1.onclick = function () {
             if (item.action) {
                 floatsec_utils_hide_all();
@@ -145,4 +153,10 @@ const mainMenu = [
     }
 ];
 
-export { mkMenu, mainMenu };
+function showContextMenu(lst, anchorDom) {
+    menu_lv2_dom.classList.remove("hide");
+    showMenuLv2(lst, anchorDom);
+    floating_section_expand();
+}
+
+export { mkMenu, mainMenu, showContextMenu };
