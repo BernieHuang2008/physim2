@@ -24,6 +24,13 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
     inspector_ui_section.activate(return_to);
 
     // Prevent re-constructing
+    if (phyobj_id === null) {
+        inspector_ui_section.clearContent();
+        inspector_ui_section.render();
+        last_rendered_phyobj_id = null;
+        return;
+    }
+
     if (last_rendered_phyobj_id === phyobj_id) {
         inspector_ui_section.render();
         return;
@@ -54,45 +61,47 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
         UI Section: Header
     ========================================
     */
-    inspector_ui_section.addHTML(`
-        <span class='big' id="nickname-display" style="user-select: none;"></span>
-        <span class='small gray cursor-pointer no-select' alt="${t("Edit")}" id="edit-nickname">
-            <span class='symbol'>&#xE70F;</span>
-        </span>
+    inspector_ui_section
+            .addHeadlessSubsection()
+            .addHTML(`
+                <span class='big' id="nickname-display" style="user-select: none;"></span>
+                <span class='small gray cursor-pointer no-select' alt="${t("Edit")}" id="edit-nickname">
+                    <span class='symbol'>&#xE70F;</span>
+                </span>
 
-        <br>
-        <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
-            <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
-        </span>
-        &emsp;&emsp;
-        <span class='small gray'> < ${phyobj.type} > </span>
-        <hr>
-    `, (dom) => {
-        // nickname display
-        dom.querySelector("#nickname-display").innerText = phyobj.nickname;
+                <br>
+                <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
+                    <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE16D;</span>
+                </span>
+                &emsp;&emsp;
+                <span class='small gray'> < ${phyobj.type} > </span>
+                <hr>
+            `, (dom) => {
+            // nickname display
+            dom.querySelector("#nickname-display").innerText = phyobj.nickname;
 
-        // id copy
-        dom.querySelector("#copy-id-btn").onclick = function () {
-            navigator.clipboard.writeText(phyobj.id);
-            this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => {
-                this.querySelector("#symbol1").innerHTML = "&#xE8C8;";
-            }, 1000);
-        }
-
-        // nickname edit
-        const nicknameDisplay = dom.querySelector("#nickname-display");
-        dom.querySelector("#edit-nickname").onclick = () => {
-            nicknameDisplay.contentEditable = "true";
-            nicknameDisplay.focus();
-
-            nicknameDisplay.onblur = () => {
-                nicknameDisplay.contentEditable = "false";
-                phyobj.nickname = nicknameDisplay.innerText.trim();
-                inspector_ui_section.render();
+            // id copy
+            dom.querySelector("#copy-id-btn").onclick = function () {
+                navigator.clipboard.writeText(phyobj.id);
+                this.querySelector("#symbol1").innerHTML = "&#xE73E;";
+                setTimeout(() => {
+                    this.querySelector("#symbol1").innerHTML = "&#xE16D;";
+                }, 1000);
             }
-        }
-    });
+
+            // nickname edit
+            const nicknameDisplay = dom.querySelector("#nickname-display");
+            dom.querySelector("#edit-nickname").onclick = () => {
+                nicknameDisplay.contentEditable = "true";
+                nicknameDisplay.focus();
+
+                nicknameDisplay.onblur = () => {
+                    nicknameDisplay.contentEditable = "false";
+                    phyobj.nickname = nicknameDisplay.innerText.trim();
+                    inspector_ui_section.render();
+                }
+            }
+        });
 
     /*
     ========================================
@@ -177,11 +186,11 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
                         const symbol = this.querySelector("#symbol-var-" + variable.id);
                         if (symbol) {
                             symbol.innerHTML = "&#xE73E;";
-                            setTimeout(() => { symbol.innerHTML = "&#xE8C8;"; }, 1000);
+                            setTimeout(() => { symbol.innerHTML = "&#xE16D;"; }, 1000);
                         }
                     };
                     span.innerHTML = `
-                        ${variable.nickname} <span class='symbol small gray' id="symbol-var-${variable.id}">&#xE8C8;</span>
+                        ${variable.nickname} <span class='symbol small gray' id="symbol-var-${variable.id}">&#xE16D;</span>
                         <br>
                         <span class='small gray'>${variable.id}</span>
                     `;
@@ -225,11 +234,11 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
                         const symbol = this.querySelector("#symbol-ff-" + ff.id);
                         if (symbol) {
                             symbol.innerHTML = "&#xE73E;";
-                            setTimeout(() => { symbol.innerHTML = "&#xE8C8;"; }, 1000);
+                            setTimeout(() => { symbol.innerHTML = "&#xE16D;"; }, 1000);
                         }
                     };
                     span.innerHTML = `
-                        ${ff.nickname} <span class='symbol small gray' id="symbol-ff-${ff.id}">&#xE8C8;</span>
+                        ${ff.nickname} <span class='symbol small gray' id="symbol-ff-${ff.id}">&#xE16D;</span>
                         <br>
                         <span class='small gray'>${ff.id}</span>
                     `;
@@ -305,4 +314,4 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
 }
 
 
-export { inspect_phyobj };
+export { inspect_phyobj, last_rendered_phyobj_id };

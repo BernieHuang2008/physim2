@@ -70,6 +70,8 @@ const translations = {
     "Inspector": "检查器",
     "Force Field Editor": "力场编辑器",
     "Monitor": "监视器",
+    "[Monitor]": "[监视器]",
+    "Info": "信息",
 
     // 按钮标签和操作 (Button Labels and Actions)
     "Add New": "添加新项",

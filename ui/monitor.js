@@ -21,7 +21,13 @@ var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
 // "Monit Var" Controls
-function mvc(var_id) {
+function mvc(var_id, vec_comp = null) {
+    if (typeof vec_comp === "number") {
+        var_id += `[${vec_comp}]`;
+    } else if (vec_comp === "mag") {
+        var_id = `norm(${var_id})`;
+    }
+
     return `
         <span class="small gray cursor-pointer no-select" alt="${t('Monit')}" onclick="window.mvc_helper(this)" data-livemon-id="${var_id}">
             <span class="symbol">&#xE9F9;</span>
@@ -60,50 +66,52 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
     var focusOn = false;
     // Display the properties of the phyobject in the inspector panel
     monitor_ui_section.clearContent();
-    monitor_ui_section.addHTML(`
-        <span class='big' id="nickname-display" style="user-select: none;"></span>
-        <span class='small gray cursor-pointer no-select' alt="${t("Focus")}" id="focus-po">
-            <span class='symbol'>&#xE78F;</span>
-        </span>
+    monitor_ui_section
+        .addHeadlessSubsection()
+        .addHTML(`
+                <span class='big' id="nickname-display" style="user-select: none;"></span>
+                <span class='small gray cursor-pointer no-select' alt="${t("Focus")}" id="focus-po">
+                    <span class='symbol'>&#xE78F;</span>
+                </span>
 
-        <br>
-        <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
-            <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
-        </span>
-        &emsp;&emsp;
-        <span class='small gray'> < ${phyobj.type} > </span>
-        <hr>
-    `, (dom) => {
-        // nickname display
-        dom.querySelector("#nickname-display").innerText = phyobj.nickname;
+                <br>
+                <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
+                    <b>${t("ID")}:</b> ${phyobj.id} <span class='symbol' id="symbol1">&#xE16D;</span>
+                </span>
+                &emsp;&emsp;
+                <span class='small gray'> < ${phyobj.type} > </span>
+                <hr>
+            `, (dom) => {
+            // nickname display
+            dom.querySelector("#nickname-display").innerText = phyobj.nickname;
 
-        // id copy
-        dom.querySelector("#copy-id-btn").onclick = function () {
-            navigator.clipboard.writeText(phyobj.id);
-            this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => {
-                this.querySelector("#symbol1").innerHTML = "&#xE8C8;";
-            }, 1000);
-        }
-
-        // po focus
-        const focusPoBtn = dom.querySelector("#focus-po");
-        focusPoBtn.onclick = () => {
-            focusPoBtn.classList.toggle("on");
-            if (focusPoBtn.classList.contains("on")) {
-                rdframe_setDefaultFocus(phyobj.id);
-                focusOn = true;
-            } else {
-                rdframe_setDefaultFocus(null);
-                focusOn = false;
+            // id copy
+            dom.querySelector("#copy-id-btn").onclick = function () {
+                navigator.clipboard.writeText(phyobj.id);
+                this.querySelector("#symbol1").innerHTML = "&#xE73E;";
+                setTimeout(() => {
+                    this.querySelector("#symbol1").innerHTML = "&#xE16D;";
+                }, 1000);
             }
-        }
-        if (focusOn) {
-            focusPoBtn.classList.add("on");
-        } else {
-            focusPoBtn.classList.remove("on");
-        }
-    });
+
+            // po focus
+            const focusPoBtn = dom.querySelector("#focus-po");
+            focusPoBtn.onclick = () => {
+                focusPoBtn.classList.toggle("on");
+                if (focusPoBtn.classList.contains("on")) {
+                    rdframe_setDefaultFocus(phyobj.id);
+                    focusOn = true;
+                } else {
+                    rdframe_setDefaultFocus(null);
+                    focusOn = false;
+                }
+            }
+            if (focusOn) {
+                focusPoBtn.classList.add("on");
+            } else {
+                focusPoBtn.classList.remove("on");
+            }
+        });
 
     var isWorldAnchor = (phyobj.type === "WorldAnchorPO");
 
@@ -116,13 +124,13 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
             onChange: () => monitor_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Position") + mvc(phyobj.pos.id),
+            field: t("Position") + mvc(phyobj.pos.id, "mag"),
             variable: phyobj.pos,
             disabled: true,
             onChange: () => { monitor_ui_section.render(); render_frame(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Velocity") + mvc(phyobj.velocity.id),
+            field: t("Velocity") + mvc(phyobj.velocity.id, "mag"),
             variable: phyobj.velocity,
             disabled: true,
             onChange: () => monitor_ui_section.render()
@@ -179,7 +187,7 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
         })
 
     monitor_ui_section
-        .addSubsection(t("Force Analysis"))
+        .addSubsection(t("Force Analysis"), false)
         .addUIControl(UIControls.Dynamic(() => {
             const div = document.createElement('div');
             div.innerHTML = `
@@ -257,4 +265,4 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
 }
 
 
-export { monitor_phyobj, monitor_ui_section };
+export { monitor_phyobj, monitor_ui_section, last_rendered_phyobj_id };

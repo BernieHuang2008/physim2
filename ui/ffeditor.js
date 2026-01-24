@@ -109,7 +109,7 @@ function edit_ff(world, ff_id, return_to=null) {
 
         <br>
         <span class='small gray cursor-pointer' alt="${t("Copy")}" id="copy-id-btn">
-            <b>${t("ID")}:</b> ${ff.id} <span class='symbol' id="symbol1">&#xE8C8;</span>
+            <b>${t("ID")}:</b> ${ff.id} <span class='symbol' id="symbol1">&#xE16D;</span>
         </span>
         &emsp;&emsp;
         <span class='small gray'> < ${ff.type} > </span>
@@ -120,7 +120,7 @@ function edit_ff(world, ff_id, return_to=null) {
             navigator.clipboard.writeText(ff.id);
             this.querySelector("#symbol1").innerHTML = "&#xE73E;";
             setTimeout(() => { 
-                this.querySelector("#symbol1").innerHTML = "&#xE8C8;"; 
+                this.querySelector("#symbol1").innerHTML = "&#xE16D;"; 
             }, 1000);
         }
 

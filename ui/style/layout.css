@@ -95,6 +95,15 @@
     cursor: pointer;
 }
 
+#center-bar {
+    position: absolute;
+    top: var(--top-bar-height);
+    left: var(--left-bar-width);
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
 #center-zone {
     position: absolute;
     top: var(--top-bar-height);

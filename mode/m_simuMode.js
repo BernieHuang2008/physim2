@@ -1,9 +1,11 @@
+import { globalWorld } from "../phy/World.js";
 import { globalSimulation, SETTINGS } from "../sim/simulation.js";
 import { $, $$ } from "./../utils.js";
 import * as Noti from '../ui/notification/notification.js';
 import { t } from "../i18n/i18n.js";
 import { render_frame } from "../sim/render_frame.js";
-import { monitor_ui_section } from "../ui/monitor.js";
+import * as Inspector from "../ui/inspector.js";
+import { monitor_phyobj, monitor_ui_section } from "../ui/monitor.js";
 import { mainMenu, mkMenu } from "../ui/menu.js";
 import { livemon_reset } from "../ui/live_monitor.js";
 
@@ -32,6 +34,8 @@ function initMode() {
     // init progress bar
     globalSimulation.clear();
     setProgress(globalSimulation.time / globalSimulation.maxTime, globalSimulation.maxTime);
+    // switch from inspector -> monitor
+    monitor_phyobj(globalWorld, Inspector.last_rendered_phyobj_id || null);
 }
 
 function deinitMode() {

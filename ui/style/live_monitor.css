@@ -29,7 +29,6 @@
     position: relative;
     width: calc(100% - 20px);
     height: calc(100% - 40px);
-    margin: 10px;
 }
 
 .live-monitor-resize-handle {
@@ -39,7 +38,7 @@
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 0 12px 12px;
+    border-width: 0 0 7px 7px;
     border-color: transparent transparent #007bff transparent;
     cursor: se-resize;
     display: none;

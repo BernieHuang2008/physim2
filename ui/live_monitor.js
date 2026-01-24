@@ -4,9 +4,12 @@ import { showContextMenu } from './menu.js';
 import UIControls from './controls/controls.js';
 import { FakeVarFromFunction } from '../phy/FakeVarFromFunction.js';
 import { globalWorld } from '../phy/World.js';
+import { UI_Section } from './ui_section/ui_section.js';
+import { $, $$ } from '../utils.js';
 
 var liveMonitorData = {};
 var liveMonitorPlots = {};
+window.liveMonitorData = liveMonitorData;
 
 var current_time = -1;
 var current_time_ff_data = {};
@@ -28,86 +31,137 @@ const SETTINGS = {
 
 function edit_info(id) {
     const item = liveMonitorData[id];
-    const plotDiv = liveMonitorPlots[id];
+    const itemPlot = liveMonitorPlots[id];
+    const display = item.meta.display;
+    const plotDiv = itemPlot.plotDiv;
     const infoDiv = plotDiv.parentElement.querySelector('.live-monitor-info');
 
-    // show info section
-    infoDiv.style.display = 'block';
-    plotDiv.style.display = 'none';
+    // a one-time UI section for editing info
+    var section_info = new UI_Section(t("[Monitor]") + " " + (item.meta.title || t("Untitled")) + " - " + t("Info"));
 
-    infoDiv.innerHTML = '';
-    let title = document.createElement('h3');
-    title.textContent = t('Monitor Info');
-    infoDiv.appendChild(title);
-
-    let paraId = document.createElement('p');
-    paraId.textContent = t('ID') + ': ' + item.meta.id;
-    infoDiv.appendChild(paraId);
-
-    const fakeVar = new FakeVarFromFunction(() => null, "Live Monitor Expr Var", null, globalWorld);
-    fakeVar.expression = item.meta.expr;
-    fakeVar.update_expression = function (newExpr) {
-        item.meta.expr = newExpr;
-        fakeVar.expression = newExpr;
-    };
-
-    infoDiv.appendChild(UIControls.InputControls.InputMath({
-        field: t('Expression'),
-        variable: fakeVar,
-        onChange: (variable, newValue) => {
-            item.data.time = [];
-            item.data.value = [];
+    section_info.on["activate"]["adjust_window_display"] = () => {
+        // Set initial position and size
+        if (display.pos) {
+            section_info.dom.style.left = (display.pos[0] || 0) + 'px';
+            section_info.dom.style.top = (display.pos[1] || 0) + 'px';
         }
-    }));
+        if (display.size) {
+            section_info.dom.style.width = (display.size[0] || 400) + 'px';
+            section_info.dom.style.height = (display.size[1] || 300) + 'px';
+        }
+    }
 
-    let paraDatatype = document.createElement('p');
-    paraDatatype.textContent = t('Data Type') + ': ' + item.meta.datatype;
-    infoDiv.appendChild(paraDatatype);
+    section_info.activateAt($("#center-bar"));
 
-    let btnBack = document.createElement('button');
-    btnBack.textContent = t('Back');
-    btnBack.onclick = () => {
-        infoDiv.style.display = 'none';
-        plotDiv.style.display = 'block';
+    // fake vars
+    const fakeVar_expression = new FakeVarFromFunction(() => null, "Live Monitor Expr Var", null, globalWorld);
+    fakeVar_expression.type = "derived";
+    fakeVar_expression.expression = item.meta.expr;
+    fakeVar_expression.update_expression = function (newExpr) {
+        item.meta.expr = newExpr;
+        fakeVar_expression.expression = newExpr;
     };
-    infoDiv.appendChild(btnBack);
+
+    const fakeVar_title = new FakeVarFromFunction(() => null, "Live Monitor Title Var", null, globalWorld);
+    fakeVar_title.type = "immediate";
+    fakeVar_title._value = item.meta.title;
+    fakeVar_title.update = function (newTitle) {
+        fakeVar_title._value = newTitle;
+        item.meta.title = newTitle;
+    };
+
+    // build section
+    section_info
+        .addHeadlessSubsection()
+        .addUIControl(UIControls.InputControls.InputNormal, {
+            field: t('Title'),
+            variable: fakeVar_title,
+            onChange: (variable, newValue) => {
+                // itemPlot.section.setTitle(t("[Monitor]") + " " + (newValue || t("Untitled")));
+            }
+        })
+        .addUIControl(UIControls.InputControls.InputMath, {
+            field: t('Expression'),
+            variable: fakeVar_expression,
+            onChange: (variable, newValue) => {
+                item.data.time = [];
+                item.data.value = [];
+            }
+        })
+        .render();
+
+    section_info.activate(itemPlot.section);
+
+    // Override drag/resize handlers to save state
+    const oldDragEnd = section_info._onDragEnd.bind(section_info);
+    section_info._onDragEnd = (e) => {
+        oldDragEnd(e);
+        display.pos = [section_info.dom.offsetLeft, section_info.dom.offsetTop];
+    };
+    const oldResizeEnd = section_info._onResizeEnd.bind(section_info);
+    section_info._onResizeEnd = (e) => {
+        oldResizeEnd(e);
+        display.size = [section_info.dom.offsetWidth, section_info.dom.offsetHeight];
+    };
 }
 
 function _createPlotlyPlot(id) {
     const item = liveMonitorData[id];
     const display = item.meta.display;
 
-    // Create Window Container
-    let container = document.createElement('div');
-    container.className = 'live-monitor-window';
-    container.style.left = (display.pos[0] || 0) + 'px';
-    container.style.top = (display.pos[1] || 0) + 'px';
-    container.style.width = (display.size[0] || 400) + 'px';
-    container.style.height = (display.size[1] || 300) + 'px';
+    // Create UI Section
+    let title = "placeholder";
+    let section = new UI_Section(title);
 
-    // Title Bar
-    let titleBar = document.createElement('div');
-    titleBar.className = 'live-monitor-title-bar';
-    titleBar.style.display = 'flex';
-    titleBar.style.justifyContent = 'space-between';
-    titleBar.style.alignItems = 'center';
+    section.on["activate"]["adjust_window_display"] = () => {
+        // set title
+        section.setTitle(t("[Monitor]") + " " + (item.meta.title || t("Untitled")));
+        // Set initial position and size
+        if (display.pos) {
+            section.dom.style.left = (display.pos[0] || 0) + 'px';
+            section.dom.style.top = (display.pos[1] || 0) + 'px';
+        }
+        if (display.size) {
+            section.dom.style.width = (display.size[0] || 400) + 'px';
+            section.dom.style.height = (display.size[1] || 300) + 'px';
+        }
+    }
 
-    let titleText = document.createElement('span');
-    titleText.textContent = item.meta.title || "Monitor";
-    titleText.style.flexGrow = '1';
-    titleText.style.overflow = 'hidden';
-    titleText.style.textOverflow = 'ellipsis';
-    titleBar.appendChild(titleText);
+    // Override deactivate to clean up
+    section.on["deactivate"]["if_close_then_cleanup"] = (msg = null) => {
+        if (msg === "CLOSE") {
+            delete liveMonitorData[id];
+            delete liveMonitorPlots[id];
+        }
+    };
 
-    let titleBtnContainer = document.createElement('div');
-    titleBtnContainer.style.display = 'flex';
-    titleBtnContainer.style.alignItems = 'center';
+    // Bind to center-bar
+    section.activateAt(document.getElementById("center-bar"));
 
-    let moreBtn = document.createElement('div');
-    moreBtn.textContent = '...';
+    // Override drag/resize handlers to save state
+    const oldDragEnd = section._onDragEnd.bind(section);
+    section._onDragEnd = (e) => {
+        oldDragEnd(e);
+        display.pos = [section.dom.offsetLeft, section.dom.offsetTop];
+    };
+
+    const oldResizeEnd = section._onResizeEnd.bind(section);
+    section._onResizeEnd = (e) => {
+        oldResizeEnd(e);
+        display.size = [section.dom.offsetWidth, section.dom.offsetHeight];
+        Plotly.Plots.resize(plotDiv);
+    };
+
+    // Add '...' menu button to title bar
+    let titleBar = section.dom.querySelector('.ui-section-title');
+    let closeBtn = titleBar.querySelector('#close-btn');
+
+    let moreBtn = document.createElement('span');
+    moreBtn.textContent = '⋯';
+    moreBtn.className = 'symbol float-right';
     moreBtn.style.cursor = 'pointer';
-    moreBtn.style.padding = '0 5px';
     moreBtn.style.fontWeight = 'bold';
+    moreBtn.style.marginRight = '3ch';
     moreBtn.addEventListener('mousedown', (e) => e.stopPropagation()); // Prevent drag
     moreBtn.onclick = function () {
         showContextMenu([
@@ -118,40 +172,24 @@ function _createPlotlyPlot(id) {
             }
         ], moreBtn);
     };
-    titleBtnContainer.appendChild(moreBtn);
+    // Insert before close button
+    titleBar.insertBefore(moreBtn, closeBtn);
 
-    let closeBtn = document.createElement('div');
-    closeBtn.textContent = '×';
-    closeBtn.style.cursor = 'pointer';
-    closeBtn.style.padding = '0 5px';
-    closeBtn.style.fontWeight = 'bold';
-    closeBtn.addEventListener('mousedown', (e) => {
-        e.stopPropagation(); // Prevent drag
-
-        delete liveMonitorData[id];
-        delete liveMonitorPlots[id];
-        container.remove();
-    });
-    titleBtnContainer.appendChild(closeBtn);
-
-    titleBar.appendChild(titleBtnContainer);
-    container.appendChild(titleBar);
+    // Content
+    let contentContainer = section.dom_content;
 
     // Plot Content Area
     let plotDiv = document.createElement('div');
     plotDiv.className = 'live-monitor-content';
-    container.appendChild(plotDiv);
+    plotDiv.style.width = '100%';
+    plotDiv.style.height = '100%';
+    contentContainer.appendChild(plotDiv);
 
     // Edit Info Area (Hidden by default)
     let infoDiv = document.createElement('div');
     infoDiv.className = 'live-monitor-info';
     infoDiv.style.display = 'none';
-    container.appendChild(infoDiv);
-
-    // Resize Handle
-    let resizeHandle = document.createElement('div');
-    resizeHandle.className = 'live-monitor-resize-handle';
-    container.appendChild(resizeHandle);
+    contentContainer.appendChild(infoDiv);
 
     Plotly.newPlot(plotDiv, [{
         x: item.data.time,
@@ -159,98 +197,21 @@ function _createPlotlyPlot(id) {
         mode: 'scatter',
     }], SETTINGS.plotly_layout, SETTINGS.plotly_config);
 
-    const sim_anchor = document.getElementById("simulation-area-anchor");
-    if (sim_anchor) {
-        sim_anchor.appendChild(container);
-    } else {
-        document.body.appendChild(container); // Fallback
-    }
-
-    // --- Dragging Logic ---
-    let isDragging = false;
-    let dragStartX, dragStartY, dragStartLeft, dragStartTop;
-
-    titleBar.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        dragStartLeft = container.offsetLeft;
-        dragStartTop = container.offsetTop;
-
-        e.preventDefault();
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('mouseup', onDragUp);
-    });
-
-    function onDragMove(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - dragStartX;
-        const dy = e.clientY - dragStartY;
-
-        const newLeft = dragStartLeft + dx;
-        const newTop = dragStartTop + dy;
-
-        container.style.left = newLeft + 'px';
-        container.style.top = newTop + 'px';
-
-        display.pos = [newLeft, newTop];
-    }
-
-    function onDragUp() {
-        isDragging = false;
-        document.removeEventListener('mousemove', onDragMove);
-        document.removeEventListener('mouseup', onDragUp);
-    }
-
-    // --- Resizing Logic ---
-    let isResizing = false;
-    let resizeStartX, resizeStartY, resizeStartW, resizeStartH;
-
-    resizeHandle.addEventListener('mousedown', (e) => {
-        isResizing = true;
-        resizeStartX = e.clientX;
-        resizeStartY = e.clientY;
-        resizeStartW = container.offsetWidth;
-        resizeStartH = container.offsetHeight;
-
-        e.preventDefault();
-        e.stopPropagation(); // prevent dragging from parent
-        document.addEventListener('mousemove', onResizeMove);
-        document.addEventListener('mouseup', onResizeUp);
-    });
-
-    function onResizeMove(e) {
-        if (!isResizing) return;
-        const dx = e.clientX - resizeStartX;
-        const dy = e.clientY - resizeStartY;
-
-        const newW = Math.max(150, resizeStartW + dx);
-        const newH = Math.max(100, resizeStartH + dy);
-
-        container.style.width = newW + 'px';
-        container.style.height = newH + 'px';
-
+    // Initial resize to fit container
+    requestAnimationFrame(() => {
         Plotly.Plots.resize(plotDiv);
+    });
 
-        display.size = [newW, newH];
-    }
-
-    function onResizeUp() {
-        isResizing = false;
-        document.removeEventListener('mousemove', onResizeMove);
-        document.removeEventListener('mouseup', onResizeUp);
-    }
-
-    Plotly.Plots.resize(plotDiv);
-
-    return plotDiv;
+    return {
+        section: section,
+        plotDiv: plotDiv
+    };
 }
 
 function livemon_add(id, title, expr) {
     if (liveMonitorData[id]) {
         return;
     }
-
 
     liveMonitorData[id] = {
         meta: {
@@ -318,7 +279,7 @@ function livemon_report_simend(sim) {
         let val = math.evaluate(expr, scope);
 
         item.data.time.push(time);
-        item.data.value.push(val[0]);
+        item.data.value.push(val);
     }
 }
 
@@ -342,7 +303,7 @@ function livemon_update_frame() {
     livemon_init_display();
 
     for (let [id, item] of Object.entries(liveMonitorData)) {
-        let plotDiv = liveMonitorPlots[id];
+        let plotDiv = liveMonitorPlots[id].plotDiv;
 
         Plotly.react(plotDiv, [{
             x: [...item.data.time],

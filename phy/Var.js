@@ -47,8 +47,7 @@ class Variable extends IDObject {
         this.nickname = nickname;
 
         if (type === "immediate") {
-            this._value = value;
-            this.expression = null;
+            this.update(value);
         } else if (type === "derived") {
             this.update_expression(value);
         }
