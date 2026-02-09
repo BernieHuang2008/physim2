@@ -80,7 +80,7 @@ function defaultTemplates(template_type) {
     }
 }
 
-function edit_ff(world, ff_id, return_to=null) {
+function edit_ff(world, ff_id, return_to = null) {
     ffeditor_ui_section.activate(return_to);
 
     // Prevent re-constructing
@@ -101,7 +101,9 @@ function edit_ff(world, ff_id, return_to=null) {
 
     // Display ff properties
     ffeditor_ui_section.clearContent();
-    ffeditor_ui_section.addHTML(`
+    ffeditor_ui_section
+        .addHeadlessSubsection()
+        .addHTML(`
         <span class='big' id="nickname-display" style="user-select: none;"> ${ff.nickname} </span>
         <span class='small gray cursor-pointer' alt="${t("Edit")}" id="edit-nickname">
             <span class='symbol'>&#xE70F;</span>
@@ -114,29 +116,29 @@ function edit_ff(world, ff_id, return_to=null) {
         &emsp;&emsp;
         <span class='small gray'> < ${ff.type} > </span>
         <hr>
-    `, (dom) => {
-        // id copy
-        dom.querySelector("#copy-id-btn").onclick = function () {
-            navigator.clipboard.writeText(ff.id);
-            this.querySelector("#symbol1").innerHTML = "&#xE73E;";
-            setTimeout(() => { 
-                this.querySelector("#symbol1").innerHTML = "&#xE16D;"; 
-            }, 1000);
-        }
-
-        // nickname edit
-        const nicknameDisplay = dom.querySelector("#nickname-display");
-        dom.querySelector("#edit-nickname").onclick = () => {
-            nicknameDisplay.contentEditable = "true";
-            nicknameDisplay.focus();
-
-            nicknameDisplay.onblur = () => {
-                nicknameDisplay.contentEditable = "false";
-                ff.nickname = nicknameDisplay.innerText;
-                // inspector_ui_section.render();
+        `, (dom) => {
+            // id copy
+            dom.querySelector("#copy-id-btn").onclick = function () {
+                navigator.clipboard.writeText(ff.id);
+                this.querySelector("#symbol1").innerHTML = "&#xE73E;";
+                setTimeout(() => {
+                    this.querySelector("#symbol1").innerHTML = "&#xE16D;";
+                }, 1000);
             }
-        }
-    });
+
+            // nickname edit
+            const nicknameDisplay = dom.querySelector("#nickname-display");
+            dom.querySelector("#edit-nickname").onclick = () => {
+                nicknameDisplay.contentEditable = "true";
+                nicknameDisplay.focus();
+
+                nicknameDisplay.onblur = () => {
+                    nicknameDisplay.contentEditable = "false";
+                    ff.nickname = nicknameDisplay.innerText;
+                    // inspector_ui_section.render();
+                }
+            }
+        });
 
     ffeditor_ui_section
         .addSubsection(t("Preview & Operation"), false)
