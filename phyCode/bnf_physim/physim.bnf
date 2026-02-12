@@ -1,0 +1,2 @@
+<phyobj_type> ::= <phyobj_type_standard>
+<phyobj_type_standard> ::= "T<rigidbody>" | "T<particle>"
