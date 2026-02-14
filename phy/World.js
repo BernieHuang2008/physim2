@@ -152,6 +152,10 @@ class World {
         this.used_ids = new Set(otherWorld.used_ids);
         this.anchor = otherWorld.anchor;
     }
+
+    copy() {
+        return World.fromJSON(this.toJSON());
+    }
 }
 
 function _dreplace(target, source) {

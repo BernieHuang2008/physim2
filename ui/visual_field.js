@@ -2,6 +2,7 @@ import { BasicPhyObject } from "../phy/PhyObjects/basic.js";
 import { getZoomLevel, render_area } from "../sim/render_frame.js";
 import * as Noti from "./notification/notification.js";
 import { World } from "../phy/World.js";
+import { Variable } from "../phy/Var.js";
 import { t } from "../i18n/i18n.js";
 
 /**
@@ -38,8 +39,19 @@ function hideVisualFieldCover() {
     }
 }
 
+
 // 创建假物体用于计算
-const fake_po = new BasicPhyObject(new World(), 1, [0, 0], [0, 0], [], []);
+const fake_world = new World();
+const fake_po = new BasicPhyObject(fake_world, 1, [0, 0], [0, 0], [], []);
+const _tmp_fake_po_vars_used_to_construct_var_list = [
+    new Variable('q', 1, 'immediate'),
+];
+_tmp_fake_po_vars_used_to_construct_var_list.forEach(v => {
+    var var_id = fake_world.add_var(v);
+    fake_po.vars.push(var_id);
+});
+const fake_world_vars = Object.assign({}, fake_world.vars);   // backup for restoring after sync
+
 
 /**
  * 计算指定位置的力场强度和方向
@@ -162,7 +174,7 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
     const grid = gridData.grid;
     const cols = grid.length;
     const rows = grid[0].length;
-    
+
     // Estimate cell size from first two points
     let cellW = 20; // fallback
     let cellH = 20;
@@ -181,7 +193,7 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
                 // Exponential Mode: Logarithmic scaling
                 let norm = (val - minVal) / range;
                 norm = Math.max(0, Math.min(1, norm));
-                
+
                 // Log mapping
                 const C = 100;
                 t = Math.log(norm * C + 1) / Math.log(C + 1);
@@ -195,15 +207,15 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
         // Use Opacity for Gradient
         // High Potential -> 50% Opacity (0.5)
         // Low Potential -> 0% Opacity (0.0)
-        
+
         const opacity = t * 0.7; // Max 0.5
 
         if (colorTheme === 'red') {
-             // Red Base: rgb(255, 0, 0)
-             return `rgba(255, 0, 0, ${opacity.toFixed(3)})`;
+            // Red Base: rgb(255, 0, 0)
+            return `rgba(255, 0, 0, ${opacity.toFixed(3)})`;
         } else {
-             // Blue Base: rgb(0, 0, 255)
-             return `rgba(0, 0, 255, ${opacity.toFixed(3)})`;
+            // Blue Base: rgb(0, 0, 255)
+            return `rgba(0, 0, 255, ${opacity.toFixed(3)})`;
         }
     }
 
@@ -215,25 +227,25 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
     const ctx = canvas.getContext('2d');
 
     // Fill canvas pixels
-    for(let i=0; i<cols; i++){
-        for(let j=0; j<rows; j++){
-             const cell = grid[i][j];
-             if(!cell) continue;
-             
-             ctx.fillStyle = getColor(cell.potential);
-             // Canvas (0,0) is Top-Left.
-             // Grid (i, j) corresponds to World X (i) and World Y (j)
-             // World Y=0 is Bottom. So we map grid j (0..rows-1) to canvas y (rows-1..0)
-             ctx.fillRect(i, rows - 1 - j, 1, 1);
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+            const cell = grid[i][j];
+            if (!cell) continue;
+
+            ctx.fillStyle = getColor(cell.potential);
+            // Canvas (0,0) is Top-Left.
+            // Grid (i, j) corresponds to World X (i) and World Y (j)
+            // World Y=0 is Bottom. So we map grid j (0..rows-1) to canvas y (rows-1..0)
+            ctx.fillRect(i, rows - 1 - j, 1, 1);
         }
     }
-    
+
     // Convert to Data URL
     const imgData = canvas.toDataURL("image/png");
-    
+
     // Create SVG Image element to stretch this heatmap over the view
     const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    
+
     // Map Canvas boundaries to SVG Viewport
     // Grid covers physical width: (cols-1) * cellW. 
     // Image covers pixels (cols) * cellW.
@@ -241,10 +253,10 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
     // We center the pixels on the grid points.
     // Pixel 0 center is at 0.5. Grid 0 is at 0.
     // So Image Start X = -0.5 * cellW
-    
+
     const imgX = -0.5 * cellW;
     const imgY = height - (rows - 0.5) * cellH; // Align image bottom with grid bottom + half cell
-    
+
     const imgW = cols * cellW;
     const imgH = rows * cellH;
 
@@ -255,8 +267,8 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
     image.setAttribute("height", imgH);
     image.setAttribute("preserveAspectRatio", "none");
     // Ensure smoothing (browser default usually bilinearly interpolates images upon scaling)
-    image.style.imageRendering = "auto"; 
-    
+    image.style.imageRendering = "auto";
+
     svg.appendChild(image);
 
     function worldToScreen(mathWorldX, mathWorldY) {
@@ -272,7 +284,7 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
 
     contourLevels.forEach((potentialValue, levelIndex) => {
         const contourPaths = generateEquipotentialContours(gridData, potentialValue);
-        
+
         contourPaths.forEach(path => {
             if (path.length < 2) return;
 
@@ -281,7 +293,7 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, optio
             const [startX, startY] = worldToScreen(path[0][0], path[0][1]);
             const [endX, endY] = worldToScreen(path[1][0], path[1][1]);
             let d = `M ${startX} ${startY}`;
-            for(let k=1; k<path.length; k++){
+            for (let k = 1; k < path.length; k++) {
                 const [px, py] = worldToScreen(path[k][0], path[k][1]);
                 d += ` L ${px} ${py}`;
             }
@@ -543,7 +555,7 @@ function renderFieldVectorsToSVG(vectors, bounds, maxMagnitude, maxArrowLength, 
     Visualize FF (Force Line) - Updated Logic
 */
 function visualize_ff_FL(world, ff_id) {
-    fake_po.world.vars = world.vars; // sync vars
+    fake_world.vars = Object.assign({}, world.vars, fake_world_vars); // sync vars
 
     const ff = world.ffs[ff_id];
     if (!ff) {
@@ -654,7 +666,7 @@ function calcU(ff, p1, p2) {
     Visualize FF (Equal Potential Surface) - Poisson Relaxation Method
 */
 function visualize_ff_EPS(world, ff_id) {
-    fake_po.world.vars = world.vars; // sync vars
+    fake_world.vars = Object.assign({}, world.vars, fake_world_vars); // sync vars
 
     const ff = world.ffs[ff_id];
     if (!ff) {
@@ -809,9 +821,6 @@ function visualize_ff_EPS(world, ff_id) {
             potentialGrid[i][j] = avg;
         }
     }
-    for (let j = 0; j < rows; j++) {
-        console.log(`Column i=0, j=${j}: potential=${potentialGrid[0][j]}`);
-    }
 
     // 4. Format Data
     let minPotential = Infinity;
@@ -849,10 +858,10 @@ function visualize_ff_EPS(world, ff_id) {
     if (range > 1e-9 && countValues > 10) {
         const avg = sumPotential / countValues;
         const normalizedMean = (avg - minPotential) / range;
-        
+
         // If distribution is highly skewed (mean is close to min or max), treat as exponential
         // Standard Linear distribution has mean ~ 0.5
-        if(normalizedMean < 0.2 || normalizedMean > 0.8) {
+        if (normalizedMean < 0.2 || normalizedMean > 0.8) {
             useLog = true;
             colorTheme = 'red';
         }
@@ -887,7 +896,7 @@ function visualize_ff_EPS(world, ff_id) {
         maxVal: maxPotential
     });
     visualFieldCover.appendChild(svg);
-    
+
     // 显示覆盖层
     showVisualFieldCover();
 }
