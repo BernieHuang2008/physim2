@@ -143,10 +143,11 @@ function generateEquipotentialContours(gridData, potentialValue) {
  * @param {Object} bounds - 显示边界
  * @returns {SVGElement} SVG元素
  */
-function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds) {
+function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, options = {}) {
     const { xmin, xmax, ymin, ymax } = bounds;
     const width = xmax - xmin;
     const height = ymax - ymin;
+    const { useLogScale = false, colorTheme = 'blue', minVal, maxVal } = options;
 
     // 创建SVG元素
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -158,24 +159,120 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds) {
     const scaleX = width / (xmax - xmin);
     const scaleY = height / (ymax - ymin);
 
+    const grid = gridData.grid;
+    const cols = grid.length;
+    const rows = grid[0].length;
+    
+    // Estimate cell size from first two points
+    let cellW = 20; // fallback
+    let cellH = 20;
+    if (cols > 1) cellW = (grid[1][0].x - grid[0][0].x) * scaleX;
+    if (rows > 1) cellH = Math.abs((grid[0][1].y - grid[0][0].y) * scaleY); // Y is flipped?
+
+    // Color Interpolator (Opacity based)
+    function getColor(val) {
+        let t = 0;
+        const range = maxVal - minVal;
+
+        if (Math.abs(range) < 1e-9) {
+            t = 0.5;
+        } else {
+            if (useLogScale) {
+                // Exponential Mode: Logarithmic scaling
+                let norm = (val - minVal) / range;
+                norm = Math.max(0, Math.min(1, norm));
+                
+                // Log mapping
+                const C = 100;
+                t = Math.log(norm * C + 1) / Math.log(C + 1);
+            } else {
+                // Linear Mode: Strictly Linear Scaling (No Log)
+                t = (val - minVal) / range;
+            }
+        }
+        t = Math.max(0, Math.min(1, t));
+
+        // Use Opacity for Gradient
+        // High Potential -> 50% Opacity (0.5)
+        // Low Potential -> 0% Opacity (0.0)
+        
+        const opacity = t * 0.7; // Max 0.5
+
+        if (colorTheme === 'red') {
+             // Red Base: rgb(255, 0, 0)
+             return `rgba(255, 0, 0, ${opacity.toFixed(3)})`;
+        } else {
+             // Blue Base: rgb(0, 0, 255)
+             return `rgba(0, 0, 255, ${opacity.toFixed(3)})`;
+        }
+    }
+
+    // 1. Render Heatmap Background (Interpolated Canvas)
+    // Create a temporary canvas to render the grid points
+    const canvas = document.createElement('canvas');
+    canvas.width = cols;
+    canvas.height = rows;
+    const ctx = canvas.getContext('2d');
+
+    // Fill canvas pixels
+    for(let i=0; i<cols; i++){
+        for(let j=0; j<rows; j++){
+             const cell = grid[i][j];
+             if(!cell) continue;
+             
+             ctx.fillStyle = getColor(cell.potential);
+             // Canvas (0,0) is Top-Left.
+             // Grid (i, j) corresponds to World X (i) and World Y (j)
+             // World Y=0 is Bottom. So we map grid j (0..rows-1) to canvas y (rows-1..0)
+             ctx.fillRect(i, rows - 1 - j, 1, 1);
+        }
+    }
+    
+    // Convert to Data URL
+    const imgData = canvas.toDataURL("image/png");
+    
+    // Create SVG Image element to stretch this heatmap over the view
+    const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    
+    // Map Canvas boundaries to SVG Viewport
+    // Grid covers physical width: (cols-1) * cellW. 
+    // Image covers pixels (cols) * cellW.
+    // SVG x=0 is aligned with Grid i=0.
+    // We center the pixels on the grid points.
+    // Pixel 0 center is at 0.5. Grid 0 is at 0.
+    // So Image Start X = -0.5 * cellW
+    
+    const imgX = -0.5 * cellW;
+    const imgY = height - (rows - 0.5) * cellH; // Align image bottom with grid bottom + half cell
+    
+    const imgW = cols * cellW;
+    const imgH = rows * cellH;
+
+    image.setAttribute("href", imgData);
+    image.setAttribute("x", imgX);
+    image.setAttribute("y", imgY);
+    image.setAttribute("width", imgW);
+    image.setAttribute("height", imgH);
+    image.setAttribute("preserveAspectRatio", "none");
+    // Ensure smoothing (browser default usually bilinearly interpolates images upon scaling)
+    image.style.imageRendering = "auto"; 
+    
+    svg.appendChild(image);
+
     function worldToScreen(mathWorldX, mathWorldY) {
         const screenX = (mathWorldX - xmin) * scaleX;
-        const screenY = height - (mathWorldY - ymin) * scaleY; // 翻转Y轴
+        const screenY = height - (mathWorldY - ymin) * scaleY; // Flip Y
         return [screenX, screenY];
     }
 
+    // 2. Render Contours (Overlay)
     // 生成颜色映射
-    const colors = [
-        "#0000CC", "#1155DD", "#2266EE", "#0033AA", "#004499",
-        "#333333",
-        "#CC3300", "#DD4411", "#EE5522", "#FF0000", "#AA1100"
-    ];
+    // Simplified contours for overlay (e.g. white or black lines)
+    const contourColor = (colorTheme === 'red') ? "rgba(255, 255, 200, 0.5)" : "rgba(200, 255, 255, 0.5)";
 
-    // 为每个等势线级别绘制轮廓
     contourLevels.forEach((potentialValue, levelIndex) => {
         const contourPaths = generateEquipotentialContours(gridData, potentialValue);
-        const color = colors[levelIndex % colors.length];
-
+        
         contourPaths.forEach(path => {
             if (path.length < 2) return;
 
@@ -183,37 +280,23 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds) {
 
             const [startX, startY] = worldToScreen(path[0][0], path[0][1]);
             const [endX, endY] = worldToScreen(path[1][0], path[1][1]);
-
-            const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
-
-            svgPath.setAttribute("d", pathData);
-            svgPath.setAttribute("stroke", color);
-            svgPath.setAttribute("stroke-width", "2");
-            svgPath.setAttribute("fill", "none");
-            svgPath.setAttribute("stroke-opacity", "0.8");
-
-            // 添加势能值标签（只为一些线段添加）
-            if (levelIndex % 2 === 0 && Math.random() < 0.1) {
-                const midX = (startX + endX) / 2;
-                const midY = (startY + endY) / 2;
-
-                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute("x", midX);
-                text.setAttribute("y", midY);
-                text.setAttribute("font-size", "10");
-                text.setAttribute("fill", color);
-                text.setAttribute("text-anchor", "middle");
-                text.textContent = potentialValue.toFixed(1);
-
-                svg.appendChild(text);
+            let d = `M ${startX} ${startY}`;
+            for(let k=1; k<path.length; k++){
+                const [px, py] = worldToScreen(path[k][0], path[k][1]);
+                d += ` L ${px} ${py}`;
             }
 
+            svgPath.setAttribute("d", d);
+            svgPath.setAttribute("stroke", contourColor);
+            svgPath.setAttribute("stroke-width", "1");
+            svgPath.setAttribute("fill", "none");
             svg.appendChild(svgPath);
         });
     });
 
     return svg;
 }
+
 function generateAdaptiveStartPoints(bounds, gridResolution = 20) {
     const startPoints = [];
     const { xmin, xmax, ymin, ymax } = bounds;
@@ -568,7 +651,7 @@ function calcU(ff, p1, p2) {
 }
 
 /*
-    Visualize FF (Equal Potential Surface)
+    Visualize FF (Equal Potential Surface) - Poisson Relaxation Method
 */
 function visualize_ff_EPS(world, ff_id) {
     fake_po.world.vars = world.vars; // sync vars
@@ -580,7 +663,6 @@ function visualize_ff_EPS(world, ff_id) {
         return;
     }
 
-
     // 根据当前可视区域计算世界坐标边界
     const bounds = {
         xmin: render_area[0],
@@ -588,66 +670,192 @@ function visualize_ff_EPS(world, ff_id) {
         ymin: render_area[2],
         ymax: render_area[3]
     };
-    // console.log("计算等势面边界:", bounds);
 
-    // 生成势能网格数据
-    const gridResolution = 30; // 较低分辨率以提高性能
+    const zoom = getZoomLevel();
+    // Grid Setup
+    const gridSizePx = 20; // grid spacing in screen pixels
+    const widthPx = bounds.xmax - bounds.xmin;
+    const heightPx = bounds.ymax - bounds.ymin;
 
-    // Create matrix directly with size (xmax-xmin)/gridResolution
-    const matrixWidth = Math.ceil((bounds.xmax - bounds.xmin) / gridResolution);
-    const matrixHeight = Math.ceil((bounds.ymax - bounds.ymin) / gridResolution);
-    const potentialMatrix = Array(matrixWidth).fill(null).map(() => Array(matrixHeight).fill(0));   // size: [w][h]
+    const cols = Math.ceil(widthPx / gridSizePx) + 1;
+    const rows = Math.ceil(heightPx / gridSizePx) + 1;
 
-    if (!potentialMatrix || potentialMatrix.length === 0) {
-        Noti.warning(t("Potential Calculation Failed"), "Unable to calculate potential energy data");
-        return;
-    }
+    // Physics step size
+    const h = gridSizePx / zoom;
 
-    // calculate potential matrix
-    // reference point
-    potentialMatrix[0][0] = 0;
-    // first row & column
-    for (let i = 1; i < matrixWidth; i++) {
-        var mathX = (bounds.xmin + i * gridResolution) / getZoomLevel();
-        potentialMatrix[i][0] = potentialMatrix[i - 1][0] + calcU(ff, [mathX - gridResolution / getZoomLevel(), 0], [mathX, 0]);
+    // 1. Precompute Forces
+    const forceGrid = []; // [col][row] -> [fx, fy]
 
-        var mathY = (bounds.ymin + i * gridResolution) / getZoomLevel();
-        potentialMatrix[0][i] = potentialMatrix[0][i - 1] + calcU(ff, [0, mathY - gridResolution / getZoomLevel()], [0, mathY]);
-    }
-    // remainings
-    for (let x = 1; x < matrixWidth; x++) {
-        for (let y = 1; y < matrixHeight; y++) {
-            const mathX = (bounds.xmin + x * gridResolution) / getZoomLevel();
-            const mathY = (bounds.ymin + y * gridResolution) / getZoomLevel();
+    for (let i = 0; i < cols; i++) {
+        forceGrid[i] = [];
+        for (let j = 0; j < rows; j++) {
+            const screenX = bounds.xmin + i * gridSizePx;
+            const screenY = bounds.ymin + j * gridSizePx;
 
-            potentialMatrix[x][y]
-                = potentialMatrix[x - 1][y]
-                + calcU(ff, [mathX - gridResolution / getZoomLevel(), mathY], [mathX, mathY]);
+            // Convert to Physics Coordinates
+            // Note: render_area y is already consistent with internal logic, 
+            // but we need to divide by zoom.
+            const mathX = screenX / zoom;
+            const mathY = screenY / zoom;
+
+            const f = calculateForceAtPosition(ff, [mathX, mathY]);
+            if (f && Array.isArray(f) && f.length >= 2) {
+                forceGrid[i][j] = f;
+            } else {
+                forceGrid[i][j] = [0, 0];
+            }
         }
     }
 
-    // Convert potential matrix to gridData format and find min/max values
+    // 2. Helper function to solve Poisson with fixed sweep direction
+    // "Four-Direction Averaging" Strategy:
+    // Run solver 4 times, starting from each corner (TL, TR, BL, BR),
+    // then average the results. This cancels out directional bias completely.
+    const solvePoissonDirectional = (dirX, dirY) => {
+        // init local grid
+        const pGrid = [];
+        for (let i = 0; i < cols; i++) {
+            pGrid[i] = new Float64Array(rows).fill(0);
+        }
+
+        const iterations = 180;
+
+        for (let iter = 0; iter < iterations; iter++) {
+
+            const startI = (dirX > 0) ? 0 : cols - 1;
+            const endI = (dirX > 0) ? cols : -1;
+            const stepI = (dirX > 0) ? 1 : -1;
+
+            const startJ = (dirY > 0) ? 0 : rows - 1;
+            const endJ = (dirY > 0) ? rows : -1;
+            const stepJ = (dirY > 0) ? 1 : -1;
+
+            for (let i = startI; i !== endI; i += stepI) {
+                for (let j = startJ; j !== endJ; j += stepJ) {
+                    let sum = 0;
+                    let count = 0;
+
+                    // F current
+                    const F_c = forceGrid[i][j];
+
+                    // Right Neighbor (i+1)
+                    if (i < cols - 1) {
+                        const U_n = pGrid[i + 1][j];
+                        const F_n = forceGrid[i + 1][j];
+                        // U_c ~= U_n + F_mid_x * h
+                        const F_mid_x = (F_c[0] + F_n[0]) * 0.5;
+                        sum += U_n + F_mid_x * h;
+                        count++;
+                    }
+
+                    // Left Neighbor (i-1)
+                    if (i > 0) {
+                        const U_n = pGrid[i - 1][j];
+                        const F_n = forceGrid[i - 1][j];
+                        // U_c ~= U_n - F_mid_x * h
+                        const F_mid_x = (F_c[0] + F_n[0]) * 0.5;
+                        sum += U_n - F_mid_x * h;
+                        count++;
+                    }
+
+                    // Top Neighbor (j+1)
+                    if (j < rows - 1) {
+                        const U_n = pGrid[i][j + 1];
+                        const F_n = forceGrid[i][j + 1];
+                        // U_c ~= U_n + F_mid_y * h
+                        const F_mid_y = (F_c[1] + F_n[1]) * 0.5;
+                        sum += U_n + F_mid_y * h;
+                        count++;
+                    }
+
+                    // Bottom Neighbor (j-1)
+                    if (j > 0) {
+                        const U_n = pGrid[i][j - 1];
+                        const F_n = forceGrid[i][j - 1];
+                        // U_c ~= U_n - F_mid_y * h
+                        const F_mid_y = (F_c[1] + F_n[1]) * 0.5;
+                        sum += U_n - F_mid_y * h;
+                        count++;
+                    }
+
+                    if (count > 0) {
+                        const targetVal = sum / count;
+                        // SOR Update
+                        const oldVal = pGrid[i][j];
+                        // Use omega = 1.6 for faster convergence (must be < 2)
+                        pGrid[i][j] = oldVal + 1.6 * (targetVal - oldVal);
+                    }
+                }
+            }
+        }
+        return pGrid;
+    };
+
+    // 3. Relaxation (Poisson Solver)
+    // Run 4 independent solvers from 4 corners and average results
+    // To ensure linearity for uniform fields, we need FULL convergence.
+    // Averaging opposite corners (TL+BR) is sufficient for symmetry if converged.
+    // Using all 4 is safer but slower.
+    const pGridTL = solvePoissonDirectional(1, 1);
+    const pGridTR = solvePoissonDirectional(-1, 1);
+    const pGridBL = solvePoissonDirectional(1, -1);
+    const pGridBR = solvePoissonDirectional(-1, -1);
+
+    const potentialGrid = [];
+    for (let i = 0; i < cols; i++) {
+        potentialGrid[i] = new Float64Array(rows);
+        for (let j = 0; j < rows; j++) {
+            const avg = (pGridTL[i][j] + pGridBR[i][j]) * 0.5; // Average of two opposite corners to cancel bias
+            potentialGrid[i][j] = avg;
+        }
+    }
+    for (let j = 0; j < rows; j++) {
+        console.log(`Column i=0, j=${j}: potential=${potentialGrid[0][j]}`);
+    }
+
+    // 4. Format Data
     let minPotential = Infinity;
     let maxPotential = -Infinity;
+    let sumPotential = 0;
+    let countValues = 0;
     const grid = [];
 
-    for (let i = 0; i < matrixWidth; i++) {
-        const row = [];
-        for (let j = 0; j < matrixHeight; j++) {
-            const worldX = bounds.xmin + i * gridResolution;
-            const worldY = bounds.ymin + j * gridResolution;
-            const potential = potentialMatrix[i][j];
+    for (let i = 0; i < cols; i++) {
+        const rowData = [];
+        for (let j = 0; j < rows; j++) {
+            const worldX = bounds.xmin + i * gridSizePx;
+            const worldY = bounds.ymin + j * gridSizePx;
+            const potential = potentialGrid[i][j];
 
-            row.push({
+            rowData.push({
                 x: worldX,
                 y: worldY,
                 potential: potential
             });
 
-            minPotential = Math.min(minPotential, potential);
-            maxPotential = Math.max(maxPotential, potential);
+            if (potential < minPotential) minPotential = potential;
+            if (potential > maxPotential) maxPotential = potential;
+            sumPotential += potential;
+            countValues++;
         }
-        grid.push(row);
+        grid.push(rowData);
+    }
+
+    // Auto-detect Exponential / Singularity (Skewness check)
+    let useLog = false;
+    let colorTheme = 'blue';
+
+    const range = maxPotential - minPotential;
+    if (range > 1e-9 && countValues > 10) {
+        const avg = sumPotential / countValues;
+        const normalizedMean = (avg - minPotential) / range;
+        
+        // If distribution is highly skewed (mean is close to min or max), treat as exponential
+        // Standard Linear distribution has mean ~ 0.5
+        if(normalizedMean < 0.2 || normalizedMean > 0.8) {
+            useLog = true;
+            colorTheme = 'red';
+        }
     }
 
     const gridData = {
@@ -658,29 +866,28 @@ function visualize_ff_EPS(world, ff_id) {
         referencePoint: [bounds.xmin, bounds.ymin]
     };
 
-    console.log(`势能范围: ${minPotential.toFixed(3)} 到 ${maxPotential.toFixed(3)}`);
+    console.log(`EPS (Poisson): Range ${minPotential.toExponential(2)} ~ ${maxPotential.toExponential(2)}. LogMode: ${useLog}`);
 
-    // 生成等势线级别
-    const numContours = 10;
-    // const potentialRange = gridData.maxPotential - gridData.minPotential;
-    const potentialRange = Math.log(gridData.maxPotential - gridData.minPotential);
-    const contourStep = potentialRange / numContours;
-
+    // Dynamic contour selection
     const contourLevels = [];
-    for (let i = 1; i < numContours; i++) {
-        contourLevels.push(gridData.minPotential + Math.exp(i * contourStep));
-        // contourLevels.push(gridData.minPotential + i * contourStep);
+    const numContours = 15;
+    const step = range / numContours;
+    for (let k = 0; k <= numContours; k++) {
+        contourLevels.push(minPotential + k * step);
     }
-
-    console.log(`生成 ${contourLevels.length} 条等势线，范围: ${gridData.minPotential.toFixed(3)} 到 ${gridData.maxPotential.toFixed(3)}`);
 
     // 清除之前的内容
     visualFieldCover.innerHTML = '';
 
     // 渲染等势面
-    const svg = renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds);
+    const svg = renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds, {
+        useLogScale: useLog,
+        colorTheme: colorTheme,
+        minVal: minPotential,
+        maxVal: maxPotential
+    });
     visualFieldCover.appendChild(svg);
-
+    
     // 显示覆盖层
     showVisualFieldCover();
 }
