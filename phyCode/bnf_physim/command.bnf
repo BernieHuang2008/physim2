@@ -1,5 +1,0 @@
-<cmd_create> ::= "create" <phyobj_type> <as_name> <with_properties> | "create" <phyobj_type> <as_name> | "create" <phyobj_type> <with_properties> | "create" <phyobj_type>
-<as_name> ::= "as" <identifier!>
-<with_properties> ::= "with" <property_list>
-<property_list> ::= <property> "," <property_list> | <property>
-<property> ::= <assignment>
