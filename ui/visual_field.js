@@ -22,13 +22,20 @@ function revY(y) {
 }
 
 const visualFieldCover = document.getElementById("visualField-cover");
+const simAnchor = document.getElementById("simulation-area-anchor");
 
 function showVisualFieldCover() {
     visualFieldCover.style.display = "block";
+    if (simAnchor) {
+        simAnchor.style.filter = "grayscale(100%) opacity(0.3)";
+    }
 }
 
 function hideVisualFieldCover() {
     visualFieldCover.style.display = "none";
+    if (simAnchor) {
+        simAnchor.style.filter = "none";
+    }
 }
 
 // 创建假物体用于计算
@@ -159,8 +166,8 @@ function renderEquipotentialSurfacesToSVG(contourLevels, gridData, bounds) {
 
     // 生成颜色映射
     const colors = [
-        "#0000CC", "#1155DD", "#2266EE", "#0033AA", "#004499", 
-        "#333333", 
+        "#0000CC", "#1155DD", "#2266EE", "#0033AA", "#004499",
+        "#333333",
         "#CC3300", "#DD4411", "#EE5522", "#FF0000", "#AA1100"
     ];
 
@@ -343,12 +350,15 @@ function optimizeFieldLineDistribution(fieldLines, minDistance = 2.0) {
 }
 
 /**
- * 绘制力场线到SVG
- * @param {Array} fieldLines - 力场线数组
+ * 绘制力场矢量箭头到SVG
+ * @param {Array} vectors - 矢量数组 [{x, y, fx, fy, magnitude}]
  * @param {Object} bounds - 显示边界
+ * @param {number} maxMagnitude - 最大场强
+ * @param {number} maxArrowLength - 最大箭头长度
+ * @param {boolean} useLogScale - 是否使用对数刻度
  * @returns {SVGElement} SVG元素
  */
-function renderFieldLinesToSVG(fieldLines, bounds) {
+function renderFieldVectorsToSVG(vectors, bounds, maxMagnitude, maxArrowLength, useLogScale = false) {
     const { xmin, xmax, ymin, ymax } = bounds;
     const width = xmax - xmin;
     const height = ymax - ymin;
@@ -358,7 +368,6 @@ function renderFieldLinesToSVG(fieldLines, bounds) {
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    // svg.style.background = "rgba(255, 255, 255, 0.9)";
 
     // 坐标转换函数
     const scaleX = width / (xmax - xmin);
@@ -366,76 +375,89 @@ function renderFieldLinesToSVG(fieldLines, bounds) {
 
     function worldToScreen(mathWorldX, mathWorldY) {
         const screenX = (mathWorldX - xmin) * scaleX;
-        // 将数学世界坐标转换为SVG屏幕坐标
-        // SVG坐标系：原点在左上角，Y向下为正
-        // 数学坐标系：Y向上为正
-        const screenY = height - (mathWorldY - ymin) * scaleY; // 翻转Y轴使数学坐标适配SVG
+        const screenY = height - (mathWorldY - ymin) * scaleY; // 翻转Y轴
         return [screenX, screenY];
     }
 
-    // 绘制每条力场线
-    fieldLines.forEach((line, index) => {
-        if (line.length < 2) return;
+    const minMagnitude = vectors.reduce((min, vec) => vec.magnitude < min ? vec.magnitude : min, Infinity);
+    const logBase = Math.min(minMagnitude > 0 ? minMagnitude : 1e-9, 1e-9);
 
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        let pathData = "";
+    vectors.forEach(vec => {
+        const { x, y, fx, fy, magnitude } = vec;
 
-        line.forEach((point, pointIndex) => {
-            const [screenX, screenY] = worldToScreen(point[0], point[1]);
-            if (pointIndex === 0) {
-                pathData += `M ${screenX} ${screenY}`;
+        // 计算箭头长度
+        let length;
+        if (useLogScale) {
+            const logVal = Math.log10(magnitude);
+            const logMax = Math.log10(maxMagnitude);
+            const logMin = Math.log10(logBase);
+
+            // 归一化到 0-1
+            // Range: logMin ... logMax
+            // val = (logVal - logMin) / (logMax - logMin)
+            const range = logMax - logMin;
+            if (range > 0) {
+                length = ((logVal - logMin) / range) * maxArrowLength;
             } else {
-                pathData += ` L ${screenX} ${screenY}`;
+                length = maxArrowLength;
             }
-        });
-
-        path.setAttribute("d", pathData);
-        path.setAttribute("stroke", "#0066cc");
-        path.setAttribute("stroke-width", "1.5");
-        path.setAttribute("fill", "none");
-        path.setAttribute("stroke-opacity", "0.8");
-
-        // 添加箭头标记
-        if (line.length >= 2) {
-            const lastPoint = line[line.length - 1];
-            const secondLastPoint = line[line.length - 2];
-            const [lastX, lastY] = worldToScreen(lastPoint[0], lastPoint[1]);
-            const [secondLastX, secondLastY] = worldToScreen(secondLastPoint[0], secondLastPoint[1]);
-
-            // 计算箭头方向
-            const dx = lastX - secondLastX;
-            const dy = lastY - secondLastY;
-            const length = Math.sqrt(dx * dx + dy * dy);
-
-            if (length > 0) {
-                const arrowSize = 8;
-                const unitX = dx / length;
-                const unitY = dy / length;
-
-                // 箭头两边的点
-                const arrowX1 = lastX - arrowSize * unitX - arrowSize * 0.5 * unitY;
-                const arrowY1 = lastY - arrowSize * unitY + arrowSize * 0.5 * unitX;
-                const arrowX2 = lastX - arrowSize * unitX + arrowSize * 0.5 * unitY;
-                const arrowY2 = lastY - arrowSize * unitY - arrowSize * 0.5 * unitX;
-
-                const arrowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                arrowPath.setAttribute("d", `M ${lastX} ${lastY} L ${arrowX1} ${arrowY1} M ${lastX} ${lastY} L ${arrowX2} ${arrowY2}`);
-                arrowPath.setAttribute("stroke", "#0066cc");
-                arrowPath.setAttribute("stroke-width", "1.5");
-                arrowPath.setAttribute("stroke-opacity", "0.8");
-
-                svg.appendChild(arrowPath);
-            }
+        } else {
+            // 线性刻度
+            length = (magnitude / maxMagnitude) * maxArrowLength;
         }
 
+        // 限制最小最大长度
+        length = Math.max(0, Math.min(length, maxArrowLength));
+
+        if (length < 1) return; // 忽略太短的箭头
+
+        // 计算屏幕坐标
+        const [screenX, screenY] = worldToScreen(x, y);
+
+        // 计算箭头方向 (注意fy需要反转，因为SVG Y轴向下)
+        const angle = Math.atan2(-fy, fx);
+
+        const endX = screenX + Math.cos(angle) * length;
+        const endY = screenY + Math.sin(angle) * length;
+
+        // 颜色设置
+        // 红色为指数/对数模式，蓝色为线性模式
+        const color = useLogScale ? "#cc0000" : "#0066cc";
+
+        // 绘制箭头主线
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        path.setAttribute("x1", screenX);
+        path.setAttribute("y1", screenY);
+        path.setAttribute("x2", endX);
+        path.setAttribute("y2", endY);
+        path.setAttribute("stroke", color);
+        path.setAttribute("stroke-width", "1.5");
+        path.setAttribute("stroke-opacity", "0.8");
         svg.appendChild(path);
+
+        // 绘制箭头头部
+        const arrowHeadSize = Math.min(4, length * 0.4);
+        const arrowAngle = Math.PI / 6; // 30度
+
+        const headX1 = endX - arrowHeadSize * Math.cos(angle - arrowAngle);
+        const headY1 = endY - arrowHeadSize * Math.sin(angle - arrowAngle);
+        const headX2 = endX - arrowHeadSize * Math.cos(angle + arrowAngle);
+        const headY2 = endY - arrowHeadSize * Math.sin(angle + arrowAngle);
+
+        const headPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        headPath.setAttribute("d", `M ${endX} ${endY} L ${headX1} ${headY1} M ${endX} ${endY} L ${headX2} ${headY2}`);
+        headPath.setAttribute("stroke", color);
+        headPath.setAttribute("stroke-width", "1.5");
+        headPath.setAttribute("stroke-opacity", "0.8");
+        headPath.setAttribute("fill", "none");
+        svg.appendChild(headPath);
     });
 
     return svg;
 }
 
 /* 
-    Visualize FF (Force Line)
+    Visualize FF (Force Line) - Updated Logic
 */
 function visualize_ff_FL(world, ff_id) {
     fake_po.world.vars = world.vars; // sync vars
@@ -454,42 +476,79 @@ function visualize_ff_FL(world, ff_id) {
         ymin: render_area[2],
         ymax: render_area[3]
     };
-    // console.log("计算得到的可视边界:", bounds);
 
-    // 生成起始点
-    const startPoints = generateAdaptiveStartPoints(bounds, 15);
+    const gridSpacing = 20; // 20px interval
+    const maxArrowLength = gridSpacing / 2; // Max length 10px
 
-    // 追踪所有力场线
-    const fieldLines = [];
-    const traceOptions = {
-        maxSteps: 500,
-        stepSize: 0.5,
-        minForce: 1e-4,
-        maxDistance: 200,
-        bounds: bounds
-    };
+    const vectors = [];
+    let maxMagnitude = 0;
+    let minMagnitude = Infinity;
+    let sumMagnitude = 0;
 
-    // console.log(`开始计算 ${startPoints.length} 条力场线...`);
+    // 遍历网格点
+    // 既然bounds就是pixel units (zoomed world)，我们直接按gridSpacing遍历
+    const startX = Math.ceil(bounds.xmin / gridSpacing) * gridSpacing;
+    const startY = Math.ceil(bounds.ymin / gridSpacing) * gridSpacing;
 
-    startPoints.forEach((startPoint, index) => {
-        const line = traceFieldLine(world, ff_id, startPoint, traceOptions);
-        if (line.length > 1) {
-            fieldLines.push(line);
+    const zoom = getZoomLevel();
+
+    for (let x = startX; x <= bounds.xmax; x += gridSpacing) {
+        for (let y = startY; y <= bounds.ymax; y += gridSpacing) {
+            // 转换为物理坐标用于计算
+            const mathX = x / zoom;
+            const mathY = y / zoom;
+
+            const force = calculateForceAtPosition(world.ffs[ff_id], [mathX, mathY]);
+
+            if (force && Array.isArray(force) && force.length >= 2) {
+                const fx = force[0];
+                const fy = force[1];
+                const magnitude = Math.sqrt(fx * fx + fy * fy);
+
+                if (magnitude > 0) {
+                    vectors.push({
+                        x: x,
+                        y: y,
+                        fx: fx,
+                        fy: fy,
+                        magnitude: magnitude
+                    });
+
+                    if (magnitude > maxMagnitude) {
+                        maxMagnitude = magnitude;
+                    }
+                    if (magnitude < minMagnitude) {
+                        minMagnitude = magnitude;
+                    }
+                    sumMagnitude += magnitude;
+                }
+            }
         }
-    });
+    }
 
-    // console.log(`计算完成，共生成 ${fieldLines.length} 条有效力场线`);
-
-    // 优化线的分布
-    const optimizedLines = optimizeFieldLineDistribution(fieldLines, 3.0);
-    // console.log(`优化后保留 ${optimizedLines.length} 条力场线`);
+    // 检测是否需要对数刻度
+    // 判定条件：跨越多个数量级，即 max/min 极大
+    let useLogScale = false;
+    if (vectors.length > 10 && maxMagnitude > 0 && minMagnitude > 0) {
+        const ratio = maxMagnitude / minMagnitude;
+        // 如果比例超过1000 (3个数量级)，并且均值远小于最大值
+        const avgMagnitude = sumMagnitude / vectors.length;
+        if (ratio > 1000 && (maxMagnitude / avgMagnitude) > 20) {
+            useLogScale = true;
+            // Noti.info(t("Exponential Field Detected"), "Using logarithmic scale (red arrows) for visualization.");
+        }
+    }
 
     // 清除之前的内容
     visualFieldCover.innerHTML = '';
 
-    // 渲染力场线
-    const svg = renderFieldLinesToSVG(optimizedLines, bounds);
-    visualFieldCover.appendChild(svg);
+    if (vectors.length > 0 && maxMagnitude > 0) {
+        // 渲染力场矢量
+        const svg = renderFieldVectorsToSVG(vectors, bounds, maxMagnitude, maxArrowLength, useLogScale);
+        visualFieldCover.appendChild(svg);
+    } else {
+        Noti.info(t("No Force Field Detected"), "Field strength is zero in the current view.");
+    }
 
     // 显示覆盖层
     showVisualFieldCover();
@@ -550,10 +609,10 @@ function visualize_ff_EPS(world, ff_id) {
     // first row & column
     for (let i = 1; i < matrixWidth; i++) {
         var mathX = (bounds.xmin + i * gridResolution) / getZoomLevel();
-        potentialMatrix[i][0] = potentialMatrix[i - 1][0] + calcU(ff, [mathX - gridResolution/getZoomLevel(), 0], [mathX, 0]);
+        potentialMatrix[i][0] = potentialMatrix[i - 1][0] + calcU(ff, [mathX - gridResolution / getZoomLevel(), 0], [mathX, 0]);
 
         var mathY = (bounds.ymin + i * gridResolution) / getZoomLevel();
-        potentialMatrix[0][i] = potentialMatrix[0][i - 1] + calcU(ff, [0, mathY - gridResolution/getZoomLevel()], [0, mathY]);
+        potentialMatrix[0][i] = potentialMatrix[0][i - 1] + calcU(ff, [0, mathY - gridResolution / getZoomLevel()], [0, mathY]);
     }
     // remainings
     for (let x = 1; x < matrixWidth; x++) {
@@ -563,7 +622,7 @@ function visualize_ff_EPS(world, ff_id) {
 
             potentialMatrix[x][y]
                 = potentialMatrix[x - 1][y]
-                + calcU(ff, [mathX - gridResolution/getZoomLevel(), mathY], [mathX, mathY]);
+                + calcU(ff, [mathX - gridResolution / getZoomLevel(), mathY], [mathX, mathY]);
         }
     }
 

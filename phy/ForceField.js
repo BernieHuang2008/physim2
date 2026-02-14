@@ -81,10 +81,10 @@ class ForceField extends IDObject {
 
         // world vars (by id)
         scope = Object.assign({}, scope, vars);
-        // for (let varid in this.world.vars) {
-        //     let v = this.world.vars[varid];
-        //     scope[v.id] = v.value;
-        // }
+        for (let varid in this.world.vars) {
+            let v = this.world.vars[varid];
+            scope[v.id] = v.value;
+        }
 
         return scope;
     }
