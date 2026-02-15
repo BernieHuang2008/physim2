@@ -3,7 +3,7 @@ import { $, $$ } from '../utils.js';
 import { UIControls } from './controls/controls.js';
 import { FakeVar_FFExpression, FakeVar_FFCondition } from "../phy/ForceField.js";
 import { Variable } from "../phy/Var.js";
-import { visualize_ff_FL, visualize_ff_EPS, showVisualFieldCover, hideVisualFieldCover } from "./visual_field.js";
+import { visualize_ff_FL, hideVisualFieldCover } from "./visual_field.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
 
@@ -144,28 +144,17 @@ function edit_ff(world, ff_id, return_to = null) {
         .addSubsection(t("Preview & Operation"), false)
         .addUIControl(() => {
             const buttonArea = document.createElement("div");
-            // View-A button
-            const viewAButton = document.createElement("span");
-            viewAButton.className = "small-button symbol";
-            viewAButton.innerHTML = "&#xE890;<sub>◎</sub>";
-            viewAButton.onmouseenter = () => {
-                visualize_ff_EPS(ff.world, ff.id);
-            };
-            viewAButton.onmouseleave = () => {
-                hideVisualFieldCover();
-            };
-            buttonArea.appendChild(viewAButton);
-            // View-B button
-            const viewBButton = document.createElement("span");
-            viewBButton.className = "small-button symbol";
-            viewBButton.innerHTML = "&#xE890;<sub>↙</sub>";
-            viewBButton.onmouseenter = () => {
+            // Preview button
+            const previewButton = document.createElement("span");
+            previewButton.className = "small-button symbol";
+            previewButton.innerHTML = "&#xE890;<sub>↙</sub>";
+            previewButton.onmouseenter = () => {
                 visualize_ff_FL(ff.world, ff.id);
             };
-            viewBButton.onmouseleave = () => {
+            previewButton.onmouseleave = () => {
                 hideVisualFieldCover();
             };
-            buttonArea.appendChild(viewBButton);
+            buttonArea.appendChild(previewButton);
             // Delete button
             const deleteButton = document.createElement("span");
             deleteButton.className = "small-button symbol red alert-theme";

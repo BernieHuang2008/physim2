@@ -2,7 +2,7 @@ import { UI_Section } from "../ui/ui_section/ui_section.js";
 import { $, $$ } from '../utils.js';
 import { UIControls } from './controls/controls.js';
 import { edit_ff } from "./ffeditor.js";
-import { hideVisualFieldCover, visualize_ff_FL, visualize_ff_EPS } from "./visual_field.js";
+import { hideVisualFieldCover, visualize_ff_FL } from "./visual_field.js";
 import { render_frame, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
 import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
@@ -264,28 +264,17 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
                     editButton.innerHTML = "&#xE70F;";
                     editButton.onclick = () => edit_ff(phyobj.world, ff.id, inspector_ui_section);
                     buttonArea.appendChild(editButton);
-                    // View-A button
-                    const viewAButton = document.createElement("span");
-                    viewAButton.className = "small-button symbol";
-                    viewAButton.innerHTML = "&#xE890;<sub>◎</sub>";
-                    viewAButton.onmouseenter = () => {
-                        visualize_ff_EPS(phyobj.world, ff.id);
-                    };
-                    viewAButton.onmouseleave = () => {
-                        hideVisualFieldCover();
-                    };
-                    buttonArea.appendChild(viewAButton);
                     // View-B button
-                    const viewBButton = document.createElement("span");
-                    viewBButton.className = "small-button symbol";
-                    viewBButton.innerHTML = "&#xE890;<sub>↙</sub>";
-                    viewBButton.onmouseenter = () => {
+                    const previewButton = document.createElement("span");
+                    previewButton.className = "small-button symbol";
+                    previewButton.innerHTML = "&#xE890;<sub>↙</sub>";
+                    previewButton.onmouseenter = () => {
                         visualize_ff_FL(phyobj.world, ff.id);
                     };
-                    viewBButton.onmouseleave = () => {
+                    previewButton.onmouseleave = () => {
                         hideVisualFieldCover();
                     };
-                    buttonArea.appendChild(viewBButton);
+                    buttonArea.appendChild(previewButton);
                     // Delete button
                     const deleteButton = document.createElement("span");
                     deleteButton.className = "small-button symbol red alert-theme";
