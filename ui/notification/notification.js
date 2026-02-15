@@ -1,9 +1,10 @@
 import { t } from "../../i18n/i18n.js";
 import { floating_section_expand } from "../floatsec_utils.js";
+import {$, $$} from "../../utils.js";
 
-const notibadge_dom = document.getElementById("notification-badge");
-const notibubbles_dom = document.getElementById("notification-bubbles-area");
-const noticenter_dom = document.getElementById("notification-center");
+const notibadge_dom = $("#notification-badge");
+const notibubbles_dom = $("#notification-bubbles-area");
+const noticenter_dom = $("#notification-center");
 
 const notifications = [];
 
@@ -158,4 +159,29 @@ function error(title, message, proceedFunc = null, duration = 10000) {
     notify(title, message, proceedFunc, "error", duration);
 }
 
-export { init, notify, info, warning, error };
+const infoBadge = $("#info-badge");
+function badgeInfoClose() {
+    infoBadge.onclick = null;
+    infoBadge.innerText = "";
+    infoBadge.style.color = "";
+    infoBadge.style.background = "";
+}
+
+function badgeInfo(message, proceedFunc = null, duration = -1, color, bgColor) {
+    infoBadge.innerText = message;
+    infoBadge.style.color = color || "var(--text-color)";
+    infoBadge.style.background = bgColor || "var(--primary-color)";
+
+    if (proceedFunc) {
+        infoBadge.onclick = () => {
+            proceedFunc();
+            badgeInfoClose();
+        };
+    }
+
+    if (duration > 0) {
+        setTimeout(badgeInfoClose, duration);
+    }
+}
+
+export { init, notify, info, warning, error, badgeInfo, badgeInfoClose };

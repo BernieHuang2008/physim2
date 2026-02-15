@@ -160,3 +160,7 @@ button.notification-bubble-close-btn {
     display: block;
 }
 
+/* info badge */
+#info-badge {
+    padding: 0 0.5rem;
+}

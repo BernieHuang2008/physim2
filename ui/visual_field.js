@@ -33,6 +33,7 @@ function showVisualFieldCover() {
 }
 
 function hideVisualFieldCover() {
+    Noti.badgeInfoClose();
     visualFieldCover.style.display = "none";
     if (simAnchor) {
         simAnchor.style.filter = "none";
@@ -262,8 +263,12 @@ function visualize_ff_FL(world, ff_id) {
         const avgMagnitude = sumMagnitude / vectors.length;
         if (ratio > 1000 && (maxMagnitude / avgMagnitude) > 20) {
             useLogScale = true;
+            Noti.badgeInfo(t("Exp. Fd. Disp."), null, -1, "white", "linear-gradient(45deg, #c00, transparent)");
             // Noti.info(t("Exponential Field Detected"), "Using logarithmic scale (red arrows) for visualization.");
         }
+    }
+    if (!useLogScale) {
+        Noti.badgeInfo(t("Linear Fd. Disp."), null, -1, "white", "linear-gradient(45deg, #06c, transparent)");
     }
 
     // 清除之前的内容

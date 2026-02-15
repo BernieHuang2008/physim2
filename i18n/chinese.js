@@ -9,6 +9,8 @@ const translations = {
     "Untitled Basic PhyObject": "未命名基础物理对象",
     "World Settings": "世界设置",
     "Untitled Force Field": "未命名力场",
+    "Exp. Fd. Disp.": "指数场显示",
+    "Linear Fd. Disp.": "线性场显示",
 
     // ===============================
     // 物理量与属性 (Physical Properties)
