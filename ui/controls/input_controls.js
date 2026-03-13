@@ -209,6 +209,35 @@ function InputMath({ field, variable, disabled = false, onChange = null, help = 
     }
 }
 
+function InputCheckbox({ field, variable, disabled = false, onChange = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+    var dom = document.createElement("div");
+    dom.innerHTML = `
+        <label class="field-title ${field ? '' : 'hidden'}">
+            <input type="checkbox" ${variable.value ? "checked" : ""} ${disabled ? "disabled" : ""} />
+            ${field}
+        </label>
+    `;
+    const checkbox = dom.querySelector("input[type='checkbox']");
+
+    checkbox.addEventListener("change", (e) => {
+        if (disabled) return;
+        const newValue = e.target.checked;
+        variable.resetWithParams({
+            value: newValue,
+            type: 'immediate',
+        });
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, newValue);
+        }
+    });
+
+    return dom;
+}
+
 function InputColor({ field, variable, disabled = false, onChange = null, hide = false }) {
     if (hide) {
         return document.createElement("div");
@@ -238,4 +267,4 @@ function InputColor({ field, variable, disabled = false, onChange = null, hide =
     return dom;
 }
 
-export { InputNormal, InputNumber, InputRange, InputVector2, InputMath, InputColor };
+export { InputNormal, InputNumber, InputRange, InputVector2, InputMath, InputCheckbox, InputColor };

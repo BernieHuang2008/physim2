@@ -17,7 +17,6 @@ var current_time_var_data = {};
 
 const SETTINGS = {
     plotly_layout: (item) => {
-        console.log(item.meta.annoX)
         var template = {
             margin: { t: 0, r: 0, b: 0, l: 0 },
             xaxis: { title: { text: item.meta.annoX }, automargin: true },
@@ -133,6 +132,14 @@ function edit_info(id) {
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t('Expression (Y-axis)'),
             variable: fakeVar_expression_y
+        })
+        .addSubsection(t("Settings"))
+        .addUIControl(UIControls.InputControls.InputCheckbox, {
+            field: t('Match X/Y Axis Scale'),
+            variable: new FakeVarFromFunction(() => item.meta.display.axis_match, "Var Monitor Axis Match", null, null),
+            onChange: (variable, newValue) => {
+                item.meta.display.axis_match = newValue;
+            }
         })
         .render();
 

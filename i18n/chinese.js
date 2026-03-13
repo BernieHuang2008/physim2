@@ -115,6 +115,7 @@ const translations = {
     "Y-axis Annotation": "Y轴注解",
     "Expression (Y-axis)": "表达式（Y轴）",
     "Expression (X-axis)": "表达式（X轴）",
+    "Match X/Y Axis Scale": "匹配X/Y轴比例",
 
     // ===============================
     // 向量显示 (Vector Display)
