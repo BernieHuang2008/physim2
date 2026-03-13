@@ -10,6 +10,13 @@
     align-items: center;
     display: none;
 }
+#sim-prog-time {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0 1ch;
+}
 body[data-mode="SIMULATE"] #simulation-progress {
     display: block;
 }

@@ -48,6 +48,7 @@ function deinitMode() {
     return true;
 }
 
+const timeDisp = $("#sim-prog-time");
 const progressFull = $("#sim-prog-full");
 const progressActual = $("#sim-prog-actual");
 const progressThumb = $("#sim-prog-thumb");
@@ -64,6 +65,13 @@ const aniFPS_Default = 60;
 var aniFPS = 60;
 
 function setProgress(progress, max) {
+    if (isNaN(progress) || isNaN(max) || max <= 0) {
+        timeDisp.textContent = `0.00s`;
+        progressActual.style.width = "0%";
+        progressThumb.style.left = "0%";
+        return;
+    }
+    timeDisp.textContent = `${progress.toFixed(2)}s`;
     progressActual.style.width = (progress / max * 100) + "%";
     progressThumb.style.left = (progress / max * 100) + "%";
     // progressBar.value = progress;
