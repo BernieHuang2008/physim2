@@ -4,7 +4,7 @@ import { t } from "../../i18n/i18n.js";
 class ParticlePhyObject extends BasicPhyObject {
     // metadata
     type = "ParticlePO";
-    nickname = t("Untitled Particle");
+    nickname = null;
 
     // constructor
     constructor(world, mass = 1, pos = null, velocity = null, vars = [], ffs = [], style = null, id = null) {
@@ -18,6 +18,8 @@ class ParticlePhyObject extends BasicPhyObject {
                 this.mass.reset('m', mass, 'immediate');
             }
         }
+
+        this.nickname = t("Particle") + " " + this.id.substring(4, 6);
     }
 }
 

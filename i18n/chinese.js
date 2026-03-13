@@ -3,12 +3,12 @@ const translations = {
     // 基础术语 (General Terms)
     // ===============================
     "Untitled": "未命名",
+    "Rigidbody": "刚体",
     "Particle": "质点",
     "Untitled Section": "未命名部分",
-    "Untitled Particle": "未命名质点",
     "Untitled Basic PhyObject": "未命名基础物理对象",
     "World Settings": "世界设置",
-    "Untitled Force Field": "未命名力场",
+    "Force Field": "力场",
     "Exp. Fd. Disp.": "指数场显示",
     "Linear Fd. Disp.": "线性场显示",
 

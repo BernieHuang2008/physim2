@@ -6,7 +6,7 @@ import { po_type_encode } from '../utils.js';
 class ForceField extends IDObject {
     // metadata
     type = "FFI";
-    nickname = t("Untitled Force Field");
+    nickname = null;
     world = null;
 
     expression = null;
@@ -22,14 +22,13 @@ class ForceField extends IDObject {
     /*
     vars can be used: time, pos (target), v (target), mass (target), TARGET_varNickname (var of target), VAR_varid
     */
-    constructor(world, expression = "", condition = "", nickname = t("Untitled Force Field"), id = null) {
+    constructor(world, expression = "", condition = "", nickname = null, id = null) {
         super();
         this.world = world;
         this.expression = expression;
         this.condition = condition;
         this.compiled_expression = math.compile(expression);
         this.compiled_condition = math.compile(condition);
-        this.nickname = nickname;
 
         if (id) {
             this.id = id;
@@ -37,6 +36,8 @@ class ForceField extends IDObject {
         } else {
             world.add_ff(this);
         }
+
+        this.nickname = nickname || `${t("Force Field")} ${this.id.substring(4, 6)}`;
     }
 
     reset(condition, expression) {

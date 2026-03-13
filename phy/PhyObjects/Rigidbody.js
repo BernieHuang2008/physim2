@@ -7,7 +7,7 @@ import { ParticlePhyObject } from "./Particle.js";
 class RigidbodyPhyObject extends ParticlePhyObject {
     // metadata
     type = "RigidbodyPO";
-    nickname = t("Untitled Rigidbody");
+    nickname = null;
 
     // display property
     style = {
@@ -43,6 +43,8 @@ class RigidbodyPhyObject extends ParticlePhyObject {
 
         // add ff based on radius
         if (id === null) this.add_ff_by_radius();
+
+        this.nickname = t("Rigidbody") + " " + this.id.substring(4, 6);
     }
 
     add_ff_by_radius() {
