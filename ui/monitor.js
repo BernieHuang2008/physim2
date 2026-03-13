@@ -1,7 +1,7 @@
 import { UI_Section } from "../ui/ui_section/ui_section.js";
 import { $, $$ } from '../utils.js';
 import { UIControls } from './controls/controls.js';
-import { render_frame, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
+import { scheduleRender, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
 import { t } from "../i18n/i18n.js";
 import * as Noti from "./notification/notification.js";
 import { assertMode, GlobalModes } from "../mode/global_mode.js";
@@ -149,7 +149,7 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
             field: t("Position") + mvc(phyobj.pos.id, "vec"),
             variable: phyobj.pos,
             disabled: true,
-            onChange: () => { monitor_ui_section.render(); render_frame(world, phyobj.id); }
+            onChange: () => { monitor_ui_section.render(); scheduleRender(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Velocity") + mvc(phyobj.velocity.id, "mag"),

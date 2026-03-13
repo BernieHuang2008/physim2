@@ -1,6 +1,6 @@
 // select object if they are in ONE pos
 import { globalWorld } from '../phy/World.js';
-import { render_frame } from '../sim/render_frame.js';
+import { scheduleRender } from '../sim/render_frame.js';
 import { inspect_phyobj } from './inspector.js';
 
 var LSsession = {

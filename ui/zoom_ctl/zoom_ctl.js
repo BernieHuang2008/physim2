@@ -1,4 +1,4 @@
-import { render_frame, setZoomLevel } from "../../sim/render_frame.js";
+import { scheduleRender, setZoomLevel } from "../../sim/render_frame.js";
 
 class ZoomControl {
     constructor() {
@@ -176,7 +176,7 @@ class ZoomControl {
 
     onZoomChange(zoom) {
         setZoomLevel(zoom / 100 * 10);
-        render_frame();
+        scheduleRender();
     }
 
     getZoomFactor() {

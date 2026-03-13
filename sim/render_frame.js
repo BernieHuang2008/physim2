@@ -56,6 +56,17 @@ function render_frame(world, focus_id = null, smooth_scroll = true) {
     livemon_update_frame();
 }
 
+var _renderPending = false;
+function scheduleRender() {
+    if (!_renderPending) {
+        _renderPending = true;
+        requestAnimationFrame(() => {
+            _renderPending = false;
+            render_frame();
+        });
+    }
+}
+
 function render_phyobj(phyobj) {
     // render a single phyobject
     const sim_anchor = document.getElementById("simulation-area-anchor");
@@ -178,4 +189,4 @@ function render_displayArea(content_area, world) {
     });
 }
 
-export { render_frame, render_area, setZoomLevel, getZoomLevel, setDefaultFocus };
+export { render_frame, scheduleRender, render_area, setZoomLevel, getZoomLevel, setDefaultFocus };

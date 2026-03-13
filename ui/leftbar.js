@@ -3,7 +3,7 @@ import { globalWorld } from "../phy/World.js";
 import { $, $$ } from "../utils.js";
 import * as Noti from "./notification/notification.js";
 import * as PhyObjects from "../phy/PhyObjects/phyobjects.js";
-import { render_frame } from "../sim/render_frame.js";
+import { scheduleRender } from "../sim/render_frame.js";
 import { inspect_phyobj } from "./inspector.js";
 
 const leftBar = $("#left-bar");
@@ -11,13 +11,13 @@ const leftBar = $("#left-bar");
 function add_particle() {
     var po = new PhyObjects.ParticlePhyObject(globalWorld, 1, [0, 0], [0, 0]);
     Noti.info(t("Add Particle"), t("A new particle has been added to the world."), () => inspect_phyobj(po.world, po.id), 5000);
-    render_frame(globalWorld);
+    scheduleRender(globalWorld);
 }
 
 function add_rigidbody() {
     var po = new PhyObjects.RigidbodyPhyObject(globalWorld, 1, 2, [0, 0], [0, 0]);
     Noti.info(t("Add Rigid Body"), t("A new rigid body has been added to the world."), () => inspect_phyobj(po.world, po.id), 5000);
-    render_frame(globalWorld);
+    scheduleRender(globalWorld);
 }
 
 const leftBarShortcuts = [

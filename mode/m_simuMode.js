@@ -3,7 +3,7 @@ import { globalSimulation, SETTINGS } from "../sim/simulation.js";
 import { $, $$ } from "./../utils.js";
 import * as Noti from '../ui/notification/notification.js';
 import { t } from "../i18n/i18n.js";
-import { render_frame } from "../sim/render_frame.js";
+import { scheduleRender } from "../sim/render_frame.js";
 import * as Inspector from "../ui/inspector.js";
 import { monitor_phyobj, monitor_ui_section } from "../ui/monitor.js";
 import { mainMenu, mkMenu } from "../ui/menu.js";
@@ -72,7 +72,7 @@ function setProgress(progress, max) {
 }
 
 function _rerenderFrame() {
-    render_frame();
+    scheduleRender();
     monitor_ui_section.render();
 }
 

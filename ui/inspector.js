@@ -3,7 +3,7 @@ import { $, $$ } from '../utils.js';
 import { UIControls } from './controls/controls.js';
 import { edit_ff } from "./ffeditor.js";
 import { hideVisualFieldCover, visualize_ff_FL } from "./visual_field.js";
-import { render_frame, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
+import { scheduleRender, setDefaultFocus as rdframe_setDefaultFocus } from "../sim/render_frame.js";
 import { Variable } from '../phy/Var.js';
 import { ForceField } from "../phy/ForceField.js";
 import { t } from "../i18n/i18n.js";
@@ -124,7 +124,7 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
             field: t("Position"),
             variable: phyobj.pos,
             disabled: isWorldAnchor,
-            onChange: () => { inspector_ui_section.render(); render_frame(world, phyobj.id); }
+            onChange: () => { inspector_ui_section.render(); scheduleRender(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
             field: t("Velocity"),
@@ -148,7 +148,7 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
             onChange: (newColor) => {
                 phyobj.style.color = newColor.value;
                 inspector_ui_section.render();
-                render_frame(world, phyobj.id);
+                scheduleRender(world, phyobj.id);
             }
         })
         .addUIControl(UIControls.InputControls.InputNumber, {
@@ -157,7 +157,7 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
             hide: !Boolean(phyobj.style.size_var),
             onChange: (newSize) => {
                 inspector_ui_section.render();
-                render_frame(world, phyobj.id);
+                scheduleRender(world, phyobj.id);
             }
         })
 

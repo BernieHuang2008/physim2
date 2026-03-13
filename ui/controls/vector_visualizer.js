@@ -5,7 +5,7 @@
  */
 
 import { t } from "../../i18n/i18n.js";
-import { render_frame } from "../../sim/render_frame.js";
+import { scheduleRender } from "../../sim/render_frame.js";
 
 function revY(y) {
     return y;
@@ -321,7 +321,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const y = parseFloat(coordYInput.value) || 0;
         setVectorValue(x, y);
 
-        render_frame();
+        scheduleRender();
     }
 
     function handleMagnitudeChange() {
@@ -340,7 +340,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
             setVectorValue(newMagnitude, 0);
         }
 
-        render_frame();
+        scheduleRender();
     }
 
     function handleAngleChange() {
@@ -356,7 +356,7 @@ export function createVectorVisualization(visualArea, infoArea, variable, disabl
         const newY = magnitude * Math.sin(radians);
         setVectorValue(newX, newY);
 
-        render_frame();
+        scheduleRender();
     }
 
     // Attach event listeners
