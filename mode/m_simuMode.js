@@ -7,7 +7,7 @@ import { scheduleRender } from "../sim/render_frame.js";
 import * as Inspector from "../ui/inspector.js";
 import { monitor_phyobj, monitor_ui_section } from "../ui/monitor.js";
 import { mainMenu, mkMenu } from "../ui/menu.js";
-import { VarMon_reset } from "../ui/var_monitor.js";
+import { VarMon_reset, VarMon_add } from "../ui/var_monitor.js";
 
 const simuMenu = [
     ...mainMenu,
@@ -16,9 +16,17 @@ const simuMenu = [
         items: [
             {
                 type: "submenu",
-                title: t("Create var Monitor"),
+                title: t("Create Var Monitor"),
                 action: function () {
-                    
+                    VarMon_add({
+                        id: Math.random(),
+                        title: t("Untitled VarMon"),
+                        exprX: "t",
+                        exprY: "undefined",
+                        annoX: t("Time / s"),
+                        annoY: t("Value"),
+                        axis_match: false
+                    });
                 }
             },
             {
