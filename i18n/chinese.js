@@ -36,6 +36,13 @@ const translations = {
     "Magnitude": "大小",
     "Angle": "角度",
 
+    // 物理量标签 (Physical Quantity Labels)
+    "Time / s": "时间 / s",
+    "Mass / kg": "质量 / kg",
+    "X coord / m": "X坐标 / m",
+    "Y coord / m": "Y坐标 / m",
+    "Speed Mag. / m·sˉ¹": "速度大小 / m·sˉ¹",
+
     // 物理常数 (Physics Constants)
     "Gravity": "重力",
     "Universal Gravitational": "万有引力",
@@ -104,6 +111,8 @@ const translations = {
     "Type": "类型",
     "Value": "值",
     "Expression": "表达式",
+    "X-axis Annotation": "X轴注解",
+    "Y-axis Annotation": "Y轴注解",
     "Expression (Y-axis)": "表达式（Y轴）",
     "Expression (X-axis)": "表达式（X轴）",
 
@@ -231,7 +240,6 @@ const translations = {
     // 其他页面 (Other Pages)
     // ===============================
     "About": "关于",
-    "Time / s": "时间 / 秒",
 
     // ===============================
     // 帮助文档 (Help Documentation)

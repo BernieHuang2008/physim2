@@ -17,13 +17,13 @@ var current_time_var_data = {};
 
 const SETTINGS = {
     plotly_layout: (item) => {
+        console.log(item.meta.annoX)
         var template = {
             margin: { t: 0, r: 0, b: 0, l: 0 },
-            xaxis: { title: { text: t('Time / s') }, automargin: true },
-            yaxis: { title: { text: t('Value') }, automargin: true},
+            xaxis: { title: { text: item.meta.annoX }, automargin: true },
+            yaxis: { title: { text: item.meta.annoY }, automargin: true},
             autosize: true,
-            title: { text: item.meta.title || t("Untitled"), font: { size: 16 } },
-        }
+        };
 
         if (item.meta.display.axis_match) {
             template.yaxis.scaleanchor = 'x';
@@ -112,9 +112,23 @@ function edit_info(id) {
             //     // itemPlot.section.setTitle(t("[Monitor]") + " " + (newValue || t("Untitled")));
             // }
         })
+        .addUIControl(UIControls.InputControls.InputNormal, {
+            field: t('X-axis Annotation'),
+            variable: new FakeVarFromFunction(() => null, "Var Monitor Axis X Title", null, null),
+            onChange: (variable, newValue) => {
+                item.meta.annoX = newValue;
+            }
+        })
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t('Expression (X-axis)'),
             variable: fakeVar_expression_x
+        })
+        .addUIControl(UIControls.InputControls.InputNormal, {
+            field: t('Y-axis Annotation'),
+            variable: new FakeVarFromFunction(() => null, "Var Monitor Axis Y Title", null, null),
+            onChange: (variable, newValue) => {
+                item.meta.annoY = newValue;
+            }
         })
         .addUIControl(UIControls.InputControls.InputMath, {
             field: t('Expression (Y-axis)'),
@@ -240,7 +254,7 @@ function _createPlotlyPlot(id) {
     };
 }
 
-function VarMon_add({id, title, exprY, exprX = "t", axis_match = false}) {
+function VarMon_add({id, title, exprX, exprY, annoX, annoY, axis_match = false}) {
     if (varMonitorData[id]) {
         return;
     }
@@ -249,6 +263,8 @@ function VarMon_add({id, title, exprY, exprX = "t", axis_match = false}) {
         meta: {
             id: "M_" + Math.random().toString(36).substring(2, 2 + 9),
             title: title,
+            annoX: annoX,      // X axis annotation
+            annoY: annoY,
             exprX: exprX,
             exprY: exprY,
             display: {

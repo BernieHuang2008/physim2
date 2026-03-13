@@ -19,26 +19,10 @@ var last_rendered_phyobj_id = null;
 // "Monit Var" Controls
 const mvcSettings = {};
 
-function mvc(var_id, vec_comp = null) {
-    var exprX, exprY, others = {};
-
-    if (typeof vec_comp === "number") {
-        exprX = `t`;
-        exprY = `${var_id}[${vec_comp}]`;
-    } else if (vec_comp === "mag") {
-        exprX = `t`;
-        exprY = `norm(${var_id})`;
-    } else if (vec_comp === "vec") {
-        exprX = `${var_id}[1]`;
-        exprY = `${var_id}[2]`;
-        others = {
-            axis_match: true
-        }
-    }
-
+function mvc(var_id, vec_comp = null, others = {}) {
     mvcSettings[`${var_id}_${vec_comp}`] = {
-        exprX: exprX,
-        exprY: exprY,
+        var_id: var_id,
+        vec_comp: vec_comp,
         others: others
     };
 
@@ -51,14 +35,46 @@ function mvc(var_id, vec_comp = null) {
 window.mvc_helper = function (elem) {
     const mvcId = elem.getAttribute("data-mvc-id");
     
-    const { exprX, exprY, others } = mvcSettings[mvcId];
-    VarMon_add({ 
-        id: `${exprX} / ${exprY}`, 
-        title: `${exprX} / ${exprY}`, 
-        exprY: exprY, 
-        exprX: exprX,
+    const { var_id, vec_comp, others } = mvcSettings[mvcId];
+    const VarMon_config = { 
+        id: mvcId, 
+        title: mvcId,
+        annoX: others.annoX || null,
+        annoY: others.annoY || null,
+        exprX: null,
+        exprY: null, 
         axis_match: others.axis_match || false
-    });
+    };
+
+    if (typeof vec_comp === "number") {
+        VarMon_config.annoX = t("Time / s");
+        VarMon_config.annoY = others.annoY || `${var_id}[${vec_comp}]`;
+        VarMon_config.exprX = `t`;
+        VarMon_config.exprY = `${var_id}[${vec_comp}]`;
+    } else {
+        switch (vec_comp) {
+            case "mag":
+                VarMon_config.annoX = t("Time / s");
+                VarMon_config.annoY = others.annoY || `|${var_id}|`;
+                VarMon_config.exprX = `t`;
+                VarMon_config.exprY = `norm(${var_id})`;
+                break;
+            case "vec":
+                VarMon_config.annoX = others.annoX || `${var_id}[1]}`;
+                VarMon_config.annoY = others.annoY || `${var_id}[2]}`;
+                VarMon_config.exprX = `${var_id}[1]`;
+                VarMon_config.exprY = `${var_id}[2]`;
+                VarMon_config.axis_match = true;
+                break;
+            default:
+                VarMon_config.annoX = t("Time / s");
+                VarMon_config.annoY = others.annoY || var_id;
+                VarMon_config.exprX = `t`;
+                VarMon_config.exprY = `${var_id}`;
+        }
+    }
+
+    VarMon_add(VarMon_config);
 
     Noti.info(t("Var Monitor"), t("Added to Var Monitor"));
 }
@@ -140,19 +156,19 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
     monitor_ui_section
         .addSubsection(t("Basic Properties"), isWorldAnchor)
         .addUIControl(UIControls.InputControls.InputMath, {
-            field: t("Mass") + mvc(phyobj.mass.id),
+            field: t("Mass") + mvc(phyobj.mass.id, null, { annoY: t("Mass / kg") }),
             variable: phyobj.mass,
             disabled: true,
             onChange: () => monitor_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Position") + mvc(phyobj.pos.id, "vec"),
+            field: t("Position") + mvc(phyobj.pos.id, "vec", { annoX: t("X coord / m"), annoY: t("Y coord / m") }),
             variable: phyobj.pos,
             disabled: true,
             onChange: () => { monitor_ui_section.render(); scheduleRender(world, phyobj.id); }
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Velocity") + mvc(phyobj.velocity.id, "mag"),
+            field: t("Velocity") + mvc(phyobj.velocity.id, "mag", { annoY: t("Speed Mag. / m·sˉ¹") }),
             variable: phyobj.velocity,
             disabled: true,
             onChange: () => monitor_ui_section.render()
