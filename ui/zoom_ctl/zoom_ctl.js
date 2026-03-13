@@ -15,6 +15,10 @@ class ZoomControl {
         this.percentageDisplay = null;
         this.minusBtn = null;
         this.plusBtn = null;
+        this.scaleRuler = document.getElementById("scale-ruler");
+        this.rulerMinPixels = 60;
+        this.rulerMaxPixels = 80;
+        this.rulerTargetPixels = 70;
 
         this.isDragging = false;
 
@@ -172,6 +176,86 @@ class ZoomControl {
         // Update button states
         this.minusBtn.disabled = this.currentZoom <= this.minZoom;
         this.plusBtn.disabled = this.currentZoom >= this.maxZoom;
+
+        // Update scale ruler
+        this.updateScaleRuler();
+    }
+
+    _getPixelsPerMeter() {
+        return this.currentZoom / 10;
+    }
+
+    _pickScaleUnitMeters() {
+        const pixelsPerMeter = this._getPixelsPerMeter();
+        const multipliers = [1, 2, 5];
+        const inRangeCandidates = [];
+        let closestCandidate = null;
+
+        for (let exponent = -3; exponent <= 12; exponent++) {
+            const base = Math.pow(10, exponent);
+            for (const multiplier of multipliers) {
+                const meters = multiplier * base;
+                const pixels = meters * pixelsPerMeter;
+                const distanceToTarget = Math.abs(pixels - this.rulerTargetPixels);
+
+                const candidate = { meters, pixels, distanceToTarget, multiplier, baseMeters: base };
+
+                if (!closestCandidate || distanceToTarget < closestCandidate.distanceToTarget) {
+                    closestCandidate = candidate;
+                }
+
+                if (pixels >= this.rulerMinPixels && pixels <= this.rulerMaxPixels) {
+                    inRangeCandidates.push(candidate);
+                }
+            }
+        }
+
+        if (inRangeCandidates.length > 0) {
+            inRangeCandidates.sort((a, b) => a.distanceToTarget - b.distanceToTarget);
+            return inRangeCandidates[0];
+        }
+
+        return closestCandidate;
+    }
+
+    _formatScaleLabel(meters) {
+        if (meters >= 1000) {
+            const kilometers = meters / 1000;
+            const text = Number.isInteger(kilometers) ? kilometers.toString() : kilometers.toPrecision(3).replace(/\.0+$/, '');
+            return text + 'km';
+        }
+
+        const meterText = Number.isInteger(meters) ? meters.toString() : meters.toPrecision(3).replace(/\.0+$/, '');
+        return meterText + 'm';
+    }
+
+    updateScaleRuler() {
+        if (!this.scaleRuler) return;
+
+        const scale = this._pickScaleUnitMeters();
+        if (!scale) return;
+
+        this.scaleRuler.innerHTML = '';
+
+        const bar = document.createElement('div');
+        bar.className = 'scale-ruler-bar';
+        bar.style.width = scale.pixels + 'px';
+
+        if (scale.multiplier === 2 || scale.multiplier === 5) {
+            for (let stepIndex = 1; stepIndex < scale.multiplier; stepIndex++) {
+                const splitter = document.createElement('div');
+                splitter.className = 'scale-ruler-splitter';
+                splitter.style.left = (stepIndex / scale.multiplier * 100) + '%';
+                bar.appendChild(splitter);
+            }
+        }
+
+        const label = document.createElement('div');
+        label.className = 'scale-ruler-label';
+        label.textContent = this._formatScaleLabel(scale.meters);
+
+        this.scaleRuler.appendChild(bar);
+        this.scaleRuler.appendChild(label);
     }
 
     onZoomChange(zoom) {

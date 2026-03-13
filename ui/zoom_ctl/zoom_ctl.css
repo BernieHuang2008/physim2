@@ -105,3 +105,37 @@
     padding: 0;
     /* cursor: pointer; */
 }
+
+#scale-ruler {
+    position: fixed;
+    bottom: 3rem;
+    right: 33vw;
+    font-size: 12px;
+    color: gray;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+#scale-ruler .scale-ruler-bar {
+    position: relative;
+    height: 7px;
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    box-sizing: border-box;
+}
+
+#scale-ruler .scale-ruler-splitter {
+    position: absolute;
+    top: 40%;
+    height: 60%;
+    border-left: 0.5px solid gray;
+    box-sizing: border-box;
+}
+
+#scale-ruler .scale-ruler-label {
+    line-height: 1;
+}
