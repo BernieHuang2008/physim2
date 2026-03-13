@@ -19,7 +19,7 @@ function init_pg_about() {
             <h2>Latest Updates</h2>
             <ul>
                 <li>Improve ForceField Visualize</li>
-                <li>Live Monitor</li>
+                <li>Var Monitor</li>
                 <li>Improve FFD logic</li>
             </ul>
             <hr>

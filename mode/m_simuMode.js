@@ -7,13 +7,20 @@ import { scheduleRender } from "../sim/render_frame.js";
 import * as Inspector from "../ui/inspector.js";
 import { monitor_phyobj, monitor_ui_section } from "../ui/monitor.js";
 import { mainMenu, mkMenu } from "../ui/menu.js";
-import { livemon_reset } from "../ui/live_monitor.js";
+import { VarMon_reset } from "../ui/var_monitor.js";
 
 const simuMenu = [
     ...mainMenu,
     {
         title: t("Monit"),
         items: [
+            {
+                type: "submenu",
+                title: t("Create var Monitor"),
+                action: function () {
+                    
+                }
+            },
             {
                 type: "submenu",
                 title: t("Open External Monitor"),
@@ -176,7 +183,7 @@ btnReset.onclick = function () {
 
     setProgress(0, globalSimulation.maxTime);
     _rerenderFrame();
-    livemon_reset();
+    VarMon_reset();
 
     Noti.info(t("Simulation Reset"), t("The simulation has been reset to the initial state."), null, 3000);
 }

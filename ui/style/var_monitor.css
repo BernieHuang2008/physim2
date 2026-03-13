@@ -1,4 +1,4 @@
-.live-monitor-window {
+.var-monitor-window {
     position: absolute;
     background-color: white;
     border: 1px solid #ccc;
@@ -9,7 +9,7 @@
     z-index: 1000;
 }
 
-.live-monitor-title-bar {
+.var-monitor-title-bar {
     height: 20px;
     background-color: #eee;
     color: #333;
@@ -24,14 +24,14 @@
     text-overflow: ellipsis;
 }
 
-.live-monitor-content {
+.var-monitor-content {
     flex-grow: 1;
     position: relative;
     width: calc(100% - 20px);
     height: calc(100% - 40px);
 }
 
-.live-monitor-resize-handle {
+.var-monitor-resize-handle {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -45,6 +45,6 @@
     z-index: 10;
 }
 
-.live-monitor-window:hover .live-monitor-resize-handle {
+.var-monitor-window:hover .var-monitor-resize-handle {
     display: block;
 }

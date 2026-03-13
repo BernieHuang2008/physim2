@@ -7,7 +7,7 @@ import * as Noti from "./notification/notification.js";
 import { assertMode, GlobalModes } from "../mode/global_mode.js";
 import { globalSimulation, SETTINGS } from "../sim/simulation.js";
 import { FakeVarFromFunction } from "../phy/FakeVarFromFunction.js";
-import { livemon_add } from "./live_monitor.js";
+import { VarMon_add } from "./var_monitor.js";
 
 const monitor_ui_section = new UI_Section(t("Monitor"));
 monitor_ui_section.activateAt($("#right-bar"));
@@ -52,7 +52,7 @@ window.mvc_helper = function (elem) {
     const mvcId = elem.getAttribute("data-mvc-id");
     
     const { exprX, exprY, others } = mvcSettings[mvcId];
-    livemon_add({ 
+    VarMon_add({ 
         id: `${exprX} / ${exprY}`, 
         title: `${exprX} / ${exprY}`, 
         exprY: exprY, 
@@ -60,7 +60,7 @@ window.mvc_helper = function (elem) {
         axis_match: others.axis_match || false
     });
 
-    Noti.info(t("Live Monitor"), t("Added to Live Monitor"));
+    Noti.info(t("Var Monitor"), t("Added to Var Monitor"));
 }
 
 function monitor_phyobj(world, phyobj_id, return_to = null) {

@@ -7,9 +7,9 @@ import { globalWorld } from '../phy/World.js';
 import { UI_Section } from './ui_section/ui_section.js';
 import { $, $$ } from '../utils.js';
 
-var liveMonitorData = {};
-var liveMonitorPlots = {};
-window.liveMonitorData = liveMonitorData;
+var varMonitorData = {};
+var varMonitorPlots = {};
+window.varMonitorData = varMonitorData;
 
 var current_time = -1;
 var current_time_ff_data = {};
@@ -44,11 +44,11 @@ const SETTINGS = {
 }
 
 function edit_info(id) {
-    const item = liveMonitorData[id];
-    const itemPlot = liveMonitorPlots[id];
+    const item = varMonitorData[id];
+    const itemPlot = varMonitorPlots[id];
     const display = item.meta.display;
     const plotDiv = itemPlot.plotDiv;
-    const infoDiv = plotDiv.parentElement.querySelector('.live-monitor-info');
+    const infoDiv = plotDiv.parentElement.querySelector('.var-monitor-info');
 
     // a one-time UI section for editing info
     var section_info = new UI_Section(t("[Monitor]") + " " + (item.meta.title || t("Untitled")) + " - " + t("Info"));
@@ -68,7 +68,7 @@ function edit_info(id) {
     section_info.activateAt($("#center-bar"));
 
     // fake vars
-    const fakeVar_expression_x = new FakeVarFromFunction(() => null, "Live Monitor Expr Var X", null, globalWorld);
+    const fakeVar_expression_x = new FakeVarFromFunction(() => null, "Var Monitor Expr Var X", null, globalWorld);
     fakeVar_expression_x.type = "derived";
     fakeVar_expression_x.expression = item.meta.exprX;
     fakeVar_expression_x.update_expression = function (newExpr) {
@@ -81,7 +81,7 @@ function edit_info(id) {
         item.data.valueX = [];
     };
 
-    const fakeVar_expression_y = new FakeVarFromFunction(() => null, "Live Monitor Expr Var Y", null, globalWorld);
+    const fakeVar_expression_y = new FakeVarFromFunction(() => null, "Var Monitor Expr Var Y", null, globalWorld);
     fakeVar_expression_y.type = "derived";
     fakeVar_expression_y.expression = item.meta.exprY;
     fakeVar_expression_y.update_expression = function (newExpr) {
@@ -94,7 +94,7 @@ function edit_info(id) {
         item.data.valueX = [];
     };
 
-    const fakeVar_title = new FakeVarFromFunction(() => null, "Live Monitor Title Var", null, globalWorld);
+    const fakeVar_title = new FakeVarFromFunction(() => null, "Var Monitor Title Var", null, globalWorld);
     fakeVar_title.type = "immediate";
     fakeVar_title._value = item.meta.title;
     fakeVar_title.update = function (newTitle) {
@@ -138,7 +138,7 @@ function edit_info(id) {
 }
 
 function _createPlotlyPlot(id) {
-    const item = liveMonitorData[id];
+    const item = varMonitorData[id];
     const display = item.meta.display;
 
     // Create UI Section
@@ -162,8 +162,8 @@ function _createPlotlyPlot(id) {
     // Override deactivate to clean up
     section.on["deactivate"]["if_close_then_cleanup"] = (msg = null) => {
         if (msg === "CLOSE") {
-            delete liveMonitorData[id];
-            delete liveMonitorPlots[id];
+            delete varMonitorData[id];
+            delete varMonitorPlots[id];
         }
     };
 
@@ -212,14 +212,14 @@ function _createPlotlyPlot(id) {
 
     // Plot Content Area
     let plotDiv = document.createElement('div');
-    plotDiv.className = 'live-monitor-content';
+    plotDiv.className = 'var-monitor-content';
     plotDiv.style.width = '100%';
     plotDiv.style.height = '100%';
     contentContainer.appendChild(plotDiv);
 
     // Edit Info Area (Hidden by default)
     let infoDiv = document.createElement('div');
-    infoDiv.className = 'live-monitor-info';
+    infoDiv.className = 'var-monitor-info';
     infoDiv.style.display = 'none';
     contentContainer.appendChild(infoDiv);
 
@@ -240,12 +240,12 @@ function _createPlotlyPlot(id) {
     };
 }
 
-function livemon_add({id, title, exprY, exprX = "t", axis_match = false}) {
-    if (liveMonitorData[id]) {
+function VarMon_add({id, title, exprY, exprX = "t", axis_match = false}) {
+    if (varMonitorData[id]) {
         return;
     }
 
-    liveMonitorData[id] = {
+    varMonitorData[id] = {
         meta: {
             id: "M_" + Math.random().toString(36).substring(2, 2 + 9),
             title: title,
@@ -266,10 +266,10 @@ function livemon_add({id, title, exprY, exprX = "t", axis_match = false}) {
         },
     };
 
-    liveMonitorPlots[id] = _createPlotlyPlot(id);
+    varMonitorPlots[id] = _createPlotlyPlot(id);
 }
 
-function livemon_report_ff(world, time, ff_id, value) {
+function VarMon_report_ff(world, time, ff_id, value) {
     if (time < current_time) {
         return;
     }
@@ -282,7 +282,7 @@ function livemon_report_ff(world, time, ff_id, value) {
     current_time_ff_data[ff_id] = value;
 }
 
-function livemon_report_vars(world, time, vars) {
+function VarMon_report_vars(world, time, vars) {
     if (time < current_time) {
         return;
     }
@@ -295,7 +295,7 @@ function livemon_report_vars(world, time, vars) {
     current_time_var_data = vars;
 }
 
-function livemon_report_simend(sim) {
+function VarMon_report_simend(sim) {
     var time = sim.time;
     if (time < current_time) {
         return;
@@ -306,7 +306,7 @@ function livemon_report_simend(sim) {
         current_time_var_data = {};
     }
 
-    for (let item of Object.values(liveMonitorData)) {
+    for (let item of Object.values(varMonitorData)) {
         let exprX = item.meta.exprX || "t";
         let exprY = item.meta.exprY;
         if (!exprY) continue;
@@ -322,16 +322,16 @@ function livemon_report_simend(sim) {
     }
 }
 
-function livemon_init_display() {
+function VarMon_init_display() {
 
 }
 
-function livemon_deinit_display() {
+function VarMon_deinit_display() {
 
 }
 
-function livemon_reset() {
-    for (let item of Object.values(liveMonitorData)) {
+function VarMon_reset() {
+    for (let item of Object.values(varMonitorData)) {
         item.data.time = [];
         item.data.valueX = [];
         item.data.valueY = [];
@@ -339,11 +339,11 @@ function livemon_reset() {
     current_time = -1;
 }
 
-function livemon_update_frame() {
-    livemon_init_display();
+function VarMon_update_frame() {
+    VarMon_init_display();
 
-    for (let [id, item] of Object.entries(liveMonitorData)) {
-        let plotDiv = liveMonitorPlots[id].plotDiv;
+    for (let [id, item] of Object.entries(varMonitorData)) {
+        let plotDiv = varMonitorPlots[id].plotDiv;
 
         Plotly.react(plotDiv, [{
             x: [...item.data.valueX],   // create a new array reference, otherwise Plotly won't detect changes
@@ -353,4 +353,4 @@ function livemon_update_frame() {
     }
 }
 
-export { liveMonitorData, livemon_add, livemon_reset, livemon_report_ff, livemon_report_vars, livemon_report_simend, livemon_update_frame };
+export { varMonitorData, VarMon_add, VarMon_reset, VarMon_report_ff, VarMon_report_vars, VarMon_report_simend, VarMon_update_frame };
