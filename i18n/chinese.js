@@ -104,6 +104,8 @@ const translations = {
     "Type": "类型",
     "Value": "值",
     "Expression": "表达式",
+    "Expression (Y-axis)": "表达式（Y轴）",
+    "Expression (X-axis)": "表达式（X轴）",
 
     // ===============================
     // 向量显示 (Vector Display)

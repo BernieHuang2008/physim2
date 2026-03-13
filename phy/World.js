@@ -17,9 +17,9 @@ class World {
     }
 
     _genid(prefix = "UNI") {
-        let id = prefix + "_" + Math.random().toString(36).substr(2, 9).toUpperCase();
+        let id = prefix + "_" + Math.random().toString(36).substring(2, 2+9).toUpperCase();
         while (this.used_ids.has(id)) {
-            id = prefix + "_" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            id = prefix + "_" + Math.random().toString(36).substring(2, 2+9).toUpperCase();
         }
         this.used_ids.add(id);
         return id;

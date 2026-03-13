@@ -16,16 +16,30 @@ var current_time_ff_data = {};
 var current_time_var_data = {};
 
 const SETTINGS = {
-    plotly_layout: {
-        margin: { t: 0, r: 0, b: 0, l: 0 },
-        xaxis: { title: { text: t('Time / s') }, automargin: true },
-        yaxis: { title: { text: t('Value') }, automargin: true },
-        autosize: true,
+    plotly_layout: (item) => {
+        var template = {
+            margin: { t: 0, r: 0, b: 0, l: 0 },
+            xaxis: { title: { text: t('Time / s') }, automargin: true },
+            yaxis: { title: { text: t('Value') }, automargin: true},
+            autosize: true,
+            title: { text: item.meta.title || t("Untitled"), font: { size: 16 } },
+        }
+
+        if (item.meta.display.axis_match) {
+            template.yaxis.scaleanchor = 'x';
+            template.yaxis.scaleratio = 1;
+        }
+
+        return template;
     },
-    plotly_config: {
-        responsive: true,
-        displayModeBar: true,
-        displaylogo: false
+    plotly_config: (item) => {
+        var template = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false
+        };
+
+        return template;
     },
 }
 
@@ -54,12 +68,30 @@ function edit_info(id) {
     section_info.activateAt($("#center-bar"));
 
     // fake vars
-    const fakeVar_expression = new FakeVarFromFunction(() => null, "Live Monitor Expr Var", null, globalWorld);
-    fakeVar_expression.type = "derived";
-    fakeVar_expression.expression = item.meta.expr;
-    fakeVar_expression.update_expression = function (newExpr) {
-        item.meta.expr = newExpr;
-        fakeVar_expression.expression = newExpr;
+    const fakeVar_expression_x = new FakeVarFromFunction(() => null, "Live Monitor Expr Var X", null, globalWorld);
+    fakeVar_expression_x.type = "derived";
+    fakeVar_expression_x.expression = item.meta.exprX;
+    fakeVar_expression_x.update_expression = function (newExpr) {
+        // update expr
+        item.meta.exprX = newExpr;
+        fakeVar_expression_x.expression = newExpr;
+        // clear existing data to avoid confusion
+        item.data.time = [];
+        item.data.valueY = [];
+        item.data.valueX = [];
+    };
+
+    const fakeVar_expression_y = new FakeVarFromFunction(() => null, "Live Monitor Expr Var Y", null, globalWorld);
+    fakeVar_expression_y.type = "derived";
+    fakeVar_expression_y.expression = item.meta.exprY;
+    fakeVar_expression_y.update_expression = function (newExpr) {
+        // update expr
+        item.meta.exprY = newExpr;
+        fakeVar_expression_y.expression = newExpr;
+        // clear existing data to avoid confusion
+        item.data.time = [];
+        item.data.valueY = [];
+        item.data.valueX = [];
     };
 
     const fakeVar_title = new FakeVarFromFunction(() => null, "Live Monitor Title Var", null, globalWorld);
@@ -75,18 +107,18 @@ function edit_info(id) {
         .addHeadlessSubsection()
         .addUIControl(UIControls.InputControls.InputNormal, {
             field: t('Title'),
-            variable: fakeVar_title,
-            onChange: (variable, newValue) => {
-                // itemPlot.section.setTitle(t("[Monitor]") + " " + (newValue || t("Untitled")));
-            }
+            variable: fakeVar_title
+            // onChange: (variable, newValue) => {
+            //     // itemPlot.section.setTitle(t("[Monitor]") + " " + (newValue || t("Untitled")));
+            // }
         })
         .addUIControl(UIControls.InputControls.InputMath, {
-            field: t('Expression'),
-            variable: fakeVar_expression,
-            onChange: (variable, newValue) => {
-                item.data.time = [];
-                item.data.value = [];
-            }
+            field: t('Expression (X-axis)'),
+            variable: fakeVar_expression_x
+        })
+        .addUIControl(UIControls.InputControls.InputMath, {
+            field: t('Expression (Y-axis)'),
+            variable: fakeVar_expression_y
         })
         .render();
 
@@ -192,10 +224,10 @@ function _createPlotlyPlot(id) {
     contentContainer.appendChild(infoDiv);
 
     Plotly.newPlot(plotDiv, [{
-        x: item.data.time,
-        y: item.data.value,
+        x: [...item.data.valueX],
+        y: item.data.valueY,
         mode: 'scatter',
-    }], SETTINGS.plotly_layout, SETTINGS.plotly_config);
+    }], SETTINGS.plotly_layout(item), SETTINGS.plotly_config(item));
 
     // Initial resize to fit container
     requestAnimationFrame(() => {
@@ -208,26 +240,29 @@ function _createPlotlyPlot(id) {
     };
 }
 
-function livemon_add(id, title, expr) {
+function livemon_add({id, title, exprY, exprX = "t", axis_match = false}) {
     if (liveMonitorData[id]) {
         return;
     }
 
     liveMonitorData[id] = {
         meta: {
-            id: "M_" + Math.random().toString(36).substr(2, 9),
+            id: "M_" + Math.random().toString(36).substring(2, 2 + 9),
             title: title,
-            expr: expr,
+            exprX: exprX,
+            exprY: exprY,
             display: {
                 pos: [0, 0],
                 size: [600, 400],
                 disp_type: "plotly/scatter",
+                axis_match: axis_match,
             },
             datatype: "REAL",
         },
         data: {
             time: [],
-            value: [],
+            valueX: [],
+            valueY: [],
         },
     };
 
@@ -272,14 +307,18 @@ function livemon_report_simend(sim) {
     }
 
     for (let item of Object.values(liveMonitorData)) {
-        let expr = item.meta.expr;
-        if (!expr) continue;
+        let exprX = item.meta.exprX || "t";
+        let exprY = item.meta.exprY;
+        if (!exprY) continue;
 
         let scope = Object.assign({ t: time }, current_time_ff_data, current_time_var_data);
-        let val = math.evaluate(expr, scope);
+        let valX = math.evaluate(exprX, scope);
+        let valY = math.evaluate(exprY, scope);
 
+        // append data
         item.data.time.push(time);
-        item.data.value.push(val);
+        item.data.valueX.push(valX);
+        item.data.valueY.push(valY);
     }
 }
 
@@ -294,7 +333,8 @@ function livemon_deinit_display() {
 function livemon_reset() {
     for (let item of Object.values(liveMonitorData)) {
         item.data.time = [];
-        item.data.value = [];
+        item.data.valueX = [];
+        item.data.valueY = [];
     }
     current_time = -1;
 }
@@ -306,10 +346,10 @@ function livemon_update_frame() {
         let plotDiv = liveMonitorPlots[id].plotDiv;
 
         Plotly.react(plotDiv, [{
-            x: [...item.data.time],
-            y: item.data.value,
+            x: [...item.data.valueX],   // create a new array reference, otherwise Plotly won't detect changes
+            y: item.data.valueY,
             type: 'scatter'
-        }], SETTINGS.plotly_layout, SETTINGS.plotly_config);
+        }], SETTINGS.plotly_layout(item), SETTINGS.plotly_config(item));
     }
 }
 

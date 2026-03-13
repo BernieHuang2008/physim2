@@ -17,22 +17,48 @@ var last_rendered_phyobj_id = null;
 // last_rendered_world_id = null;
 
 // "Monit Var" Controls
+const mvcSettings = {};
+
 function mvc(var_id, vec_comp = null) {
+    var exprX, exprY, others = {};
+
     if (typeof vec_comp === "number") {
-        var_id += `[${vec_comp}]`;
+        exprX = `t`;
+        exprY = `${var_id}[${vec_comp}]`;
     } else if (vec_comp === "mag") {
-        var_id = `norm(${var_id})`;
+        exprX = `t`;
+        exprY = `norm(${var_id})`;
+    } else if (vec_comp === "vec") {
+        exprX = `${var_id}[1]`;
+        exprY = `${var_id}[2]`;
+        others = {
+            axis_match: true
+        }
     }
 
+    mvcSettings[`${var_id}_${vec_comp}`] = {
+        exprX: exprX,
+        exprY: exprY,
+        others: others
+    };
+
     return `
-        <span class="small gray cursor-pointer no-select" alt="${t('Monit')}" onclick="window.mvc_helper(this)" data-livemon-id="${var_id}">
+        <span class="small gray cursor-pointer no-select" alt="${t('Monit')}" onclick="window.mvc_helper(this)" data-mvc-id="${var_id}_${vec_comp}">
             <span class="symbol">&#xE9F9;</span>
         </span>
         `;
 }
 window.mvc_helper = function (elem) {
-    const id = elem.getAttribute("data-livemon-id");
-    livemon_add(id, id, id);
+    const mvcId = elem.getAttribute("data-mvc-id");
+    
+    const { exprX, exprY, others } = mvcSettings[mvcId];
+    livemon_add({ 
+        id: `${exprX} / ${exprY}`, 
+        title: `${exprX} / ${exprY}`, 
+        exprY: exprY, 
+        exprX: exprX,
+        axis_match: others.axis_match || false
+    });
 
     Noti.info(t("Live Monitor"), t("Added to Live Monitor"));
 }
@@ -120,7 +146,7 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
             onChange: () => monitor_ui_section.render()
         })
         .addUIControl(UIControls.InputControls.InputVector2, {
-            field: t("Position") + mvc(phyobj.pos.id, "mag"),
+            field: t("Position") + mvc(phyobj.pos.id, "vec"),
             variable: phyobj.pos,
             disabled: true,
             onChange: () => { monitor_ui_section.render(); render_frame(world, phyobj.id); }
