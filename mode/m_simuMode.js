@@ -126,20 +126,27 @@ function simuLoop(frame_ms) {
     var end_time = performance.now();
     last_backup_elapsed = end_time - last_backup_time;
 
-    // Adjust next frame timing
-    var elapsed = end_time - start_time;
+    // Adjust next frame timing (调整下一帧的定时/渲染策略)
+    var elapsed = end_time - start_time; // 计算本帧物理模拟花费的真实时间
+    
+    // 判断当前设备性能是否跟不上默认帧率的要求 (1000 / aniFPS_Default 通常约 16.6ms)
     const needAdjustment = (elapsed * (bkupAniSpeed / SETTINGS.aniSpeed) >= 1000 / aniFPS_Default);
+    
     if (needAdjustment) {
-        // adjust aniFPS first
+        // [策略1] 首先尝试降低帧率(FPS)来换取计算时间，勉强维持用户预设的播放速度
         var aniFPS_new = aniFPS_Default / (elapsed * (bkupAniSpeed / SETTINGS.aniSpeed) / (1000 / aniFPS_Default));
+        // 限制最低帧率为 30 FPS，保证最基本的视觉动画流畅度
         aniFPS = Math.max(30, aniFPS_new);
 
+        // 如果连降低到 30 FPS 都无法按时计算完，说明系统负载极高
         if (aniFPS !== aniFPS_new) {
-            // need further adjust SETTINGS.aniSpeed
-            SETTINGS.aniSpeed = (aniFPS / aniFPS_Default) * bkupAniSpeed;
+            // [策略2] 此时只能强制降低物理模拟的播放速度 (Time Scale)
+            SETTINGS.aniSpeed = (aniFPS_new / aniFPS_Default) * bkupAniSpeed;
+            // 更新UI以显示被降级后的真实模拟播放倍速
             aspdControl.textContent = `⏭ ${SETTINGS.aniSpeed.toFixed(1)}x`;
         }
     } else {
+        // 设备性能充足，恢复原本的默认最高帧率和用户的目标播放速度
         aniFPS = aniFPS_Default;
         SETTINGS.aniSpeed = bkupAniSpeed || 0;
         aspdControl.textContent = `⏭ ${SETTINGS.aniSpeed.toFixed(1)}x`;
