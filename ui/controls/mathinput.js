@@ -145,7 +145,7 @@ function expressionToLatex(expression, world = null) {
                             break;
                     }
 
-                    return `{${header}${placeholder}}^{${binaryVarId}}_{${_escape(var_id)}}`;
+                    return `{{${header}${placeholder}}^{${binaryVarId}}_{${_escape(var_id)}}}`;
                 });
             } else {
                 const regex = new RegExp(`\\b${keyword}\\b`, 'g');
