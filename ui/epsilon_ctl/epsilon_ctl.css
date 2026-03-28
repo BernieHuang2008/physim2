@@ -2,7 +2,7 @@
     display: none;
 }
 
-body[data-mode="SIMULATE"] .epsilon-control {
+body[data-mode=SIMULATE] .epsilon-control {
     display: inline-block;
 }
 

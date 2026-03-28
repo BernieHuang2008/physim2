@@ -57,12 +57,15 @@ function render_frame(world, focus_id = null, smooth_scroll = true) {
 }
 
 var _renderPending = false;
-function scheduleRender() {
+function scheduleRender(world, focus_id = null, smooth_scroll = true, postRenderScript = null) {
     if (!_renderPending) {
         _renderPending = true;
         requestAnimationFrame(() => {
             _renderPending = false;
-            render_frame();
+            render_frame(world, focus_id, smooth_scroll);
+            if (postRenderScript) {
+                postRenderScript();
+            }
         });
     }
 }
@@ -83,7 +86,7 @@ function render_phyobj(phyobj) {
         // bind events
         dom_element.onclick = PhyObjOnClickEvent(phyobj.world, phyobj.id);
         dom_element.onmousewheel = display_layer_select;
-        console.log(dom_element)
+        // console.log(dom_element)
 
         sim_anchor.appendChild(dom_element);
     }

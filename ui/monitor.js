@@ -83,6 +83,10 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
     assertMode([GlobalModes.SIMULATE])
     rdframe_setDefaultFocus(null);
 
+    // focus it
+    document.getElementsByClassName("po-focused").item(0)?.classList.remove("po-focused");
+    document.getElementById("phyobj-" + phyobj_id).classList.add("po-focused");
+
     monitor_ui_section.activate(return_to);
 
     // Prevent re-constructing

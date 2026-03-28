@@ -271,6 +271,7 @@ class UI_Section {
 
     _onDragStart(e) {
         if (e.target.tagName === 'BUTTON') return; // Don't drag if clicking buttons
+        
         this._isDragging = true;
         this._dragStartX = e.clientX;
         this._dragStartY = e.clientY;
@@ -280,6 +281,10 @@ class UI_Section {
         e.preventDefault();
         document.addEventListener('mousemove', this._onDragMove);
         document.addEventListener('mouseup', this._onDragEnd);
+
+        // move z-index to top
+        this.dom.remove();
+        this.area.appendChild(this.dom);
     }
 
     _onDragMove(e) {

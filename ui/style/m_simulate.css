@@ -17,10 +17,10 @@
     justify-content: center;
     margin: 0 1ch;
 }
-body[data-mode="SIMULATE"] #simulation-progress {
+body[data-mode=SIMULATE] #simulation-progress {
     display: block;
 }
-body[data-mode="SIMULATE"] #simulation-ctls {
+body[data-mode=SIMULATE] #simulation-ctls {
     display: flex;
 }
 

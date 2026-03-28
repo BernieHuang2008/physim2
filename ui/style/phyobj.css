@@ -19,7 +19,8 @@
     box-sizing: border-box;
 }
 
-body[data-mode=EDIT] .po-focused {
+body[data-mode=EDIT] .po-focused,
+body[data-mode=SIMULATE] .po-focused {
     outline: 2px dashed var(--color-500);
     outline-offset: 2px;
 }

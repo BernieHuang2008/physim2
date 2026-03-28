@@ -6,6 +6,7 @@ import { pg_about_show } from "./pg_about.js";
 import { globalWorld, World } from "../phy/World.js";
 import { scheduleRender } from "../sim/render_frame.js";
 import * as Noti from "./notification/notification.js";
+import { inspect_phyobj } from "./inspector.js";
 
 const menu_dom = document.getElementById("top-bar");
 const menu_lv2_dom = document.createElement("div");
@@ -111,7 +112,7 @@ const mainMenu = [
                                     var newWorld = World.fromJSON(json);
                                     globalWorld.reset(newWorld);
                                     console.log("Loaded world:", newWorld);
-                                    scheduleRender(newWorld);
+                                    scheduleRender(newWorld, newWorld.anchor, false, () => inspect_phyobj(newWorld, newWorld.anchor));
                                 } catch (error) {
                                     Noti.error(t("Failed to load world"), error.message);
                                     console.error('Error loading world:', error);
