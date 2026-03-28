@@ -42,7 +42,7 @@ window.mvc_helper = function (elem) {
         annoX: others.annoX || null,
         annoY: others.annoY || null,
         exprX: null,
-        exprY: null, 
+        ySeries: [],
         axis_match: others.axis_match || false
     };
 
@@ -50,27 +50,27 @@ window.mvc_helper = function (elem) {
         VarMon_config.annoX = t("Time / s");
         VarMon_config.annoY = others.annoY || `${var_id}[${vec_comp}]`;
         VarMon_config.exprX = `t`;
-        VarMon_config.exprY = `${var_id}[${vec_comp}]`;
+        VarMon_config.ySeries = [{ name: "Y", expr: `${var_id}[${vec_comp}]`, color: null }];
     } else {
         switch (vec_comp) {
             case "mag":
                 VarMon_config.annoX = t("Time / s");
                 VarMon_config.annoY = others.annoY || `|${var_id}|`;
                 VarMon_config.exprX = `t`;
-                VarMon_config.exprY = `norm(${var_id})`;
+                VarMon_config.ySeries = [{ name: "Y", expr: `norm(${var_id})`, color: null }];
                 break;
             case "vec":
                 VarMon_config.annoX = others.annoX || `${var_id}[1]}`;
                 VarMon_config.annoY = others.annoY || `${var_id}[2]}`;
                 VarMon_config.exprX = `${var_id}[1]`;
-                VarMon_config.exprY = `${var_id}[2]`;
+                VarMon_config.ySeries = [{ name: "Y", expr: `${var_id}[2]`, color: null }];
                 VarMon_config.axis_match = true;
                 break;
             default:
                 VarMon_config.annoX = t("Time / s");
                 VarMon_config.annoY = others.annoY || var_id;
                 VarMon_config.exprX = `t`;
-                VarMon_config.exprY = `${var_id}`;
+                VarMon_config.ySeries = [{ name: "Y", expr: `${var_id}`, color: null }];
         }
     }
 

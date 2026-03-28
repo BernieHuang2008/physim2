@@ -22,7 +22,7 @@ const simuMenu = [
                         id: Math.random(),
                         title: t("Untitled VarMon"),
                         exprX: "t",
-                        exprY: "undefined",
+                        ySeries: [{ name: "Y", expr: "undefined", color: "#1f77b4" }],
                         annoX: t("Time / s"),
                         annoY: t("Value"),
                         axis_match: false

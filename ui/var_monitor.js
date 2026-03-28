@@ -14,8 +14,10 @@ var current_time = -1;
 var current_time_ff_data = {};
 var current_time_var_data = {};
 
+const defaultColors = ['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF'];
+
 class VarMonitor {
-    constructor({id, title, exprX, exprY, annoX, annoY, axis_match = false}) {
+    constructor({ id, title, exprX, ySeries = [], annoX, annoY, axis_match = false }) {
         this.id = id;
         this.meta = {
             id: id,
@@ -23,9 +25,9 @@ class VarMonitor {
             annoX: annoX,
             annoY: annoY,
             exprX: exprX,
-            exprY: exprY,
+            ySeries: [],
             display: {
-                pos: [0, 0],
+                pos: [100, 100],
                 size: [600, 400],
                 disp_type: "plotly/scatter",
                 axis_match: axis_match,
@@ -35,8 +37,11 @@ class VarMonitor {
         this.data = {
             time: [],
             valueX: [],
-            valueY: [],
+            valueY: [], // Array of arrays, one for each series
         };
+
+        // Initialize valueY arrays for each series
+        ySeries.forEach((ycfg) => this.addYSeries(ycfg));
 
         this.gen_config();
         this.createPlotlyPlot();
@@ -47,7 +52,7 @@ class VarMonitor {
         this.plotly_layout = {
             margin: { t: 0, r: 0, b: 0, l: 0 },
             xaxis: { title: { text: this.meta.annoX }, automargin: true },
-            yaxis: { title: { text: this.meta.annoY }, automargin: true},
+            yaxis: { title: { text: this.meta.annoY }, automargin: true },
             autosize: true,
         };
 
@@ -62,6 +67,34 @@ class VarMonitor {
             displayModeBar: true,
             displaylogo: false
         };
+    }
+
+    addYSeries({ name = "Y" + (this.meta.ySeries.length + 1), expr = "0", color = null }) {
+        if (!color) {
+            color = defaultColors[this.meta.ySeries.length % defaultColors.length];
+        }
+
+        var item = {
+            name: name,
+            expr: expr,
+            exprVar: null, // placeholder
+            color: color
+        };
+
+        const fakeVar_expression_y = new FakeVarFromFunction(() => null, name, null, globalWorld);
+        fakeVar_expression_y.type = "derived";
+        fakeVar_expression_y.expression = item.expr;
+        fakeVar_expression_y.update_expression = (newExpr) => {
+            // update expr
+            item.expr = newExpr;
+            fakeVar_expression_y.expression = newExpr;
+            // clear existing data to avoid confusion
+            this.reset();
+        };
+
+        item.exprVar = fakeVar_expression_y;
+        this.meta.ySeries.push(item);
+        this.data.valueY.push([]);
     }
 
     createPlotlyPlot() {
@@ -148,11 +181,16 @@ class VarMonitor {
         infoDiv.style.display = 'none';
         contentContainer.appendChild(infoDiv);
 
-        Plotly.newPlot(this.plotDiv, [{
+        // Create plotly traces for each series
+        const traces = this.meta.ySeries.map((series, index) => ({
             x: this.data.valueX,
-            y: this.data.valueY,
+            y: this.data.valueY[index] || [],
             mode: 'scatter',
-        }], this.plotly_layout, this.plotly_config);
+            name: series.name,
+            line: { color: series.color }
+        }));
+
+        Plotly.newPlot(this.plotDiv, traces, this.plotly_layout, this.plotly_config);
 
         // Initial resize to fit container
         requestAnimationFrame(() => {
@@ -196,22 +234,7 @@ class VarMonitor {
             this.meta.exprX = newExpr;
             fakeVar_expression_x.expression = newExpr;
             // clear existing data to avoid confusion
-            this.data.time = [];
-            this.data.valueY = [];
-            this.data.valueX = [];
-        };
-
-        const fakeVar_expression_y = new FakeVarFromFunction(() => null, "Var Monitor Expr Var Y", null, globalWorld);
-        fakeVar_expression_y.type = "derived";
-        fakeVar_expression_y.expression = this.meta.exprY;
-        fakeVar_expression_y.update_expression = (newExpr) => {
-            // update expr
-            this.meta.exprY = newExpr;
-            fakeVar_expression_y.expression = newExpr;
-            // clear existing data to avoid confusion
-            this.data.time = [];
-            this.data.valueY = [];
-            this.data.valueX = [];
+            this.reset();
         };
 
         const fakeVar_title = new FakeVarFromFunction(() => null, "Var Monitor Title Var", null, globalWorld);
@@ -248,9 +271,69 @@ class VarMonitor {
                     this.meta.annoY = newValue;
                 }
             })
-            .addUIControl(UIControls.InputControls.InputMath, {
-                field: t('Expression (Y-axis)'),
-                variable: fakeVar_expression_y
+            .addUIControl(UIControls.Tables.ColumedList, {
+                field: t("Y-axis Series"),
+                iterator: this.meta.ySeries,
+                colums: [
+                    // Col 1: Name
+                    (series, index) => {
+                        let span = document.createElement("span");
+                        let input = document.createElement("input");
+                        input.type = "text";
+                        input.value = series.name;
+                        input.style.width = "40px";
+                        input.onchange = (e) => {
+                            series.name = e.target.value;
+                            this.updateFrame(); // Assuming updateFrame handles plotly layout updates if traces change
+                        }
+                        span.appendChild(input);
+                        return span;
+                    },
+                    // Col 2: Expression
+                    (series, index) => {
+                        return UIControls.InputControls.InputMath({
+                            field: "",
+                            variable: series.exprVar,
+                        });
+                    },
+                    // Col 3: Color and Delete
+                    (series, index) => {
+                        let span = document.createElement("span");
+
+                        let colorInput = document.createElement("input");
+                        colorInput.type = "color";
+                        colorInput.value = series.color || defaultColors[index % defaultColors.length];
+                        colorInput.style.marginRight = "5px";
+                        colorInput.onchange = (e) => {
+                            series.color = e.target.value;
+                            this.updateFrame();
+                        }
+                        span.appendChild(colorInput);
+
+                        const deleteBtn = document.createElement("span");
+                        deleteBtn.className = "small-button symbol red alert-theme";
+                        deleteBtn.innerHTML = "&#xE74D;";
+                        deleteBtn.onclick = () => {
+                            this.meta.ySeries.splice(index, 1);
+                            this.data.valueY.splice(index, 1);
+                            section_info.render();
+                            this.updateFrame();
+                        };
+                        span.appendChild(deleteBtn);
+
+                        return span;
+                    }
+                ],
+                onAdd: () => {
+                    const ycfg = {
+                        name: "Y" + (this.meta.ySeries.length + 1),
+                        expr: "0",
+                        color: null
+                    };
+                    this.addYSeries(ycfg);
+                    section_info.render();
+                    this.updateFrame();
+                }
             })
             .addSubsection(t("Settings"))
             .addUIControl(UIControls.InputControls.InputCheckbox, {
@@ -280,32 +363,45 @@ class VarMonitor {
     reset() {
         this.data.time = [];
         this.data.valueX = [];
-        this.data.valueY = [];
+        this.data.valueY = this.meta.ySeries.map(() => []);
     }
 
     evaluateAndAppend(time, scope) {
         let exprX = this.meta.exprX || "t";
-        let exprY = this.meta.exprY;
-        if (!exprY) return;
 
         let valX = math.evaluate(exprX, scope);
-        let valY = math.evaluate(exprY, scope);
 
         // append data
         this.data.time.push(time);
         this.data.valueX.push(valX);
-        this.data.valueY.push(valY);
+
+        this.meta.ySeries.forEach((series, index) => {
+            if (series.expr) {
+                try {
+                    let valY = math.evaluate(series.expr, scope);
+                    this.data.valueY[index].push(valY);
+                } catch (e) {
+                    this.data.valueY[index].push(null);
+                }
+            } else {
+                this.data.valueY[index].push(null);
+            }
+        });
     }
 
     updateFrame() {
         this.revision = (this.revision || 0) + 1;
         this.plotly_layout.datarevision = this.revision;
 
-        Plotly.react(this.plotDiv, [{
+        const traces = this.meta.ySeries.map((series, index) => ({
             x: this.data.valueX,
-            y: this.data.valueY,
-            type: 'scatter'
-        }], this.plotly_layout, this.plotly_config);
+            y: this.data.valueY[index] || [],
+            type: 'scatter',
+            name: series.name,
+            line: { color: series.color }
+        }));
+
+        Plotly.react(this.plotDiv, traces, this.plotly_layout, this.plotly_config);
     }
 }
 
