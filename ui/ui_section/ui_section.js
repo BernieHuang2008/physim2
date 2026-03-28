@@ -279,8 +279,8 @@ class UI_Section {
         this._dragStartTop = this.dom.offsetTop;
 
         e.preventDefault();
-        document.addEventListener('mousemove', this._onDragMove);
-        document.addEventListener('mouseup', this._onDragEnd);
+        this.dom.ownerDocument.addEventListener('mousemove', this._onDragMove);
+        this.dom.ownerDocument.addEventListener('mouseup', this._onDragEnd);
 
         // move z-index to top
         this.dom.remove();
@@ -298,8 +298,8 @@ class UI_Section {
 
     _onDragEnd() {
         this._isDragging = false;
-        document.removeEventListener('mousemove', this._onDragMove);
-        document.removeEventListener('mouseup', this._onDragEnd);
+        this.dom.ownerDocument.removeEventListener('mousemove', this._onDragMove);
+        this.dom.ownerDocument.removeEventListener('mouseup', this._onDragEnd);
     }
 
     _enableResizing() {
@@ -326,8 +326,8 @@ class UI_Section {
 
         e.preventDefault();
         e.stopPropagation(); // prevent drag
-        document.addEventListener('mousemove', this._onResizeMove);
-        document.addEventListener('mouseup', this._onResizeEnd);
+        this.dom.ownerDocument.addEventListener('mousemove', this._onResizeMove);
+        this.dom.ownerDocument.addEventListener('mouseup', this._onResizeEnd);
     }
 
     _onResizeMove(e) {
@@ -344,8 +344,8 @@ class UI_Section {
 
     _onResizeEnd() {
         this._isResizing = false;
-        document.removeEventListener('mousemove', this._onResizeMove);
-        document.removeEventListener('mouseup', this._onResizeEnd);
+        this.dom.ownerDocument.removeEventListener('mousemove', this._onResizeMove);
+        this.dom.ownerDocument.removeEventListener('mouseup', this._onResizeEnd);
     }
 }
 

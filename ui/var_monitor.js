@@ -126,7 +126,11 @@ class VarMonitor {
         };
 
         // Bind to center-bar
-        this.section.activateAt(document.getElementById("center-bar"));
+        if (external_window && !external_window.closed) {
+            this.section.activateAt(external_window.document.getElementById("external-center-bar"));
+        } else {
+            this.section.activateAt(document.getElementById("center-bar"));
+        }
 
         // Override drag/resize handlers to save state
         const oldDragEnd = this.section._onDragEnd.bind(this.section);
@@ -154,13 +158,7 @@ class VarMonitor {
         moreBtn.style.marginRight = '3ch';
         moreBtn.addEventListener('mousedown', (e) => e.stopPropagation()); // Prevent drag
         moreBtn.onclick = () => {
-            showContextMenu([
-                {
-                    type: "submenu",
-                    title: t("Info"),
-                    action: () => this.editInfo()
-                }
-            ], moreBtn);
+            this.editInfo();
         };
         // Insert before close button
         titleBar.insertBefore(moreBtn, closeBtn);
@@ -223,7 +221,11 @@ class VarMonitor {
             }
         }
 
-        section_info.activateAt($("#center-bar"));
+        if (external_window && !external_window.closed) {
+            section_info.activateAt(external_window.document.getElementById("external-center-bar"));
+        } else {
+            section_info.activateAt(document.getElementById("center-bar"));
+        }
 
         // fake vars
         const fakeVar_expression_x = new FakeVarFromFunction(() => null, "Var Monitor Expr Var X", null, globalWorld);
@@ -479,4 +481,34 @@ function VarMon_update_frame() {
     }
 }
 
-export { VarMonitor, varMonitorData, VarMon_add, VarMon_reset, VarMon_report_ff, VarMon_report_vars, VarMon_report_simend, VarMon_update_frame };
+var external_window = null;
+function VarMon_toggle_external_mode() {
+    if (external_window && !external_window.closed) {
+        external_window.focus();
+        return;
+    }
+
+    external_window = window.open('external_var_monitor.html', '_blank', 'width=800,height=600');
+    external_window.onload = () => {
+        external_window.document.title = t("External Var Monitor");
+        // Move all var monitor sections to external window
+        for (let monitor of Object.values(varMonitorData)) {
+            monitor.section.deactivate("VARMON:move_to_external");
+            monitor.section.activateAt(external_window.document.getElementById("external-center-bar"));
+        }
+
+        // hook
+        external_window.onbeforeunload = () => {
+            for (let monitor of Object.values(varMonitorData)) {
+                monitor.section.deactivate("VARMON:move_to_main");
+                monitor.section.activateAt(document.getElementById("center-bar"));
+            }
+        }
+    }
+
+    window.onbeforeunload = () => {
+        external_window.close();
+    }
+}
+
+export { VarMonitor, varMonitorData, VarMon_add, VarMon_reset, VarMon_report_ff, VarMon_report_vars, VarMon_report_simend, VarMon_update_frame, VarMon_toggle_external_mode };

@@ -7,7 +7,7 @@ import { scheduleRender } from "../sim/render_frame.js";
 import * as Inspector from "../ui/inspector.js";
 import { monitor_phyobj, monitor_ui_section } from "../ui/monitor.js";
 import { mainMenu, mkMenu } from "../ui/menu.js";
-import { VarMon_reset, VarMon_add } from "../ui/var_monitor.js";
+import { VarMon_reset, VarMon_add, VarMon_toggle_external_mode } from "../ui/var_monitor.js";
 
 const simuMenu = [
     ...mainMenu,
@@ -33,7 +33,7 @@ const simuMenu = [
                 type: "submenu",
                 title: t("Open External Monitor"),
                 action: function () {
-                    monitor_ui_section.open_external_window();
+                    VarMon_toggle_external_mode();
                 }
             }
         ],
