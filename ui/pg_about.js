@@ -11,16 +11,16 @@ function init_pg_about() {
         </div>
         <div class="pg-about-content">
             <h1 style="">PhySim 2</h1>
-            <p>Version: 2026-03-13.1<br>(Beta 2.0.6)</p>
+            <p>Version: 2026-03-28.2<br>(Beta 2.0.7)</p>
             
             <h5>© 2025-2026 BernieHuang</h5>
             
             
             <h2>Latest Updates</h2>
             <ul>
+                <li>Auto Completion for MathInput</li>
                 <li>Improve ForceField Visualize</li>
                 <li>Var Monitor</li>
-                <li>Improve FFD logic</li>
             </ul>
             <hr>
 

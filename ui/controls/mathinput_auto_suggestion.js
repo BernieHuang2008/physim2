@@ -159,7 +159,7 @@ function auto_suggest(world, input) {
                     cate: "VAR/" + v.master_phyobj.nickname,
                     nickname: v.nickname,
                     value: v.id,
-                    desc: `${t("Master")}: ${v.master_phyobj.nickname} (${v.master_phyobj.id})\n${t("Value")}: ${v.value}`
+                    desc: `ID: ${v.id}\n${t("Master")}: ${v.master_phyobj.nickname} (${v.master_phyobj.id})\n${t("Value")}: ${v.value}`
                 })),
                 // // 4. target vars (by nickname)
                 // ...Object.values(world.vars).map((v) => ({

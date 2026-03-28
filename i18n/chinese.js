@@ -12,6 +12,7 @@ const translations = {
     "Exp. Fd. Disp.": "指数场显示",
     "Linear Fd. Disp.": "线性场显示",
     "target property": "target 属性",
+    "External Var Monitor": "变量监视器",
 
     // ===============================
     // 物理量与属性 (Physical Properties)
@@ -114,7 +115,7 @@ const translations = {
     "Expression": "表达式",
     "X-axis Annotation": "X轴注解",
     "Y-axis Annotation": "Y轴注解",
-    "Expression (Y-axis)": "表达式（Y轴）",
+    "Y-axis Series": "多重数据",
     "Expression (X-axis)": "表达式（X轴）",
     "Match X/Y Axis Scale": "匹配X/Y轴比例",
 
