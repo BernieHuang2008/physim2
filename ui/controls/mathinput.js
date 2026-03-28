@@ -2,6 +2,7 @@ import { math } from '../../phyEngine/math.js';
 import * as Noti from '../notification/notification.js';
 import { t } from '../../i18n/i18n.js';
 import { mkHelp } from './help.js';
+import { auto_suggest } from './mathinput_auto_suggestion.js';
 
 const VAR_IN_MATH_SPECIAL_CHAR = "\u200B"; //"🥒";
 const VAR_IN_MATH_SPECIAL_CHAR_HEX = "200B";
@@ -29,7 +30,6 @@ function _decodeBin(str) {
     }
     return decoded;
 }
-
 
 // MathJax initialization
 let mathJaxLoaded = false;
@@ -316,7 +316,7 @@ function createMathInput(container, variable, disabled = false, onChange = null)
     // Create the HTML structure
     container.innerHTML = `
         <div class="math-display-area ${disabled ? 'disabled' : ''}" id="mathdisplay"></div>
-        <input type="text" class="math-input hidden" id="input" 
+        <input type="text" class="math-input hidden" id="input" autocomplete="off"
                value="=${variable.expression}" ${disabled ? "disabled" : ""} />
         <span class="variable-value-display" id="value">= ${variable.value}</span>
     `;
@@ -417,6 +417,10 @@ function createMathInput(container, variable, disabled = false, onChange = null)
     mathDisplay.addEventListener('click', toggleEditMode);
 
     input.addEventListener('keydown', (e) => {
+        if (handle_suggestion_keydown(e)) {
+            return;
+        }
+
         if (e.key === 'Enter') {
             toggleEditMode();
         } else if (e.key === 'Escape') {
@@ -425,10 +429,45 @@ function createMathInput(container, variable, disabled = false, onChange = null)
         }
     });
 
-    input.addEventListener('blur', () => {
-        if (isEditing) {
-            toggleEditMode();
+    input.addEventListener('input', (e) => {
+        const words = input.value.slice(1).split(/[\s\(\)\+\-\*\/\^,]+/);
+        const last_word = words[words.length - 1];
+
+        if (last_word.length > 0) {
+            const suggestions = auto_suggest(variable.world, last_word);
+            display_suggestions(input, suggestions, (selected) => {
+                const textBefore = input.value.slice(0, input.value.lastIndexOf(last_word));
+    
+                let toInsert = selected.item.value;
+                const cursorOffset = toInsert.indexOf("&");
+                if (cursorOffset !== -1) {
+                    toInsert = toInsert.replace("&", "");
+                }
+                
+                input.value = textBefore + toInsert;
+                
+                if (cursorOffset !== -1) {
+                    const newPos = textBefore.length + cursorOffset;
+                    input.setSelectionRange(newPos, newPos);
+                } else {
+                    input.setSelectionRange(input.value.length, input.value.length);
+                }
+                
+                input.focus();
+                input.dispatchEvent(new Event('input'));
+            });
+        } else {
+            close_suggestions();
         }
+    });
+
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            close_suggestions();
+            if (isEditing) {
+                toggleEditMode();
+            }
+        }, 150);
     });
 
     // Initial value display update
@@ -486,6 +525,209 @@ function mkVariableDetails(world, var_id, targetElement) {
     mkHelp(targetElement, {
         content: details
     });
+}
+
+let current_suggestions = null;
+let current_suggestion_idx = 0;
+let current_on_select = null;
+
+function display_suggestions(inputElem, suggestions, onSelect) {
+    close_suggestions();
+    if (!suggestions || suggestions.length === 0) return;
+
+    current_suggestions = suggestions;
+    current_suggestion_idx = 0;
+    current_on_select = onSelect;
+
+    const suggestBox = document.createElement('div');
+    suggestBox.id = 'vscode-suggest-box';
+
+    const descBox = document.createElement('div');
+    descBox.id = 'vscode-suggest-desc';
+
+    document.body.appendChild(suggestBox);
+    document.body.appendChild(descBox);
+
+    suggestions.forEach((itemObj, index) => {
+        const item = itemObj.item;
+        const matches = itemObj.matches;
+        
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'suggest-item';
+
+        // Parse matches for highlighting
+        // `nickname` is what we display
+        let nicknameHtml = "";
+        let nickname = item.nickname || "";
+        let matchIndices = [];
+        
+        if (matches) {
+            const nicknameMatch = matches.find(m => m.key === 'nickname');
+            if (nicknameMatch) {
+                matchIndices = nicknameMatch.indices; // Array of [start, end]
+            }
+        }
+        
+        // Build highlighted string
+        let currentIndex = 0;
+        for (let i = 0; i < matchIndices.length; i++) {
+            let start = matchIndices[i][0];
+            let end = matchIndices[i][1];
+            
+            // Add unhighlighted text before match
+            if (start > currentIndex) {
+                nicknameHtml += `<span class="suggest-nickname-normal">${nickname.substring(currentIndex, start)}</span>`;
+            }
+            
+            // Add highlighted match (blue and bold)
+            nicknameHtml += `<span class="suggest-nickname-match">${nickname.substring(start, end + 1)}</span>`;
+            
+            currentIndex = end + 1;
+        }
+        
+        // Add remaining text
+        if (currentIndex < nickname.length) {
+            nicknameHtml += `<span class="suggest-nickname-normal">${nickname.substring(currentIndex)}</span>`;
+        }
+        
+        // If no match on nickname, just bold it
+        if (!nicknameHtml) {
+            nicknameHtml = `<span class="suggest-nickname-normal">${nickname}</span>`;
+        }
+
+        const cateSpan = `<span class="suggest-cate">${item.cate || ''}</span>`;
+
+        itemDiv.innerHTML = `<div>${nicknameHtml}</div>${cateSpan}`;
+
+        itemDiv.addEventListener('mousedown', (e) => {
+            e.preventDefault(); 
+            selectItem(index);
+        });
+
+        itemDiv.addEventListener('mouseenter', () => {
+            updateActiveItem(index);
+        });
+
+        suggestBox.appendChild(itemDiv);
+    });
+
+    const rect = inputElem.getBoundingClientRect();
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
+    
+    // Position near bottom of input
+    let topPos = rect.bottom + scrollY;
+    if (topPos + 250 > window.innerHeight + scrollY) {
+        // Show above input if it goes off bottom
+        topPos = rect.top + scrollY - Math.min(250, suggestions.length * 25 + 2);
+    }
+    
+    suggestBox.style.top = `${topPos}px`;
+    suggestBox.style.left = `${rect.left + scrollX}px`;
+
+    updateActiveItem(0);
+}
+
+function updateActiveItem(index) {
+    if (!current_suggestions) return;
+    
+    const suggestBox = document.getElementById('vscode-suggest-box');
+    if (!suggestBox) return;
+
+    if (index < 0) index = current_suggestions.length - 1;
+    if (index >= current_suggestions.length) index = 0;
+    
+    const items = suggestBox.children;
+    
+    if (items[current_suggestion_idx]) {
+        items[current_suggestion_idx].classList.remove('suggest-item-active');
+    }
+    
+    current_suggestion_idx = index;
+    
+    const activeElem = items[current_suggestion_idx];
+    if (activeElem) {
+        activeElem.classList.add('suggest-item-active');
+        
+        // Ensure in view
+        const boxRect = suggestBox.getBoundingClientRect();
+        const itemRect = activeElem.getBoundingClientRect();
+        if (itemRect.bottom > boxRect.bottom) {
+            suggestBox.scrollTop += (itemRect.bottom - boxRect.bottom);
+        } else if (itemRect.top < boxRect.top) {
+            suggestBox.scrollTop -= (boxRect.top - itemRect.top);
+        }
+    }
+
+    updateSidePanel();
+}
+
+function updateSidePanel() {
+    const descBox = document.getElementById('vscode-suggest-desc');
+    const suggestBox = document.getElementById('vscode-suggest-box');
+    if (!descBox || !suggestBox) return;
+
+    const activeSuggestion = current_suggestions[current_suggestion_idx]?.item;
+    if (!activeSuggestion || !activeSuggestion.desc) {
+        descBox.style.display = 'none';
+        return;
+    }
+
+    descBox.innerHTML = `<b>${activeSuggestion.nickname}</b><br><br>${activeSuggestion.desc.replace(/\\n/g, '<br>')}`;
+    descBox.style.display = 'block';
+
+    const suggestRect = suggestBox.getBoundingClientRect();
+    const spaceOnRight = window.innerWidth - suggestRect.right;
+    const spaceOnLeft = suggestRect.left;
+
+    let descTopPos = suggestRect.top + window.scrollY;
+
+    descBox.style.top = `${descTopPos}px`;
+
+    if (spaceOnRight > 320 || spaceOnRight >= spaceOnLeft) {
+        descBox.style.left = `${suggestRect.right + window.scrollX}px`;
+    } else {
+        descBox.style.left = `${suggestRect.left - 320 + window.scrollX}px`; 
+    }
+}
+
+function selectItem(index) {
+    if (current_suggestions && current_suggestions[index] && current_on_select) {
+        current_on_select(current_suggestions[index]);
+        close_suggestions();
+    }
+}
+
+function close_suggestions() {
+    const box = document.getElementById('vscode-suggest-box');
+    const desc = document.getElementById('vscode-suggest-desc');
+    if (box) box.remove();
+    if (desc) desc.remove();
+    current_suggestions = null;
+    current_on_select = null;
+}
+
+function handle_suggestion_keydown(e) {
+    if (!current_suggestions) return false;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        updateActiveItem(current_suggestion_idx + 1);
+        return true;
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        updateActiveItem(current_suggestion_idx - 1);
+        return true;
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        selectItem(current_suggestion_idx);
+        return true;
+    } else if (e.key === 'Escape') {
+        e.preventDefault();
+        close_suggestions();
+        return true;
+    }
+    return false;
 }
 
 export {

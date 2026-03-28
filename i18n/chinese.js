@@ -11,6 +11,7 @@ const translations = {
     "Force Field": "力场",
     "Exp. Fd. Disp.": "指数场显示",
     "Linear Fd. Disp.": "线性场显示",
+    "target property": "target 属性",
 
     // ===============================
     // 物理量与属性 (Physical Properties)
@@ -426,6 +427,11 @@ const translations = {
             <li><code>v</code>: <i>被作用对象</i> 的速度向量</li>
             <li><code>mass</code>: <i>被作用对象</i> 的质量</li>
             <li><code>time</code>: 当前的模拟时间</li>
+        </ul>
+        对于 <code>FFD</code>（被动力场），还可以访问以下变量：
+        <ul>
+            <li><code>F</code>: 被作用对象 所受合力</li>
+            <li><code>a</code>: 被作用对象 所受合力的加速度</li>
         </ul>
         </p>
         `,
