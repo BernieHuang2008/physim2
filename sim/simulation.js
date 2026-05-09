@@ -101,8 +101,10 @@ class Simulation {
             var ax = force[0] / obj.mass.value || 0;
             var ay = force[1] / obj.mass.value || 0;
             // pos
-            var dx = obj.velocity.value[0] * dt + 0.5 * ax * dt ** 2;
-            var dy = obj.velocity.value[1] * dt + 0.5 * ay * dt ** 2;
+            // var dx = obj.velocity.value[0] * dt + 0.5 * ax * dt ** 2;
+            // var dy = obj.velocity.value[1] * dt + 0.5 * ay * dt ** 2;
+            var dx = ax / (ax**2 + ay**2)**0.5 * 0.001 || 0;
+            var dy = ay / (ax**2 + ay**2)**0.5 * 0.001 || 0;
             if (dx != NaN && dy != NaN) obj.pos.update([obj.pos.value[0] + dx, obj.pos.value[1] + dy]);
             // velocity
             var dvx = ax * dt;
