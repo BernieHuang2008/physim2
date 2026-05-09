@@ -2,6 +2,7 @@ import { math } from '../phyEngine/math.js';
 import { IDObject } from './idutils.js';
 import { t } from '../i18n/i18n.js';
 import { po_type_encode } from '../utils.js';
+import { _getDependencies } from './Var.js';
 
 class ForceField extends IDObject {
     // metadata
@@ -93,19 +94,32 @@ class ForceField extends IDObject {
     judge_condition(phyobject, time, vars = {}) {
         var scope = this._compute_scope(phyobject, time, vars);
 
+        // asign undefined to missing variables, to prevent mathjs error
+        _getDependencies(this.condition).forEach(varid => {
+            if (!(varid in scope)) {
+                scope[varid] = undefined;
+            }
+        });
+
         // evaluate condition
         var condition = this.compiled_condition.evaluate(scope);
-        return condition === true;
+        return Boolean(condition);
     }
 
     _compute_force(phyobject, time, vars = {}, total_force = null) {
         var scope = this._compute_scope(phyobject, time, vars, total_force);
 
         // evaluate condition
-        var condition = this.compiled_condition.evaluate(scope);
-        if (condition === false) {
+        if (this.judge_condition(phyobject, time, vars) === false) {
             return null;
         }
+
+        // asign undefined to missing variables, to prevent mathjs error
+        _getDependencies(this.condition).forEach(varid => {
+            if (!(varid in scope)) {
+                scope[varid] = undefined;
+            }
+        });
 
         // calculate force
         var force = this.compiled_expression.evaluate(scope);

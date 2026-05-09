@@ -3,6 +3,37 @@ import { IDObject } from './idutils.js';
 import { t } from '../i18n/i18n.js';
 import * as Noti from '../ui/notification/notification.js';
 
+
+function _getDependencies(expression) {
+    const expr = math.parse(expression);
+    const deps = new Set();
+    const funcs = new Set();
+
+    expr.transform(function (node, path, parent) {
+        if (node.isSymbolNode && !node.isFunctionNode) {
+            // 排除内置函数，只收集变量
+            const exclude_list = [
+                // built-in constants
+                'e', 'E', 'i', 'Infinity', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'NaN',
+                'null', 'phi', 'pi', 'PI', 'SQRT1_2', 'SQRT2', 'tau', 'undefined',
+                // runtime vars
+                'type', 'pos', 'v', 'mass', 'time', 'dt', 'F', 'a'
+            ];
+
+            if (!exclude_list.includes(node.name)) {
+                deps.add(node.name)
+            }
+        }
+        if (node.isFunctionNode) {
+            funcs.add(node.name)
+        }
+        return node
+    });
+
+    return Array.from(deps.difference(funcs));
+    // return Array.from(deps).filter(dep => !funcs.has(dep));
+}
+
 class Variable extends IDObject {
     // metadata
     type;  // "immediate" | "derived"
@@ -25,7 +56,7 @@ class Variable extends IDObject {
     compiled_expression;
     dependencies = [];
 
-    constructor(nickname, value, type = "immediate", id=null) {
+    constructor(nickname, value, type = "immediate", id = null) {
         super(id);
         this.reset(nickname, value, type);
     }
@@ -66,36 +97,6 @@ class Variable extends IDObject {
      */
     resetWithParams({ nickname, value, type = "immediate" }) {
         this.reset(nickname || this.nickname, value, type);
-    }
-
-    _getDependencies(expression) {
-        const expr = math.parse(expression);
-        const deps = new Set();
-        const funcs = new Set();
-
-        expr.transform(function (node, path, parent) {
-            if (node.isSymbolNode && !node.isFunctionNode) {
-                // 排除内置函数，只收集变量
-                const exclude_list = [
-                    // built-in constants
-                    'e', 'E', 'i', 'Infinity', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'NaN',
-                    'null', 'phi', 'pi', 'PI', 'SQRT1_2', 'SQRT2', 'tau', 'undefined',
-                    // runtime vars
-                    'type', 'pos', 'v', 'mass', 'time', 'dt', 'F', 'a'
-                ];
-
-                if (!exclude_list.includes(node.name)) {
-                    deps.add(node.name)
-                }
-            }
-            if (node.isFunctionNode) {
-                funcs.add(node.name)
-            }
-            return node
-        });
-
-        return Array.from(deps.difference(funcs));
-        // return Array.from(deps).filter(dep => !funcs.has(dep));
     }
 
     /**
@@ -200,7 +201,7 @@ class Variable extends IDObject {
 
             this.compiled_expression = math.compile(expression);
             this.expression = expression;
-            this.dependencies = this._getDependencies(expression);
+            this.dependencies = _getDependencies(expression);
 
             var circular_check = this.world && this.checkCircularDependency(this.world.vars);
             if (circular_check == null) {
@@ -211,7 +212,7 @@ class Variable extends IDObject {
                 // If a circular dependency is detected, revert to the old expression
                 this.expression = old_expression;
                 this.compiled_expression = math.compile(old_expression);
-                this.dependencies = this._getDependencies(old_expression);
+                this.dependencies = _getDependencies(old_expression);
 
                 throw new Error("Circular dependency detected. Expression reverted to previous valid state.");
             }
@@ -227,7 +228,7 @@ class Variable extends IDObject {
         }
     }
 
-    calc(variableRegistry = {}, time=0) {
+    calc(variableRegistry = {}, time = 0) {
         if (this.type === "immediate") {
             // do nothing
         } else if (this.type === "derived") {
@@ -272,14 +273,14 @@ class Variable extends IDObject {
         return variable;
     }
 
-    _master=null;
+    _master = null;
     get master_phyobj() {
         if (this._master) {
             return this._master;
         }
 
         if (this.id.startsWith("VAR_OBJ_")) {
-            this._master = this.world.phyobjs[this.id.slice(this.id.indexOf("_")+1, this.id.lastIndexOf("_"))];
+            this._master = this.world.phyobjs[this.id.slice(this.id.indexOf("_") + 1, this.id.lastIndexOf("_"))];
             return this._master;
         }
 
@@ -295,4 +296,4 @@ class Variable extends IDObject {
     }
 }
 
-export { Variable };
+export { Variable, _getDependencies };

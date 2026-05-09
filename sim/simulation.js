@@ -67,14 +67,16 @@ class Simulation {
                     ffd_id = ff_id; // record FFD id
                 } else {
                     var force = ff.compute_force(obj, this.time, vars);
-                    total_force[0] += force[0] || 0;
-                    total_force[1] += force[1] || 0;
+                    if (force && Array.isArray(force) && force.length >= 2) {
+                        total_force[0] += force[0] || 0;
+                        total_force[1] += force[1] || 0;
 
-                    // var Monitor Reporting
-                    VarMon_report_ff(this.world, this.time, ff_id, Math.hypot(force[0], force[1]));
+                        // var Monitor Reporting
+                        VarMon_report_ff(this.world, this.time, ff_id, Math.hypot(force[0], force[1]));
+                    }
                 }
             }
-            
+
             // post process FFD
             if (ffd_id !== null) {
                 var ffd_force = this.world.ffs[ffd_id].compute_force_ffd(obj, this.time, vars, total_force);
