@@ -1,0 +1,165 @@
+<h1>Settings</h1>
+<hr>
+
+<!-- 
+
+Settings (Localstorage.=["physim2-settings"]):
+
+{
+  "ai": {
+    "source": "localStorage", 
+    "tier": "high", 
+    "custom": {
+      "endpoint": "",
+      "token": "",
+      "model": ""
+    }
+  }
+}
+
+
+-->
+
+
+<!-- LLM SETTINGS -->
+<div id="llm-settings-container">
+    <h2>LLM Settings</h2>
+
+    <div style="margin-bottom: 15px;">
+        <label>
+            <input type="radio" name="ai-source" value="localStorage" id="ai-source-local">
+            LocalStorage.AI (inter-site shared)
+        </label>
+        <br>
+        <label>
+            <input type="radio" name="ai-source" value="custom" id="ai-source-custom">
+            Custom LLM API
+        </label>
+    </div>
+
+    <!-- Panel for Local Storage preset selection -->
+    <div id="panel-local-ai" style="display: none; margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+        <h3>Select AI Tier</h3>
+        <select id="local-ai-tier-select" style="width: 350px; padding: 5px;">
+            <!-- Options dynamically populated -->
+        </select>
+    </div>
+
+    <!-- Panel for Custom AI configuration -->
+    <div id="panel-custom-ai" style="display: none; margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+        <h3>Custom AI Configuration</h3>
+        <div style="margin-bottom: 8px;">
+            <label style="display:inline-block; width:80px;">Endpoint:</label>
+            <input type="text" id="custom-ai-endpoint" style="width: 300px;">
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="display:inline-block; width:80px;">Model:</label>
+            <input type="text" id="custom-ai-model" style="width: 300px;">
+        </div>
+        <div style="margin-bottom: 8px;">
+            <label style="display:inline-block; width:80px;">Token:</label>
+            <input type="password" id="custom-ai-token" style="width: 300px;">
+        </div>
+    </div>
+
+    <button id="save-settings-btn" style="padding: 5px 15px;">Save Settings</button>
+    <span id="save-status" style="color: green; margin-left: 10px; display: none;">Saved successfully!</span>
+
+
+
+    <script>
+        // 1. Fetch AI configurations from global localStorage ('AI' key)
+        let globalAiConfig = {};
+        try {
+            globalAiConfig = JSON.parse(localStorage.getItem('AI') || '{}');
+        } catch (e) { console.error('Error parsing global AI config:', e); }
+
+        const llmTiers = globalAiConfig.llm || {};
+        const tierSelect = document.getElementById('local-ai-tier-select');
+
+        ['low', 'medium', 'high'].forEach(tier => {
+            const data = llmTiers[tier] || {};
+            const modelName = data.model ? data.model : 'No model set';
+
+            const option = document.createElement('option');
+            option.value = tier;
+            // Appending the model name in brackets
+            option.textContent = `${tier} (${modelName})`;
+            tierSelect.appendChild(option);
+        });
+
+        // 2. Fetch or Init physim2-settings
+        let appSettings = {};
+        try {
+            appSettings = JSON.parse(localStorage.getItem('physim2-settings') || '{}');
+        } catch (e) { }
+
+        if (!appSettings.ai) {
+            appSettings.ai = {
+                source: 'localStorage', // 'localStorage' or 'custom'
+                tier: 'high',
+                custom: { endpoint: '', token: '', model: '' }
+            };
+        }
+
+        // 3. Populate form based on current physim2-settings
+        if (appSettings.ai.source === 'localStorage') {
+            document.getElementById('ai-source-local').checked = true;
+        } else {
+            document.getElementById('ai-source-custom').checked = true;
+        }
+
+        tierSelect.value = appSettings.ai.tier || 'high';
+
+        document.getElementById('custom-ai-endpoint').value = appSettings.ai.custom?.endpoint || '';
+        document.getElementById('custom-ai-token').value = appSettings.ai.custom?.token || '';
+        document.getElementById('custom-ai-model').value = appSettings.ai.custom?.model || '';
+
+        // 4. UI toggles for panels
+        const panelLocal = document.getElementById('panel-local-ai');
+        const panelCustom = document.getElementById('panel-custom-ai');
+
+        const updatePanels = () => {
+            if (document.getElementById('ai-source-local').checked) {
+                panelLocal.style.display = 'block';
+                panelCustom.style.display = 'none';
+            } else {
+                panelLocal.style.display = 'none';
+                panelCustom.style.display = 'block';
+            }
+        };
+
+        document.getElementById('ai-source-local').addEventListener('change', updatePanels);
+        document.getElementById('ai-source-custom').addEventListener('change', updatePanels);
+
+        // Initial panel state
+        updatePanels();
+
+        // 5. Save functionality
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+            const source = document.getElementById('ai-source-local').checked ? 'localStorage' : 'custom';
+            const tier = tierSelect.value;
+            const customEndpoint = document.getElementById('custom-ai-endpoint').value;
+            const customToken = document.getElementById('custom-ai-token').value;
+            const customModel = document.getElementById('custom-ai-model').value;
+
+            appSettings.ai = {
+                source: source,
+                tier: tier,
+                custom: {
+                    endpoint: customEndpoint,
+                    token: customToken,
+                    model: customModel
+                }
+            };
+
+            localStorage.setItem('physim2-settings', JSON.stringify(appSettings));
+
+            const status = document.getElementById('save-status');
+            status.style.display = 'inline';
+            setTimeout(() => status.style.display = 'none', 2000);
+        });
+    </script>
+</div>
+
+<br><br><br><br><br>

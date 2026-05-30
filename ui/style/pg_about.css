@@ -14,13 +14,27 @@
     float: left;
 }
 
-.pg-about-leftbar>li:hover {
-    background-color: #0e5c2f !important;
-}
 .pg-about-leftbar>li {
     list-style-type: none;
     display: block;
     padding: calc(30 / 2000 * 100vh) 0 calc(30 / 2000 * 100vh) 0;
     text-align: center;
     width: 100%;
+    user-select: none;
+}
+.pg-about-leftbar>li:hover {
+    background-color: #0e5c2f !important;
+}
+.pg-about-leftbar>li.selected {
+    background-color: #004b1c !important;
+}
+
+.pg-about-content {
+    user-select: none;
+}
+
+.pg-about-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
