@@ -5,7 +5,7 @@ import { monitor_phyobj } from "../ui/monitor.js";
 
 function PhyObjOnClickEvent(world, phyobjid) {
     return function (event) {
-        console.log("Clicked on phyobj id:", phyobjid);
+        // console.log("[Event] Clicked on phyobj id:", phyobjid);
         switch (getMode()) {
             case GlobalModes.EDIT:
                 inspect_phyobj(world, phyobjid);

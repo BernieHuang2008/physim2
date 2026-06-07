@@ -508,7 +508,7 @@ function mkVariableDetails(world, var_id, targetElement) {
     }
 
     const master_id = variable.master_phyobj.id;
-    console.log(master_id)
+    // console.log(master_id)
     const master_name = master_id ? (world.phyobjs[master_id] ? world.phyobjs[master_id].nickname : "N/A") : "N/A";
 
     const details = `

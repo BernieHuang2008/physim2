@@ -28,7 +28,7 @@ function init_pg_about() {
 	content_dom.style.width = `calc(100vw - ${0.11667 * window.outerWidth}px - ${2 * 0.0367 * window.outerWidth}px)`;
 
     leftbar_dom.addEventListener("click", (e) => {
-        console.log("Leftbar clicked:", e.target);
+        // console.log("Leftbar clicked:", e.target);
 
         if (e.target.tagName !== "LI") return;
 

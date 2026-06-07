@@ -146,7 +146,7 @@ var cache_world_varnum = -1;
 
 function auto_suggest(world, input) {
     if (Object.keys(world.vars).length !== cache_world_varnum) {
-        console.log("Updating auto-suggest cache for world vars...");
+        // console.log("Updating auto-suggest cache for world vars...");
         cache_world_varnum = Object.keys(world.vars).length;
         fuse_world = new Fuse(
             [

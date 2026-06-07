@@ -35,7 +35,7 @@ function revY(y) {
 }
 
 function render_frame(world, focus_id = null, smooth_scroll = true) {
-    console.log("Rendering frame...");
+    console.log("[Render] Rendering frame...");
 
     if (!world) {
         world = globalWorld;

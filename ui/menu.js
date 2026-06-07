@@ -125,10 +125,10 @@ const mainMenu = [
                                     }
 
                                     curr_proj_name = file.name;
-                                    console.log("Loaded world:", curr_proj_name, globalWorld);
+                                    console.log("[File] Loaded world:", curr_proj_name, globalWorld);
                                 } catch (error) {
                                     Noti.error(t("Failed to load world"), error.message);
-                                    console.error('Error loading world:', error);
+                                    console.error('[File] Error loading world:', error);
                                 }
                             };
                             reader.readAsText(file);

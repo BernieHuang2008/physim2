@@ -23,7 +23,7 @@ function getMode() {
 
 function switchMode(newMode) {
     if (newMode === MODE) {
-        console.log("Already in mode:", newMode);
+        console.log("[Mode] Already in mode:", newMode);
         return;
     }
 
@@ -31,11 +31,11 @@ function switchMode(newMode) {
 
     if (!isOK) {
         Noti.error(t("Mode Switch Aborted"), t("Current mode failed to clean up properly: ")+t(MODE));
-        console.warn("Mode Switch Aborted.");
+        console.warn("[Mode] Mode Switch Aborted.");
         return;
     }
     
-    console.log("Mode Switch to:", newMode);
+    console.log("[Mode] Mode Switch to:", newMode);
 
     MODE = newMode;
     document.body.dataset.mode = newMode;

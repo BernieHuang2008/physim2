@@ -79,7 +79,7 @@ function display_layer_select(e) {
         }
 
         var current_index = overlayed_phyobjs.findIndex(po => po.id === e.target.dataset.phyobjid);
-        console.log("Overlayed phyobjs:", overlayed_phyobjs, "Current index:", current_index);
+        // console.log("Overlayed phyobjs:", overlayed_phyobjs, "Current index:", current_index);
 
         var new_index = (current_index + deltaY + overlayed_phyobjs.length) % overlayed_phyobjs.length;
         var new_po = overlayed_phyobjs[new_index];
