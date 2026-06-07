@@ -186,7 +186,7 @@ function init_ramble() {
 
     // Voice Icon SVG
     rambleBtn.innerHTML = `
-        <img alt="Ramble" src="/assets/icons/ramble_icon.svg">
+        <img alt="Ramble" src="./assets/icons/ramble_icon.svg">
     `;
     const rambleImg = rambleBtn.querySelector('img');
 
@@ -237,12 +237,12 @@ function init_ramble() {
         e.preventDefault();
         dom.rambleContentArea.classList.add('drag-over');
         dom.rambleBtn.classList.add('drag-over');
-        dom.rambleImg.src = "/assets/icons/ramble_eating.svg";
+        dom.rambleImg.src = "./assets/icons/ramble_eating.svg";
     }
     function handleDragLeave(e) {
         dom.rambleContentArea.classList.remove('drag-over');
         dom.rambleBtn.classList.remove('drag-over');
-        dom.rambleImg.src = "/assets/icons/ramble_icon.svg";
+        dom.rambleImg.src = "./assets/icons/ramble_icon.svg";
     }
     function handleDrop(e) {
         e.preventDefault();
@@ -258,7 +258,7 @@ function init_ramble() {
         // process drop
         dom.rambleContentArea.classList.remove('drag-over');
         dom.rambleBtn.classList.remove('drag-over');
-        dom.rambleImg.src = "/assets/icons/ramble_icon.svg";
+        dom.rambleImg.src = "./assets/icons/ramble_icon.svg";
 
         const files = e.dataTransfer.files;
         if (files.length > 0) {

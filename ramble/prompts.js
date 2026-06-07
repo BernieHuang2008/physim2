@@ -1,5 +1,5 @@
 async function _getdocs(docs_name) {
-    const response = await fetch(`/docs/${docs_name}`);
+    const response = await fetch(`./docs/${docs_name}`);
     return await response.text();
 }
 
