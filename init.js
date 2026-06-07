@@ -49,3 +49,7 @@ mkMenu(mainMenu);
 import { createLeftBar } from "./ui/leftbar.js";
 createLeftBar();
 
+/* ---- Ramble ---- */
+import { init_ramble } from "./ramble/ramble.js";
+init_ramble();
+

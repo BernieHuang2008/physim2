@@ -3,10 +3,12 @@ import { floating_section_expand, floatsec_utils_hide_all } from "./floatsec_uti
 import { t } from "../i18n/i18n.js";
 import { switchMode, GlobalModes } from "../mode/global_mode.js";
 import { pg_about_show } from "./pg_about.js";
-import { globalWorld, World } from "../phy/World.js";
 import { scheduleRender } from "../sim/render_frame.js";
 import * as Noti from "./notification/notification.js";
 import { inspect_phyobj } from "./inspector.js";
+import { globalWorld, World } from "../phy/World.js";
+import * as varmon from "./var_monitor.js";
+import filev2 from "../phy/filev2.js";
 
 const menu_dom = document.getElementById("top-bar");
 const menu_lv2_dom = document.createElement("div");
@@ -78,6 +80,60 @@ const mainMenu = [
     {
         title: t("File"),
         items: [
+            {
+                type: "submenu",
+                title: t("Save"),
+                action: function () {
+                    var json = filev2.pack();
+                    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json, specialJsonStringifyReplacer));
+                    var downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href", dataStr);
+                    downloadAnchorNode.setAttribute("download", "physim_world_static.json");
+                    document.body.appendChild(downloadAnchorNode);
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                }
+            },
+            {
+                type: "submenu",
+                title: t("Open"),
+                action: function () {
+                    var input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = function (event) {
+                        var file = event.target.files[0];
+                        if (file) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                try {
+                                    var json = JSON.parse(e.target.result, specialJsonStringifyReviver);
+                                    
+                                    switch (json.version) {
+                                        case undefined:
+                                            // Noti.warning(t("Old file format detected, trying to load with legacy loader..."));
+                                            globalWorld.reset(World.fromJSON(json));
+                                            scheduleRender(globalWorld, globalWorld.anchor, false, () => inspect_phyobj(globalWorld, globalWorld.anchor));
+                                            break;
+                                        case "file-v2":
+                                            filev2.load(json);
+                                            break;
+                                        default:
+                                            Noti.error(t("Unsupported file version: " + json.version));
+                                    }
+
+                                    console.log("Loaded world:", globalWorld);
+                                } catch (error) {
+                                    Noti.error(t("Failed to load world"), error.message);
+                                    console.error('Error loading world:', error);
+                                }
+                            };
+                            reader.readAsText(file);
+                        }
+                    };
+                    input.click();
+                }
+            },
             {
                 type: "hr"
             },

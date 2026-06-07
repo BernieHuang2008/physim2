@@ -434,6 +434,10 @@ const translations = {
             <li><code>F</code>: 被作用对象 所受合力</li>
             <li><code>a</code>: 被作用对象 所受合力的加速度</li>
         </ul>
+        对于 <code>Condition</code>（作用条件），还可以访问以下变量：
+        <ul>
+            <li><code>self（Boolean）</code>: 当前遍历到的物理对象是否为力场的宿主对象</li>
+        </ul>
         </p>
         `,
 };

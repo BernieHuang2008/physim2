@@ -18,6 +18,7 @@ class Simulation {
         this.world = world;
         // initial backup
         this.backups[0] = this.world.toJSON();
+        this.forces_detail = {};
     }
 
     clear() {
@@ -49,10 +50,12 @@ class Simulation {
 
         // 2. Calculate forces on all objects
         var forces = {};
+        this.forces_detail = {}; // { obj_id: [{ ff_id, force }] }
         for (let obj_id in this.world.phyobjs) {
             // for each PhyObj:
             var obj = this.world.phyobjs[obj_id];
-            var total_force = [0, 0];
+            var total_force = forces[obj_id] || [0, 0];
+            this.forces_detail[obj_id] = this.forces_detail[obj_id] || [];
             var ffd_id = null;
 
             for (let ff_id in this.world.ffs) {
@@ -68,11 +71,32 @@ class Simulation {
                 } else {
                     var force = ff.compute_force(obj, this.time, vars);
                     if (force && Array.isArray(force) && force.length >= 2) {
-                        total_force[0] += force[0] || 0;
-                        total_force[1] += force[1] || 0;
+                        force[0] = force[0] || 0;
+                        force[1] = force[1] || 0;
+
+                        total_force[0] += force[0];
+                        total_force[1] += force[1];
+
+                        // 反作用力
+                        if (ff.master_phyobj) {
+                            forces[ff.master_phyobj.id] = forces[ff.master_phyobj.id] || [0, 0];
+                            forces[ff.master_phyobj.id][0] -= force[0];
+                            forces[ff.master_phyobj.id][1] -= force[1];
+                            this.forces_detail[ff.master_phyobj.id] = this.forces_detail[ff.master_phyobj.id] || [];
+                            this.forces_detail[ff.master_phyobj.id].push({ 
+                                ff_id,
+                                is_reaction: true,
+                                force: [-force[0], -force[1]] 
+                            });
+                        }
 
                         // var Monitor Reporting
                         VarMon_report_ff(this.world, this.time, ff_id, Math.hypot(force[0], force[1]));
+                        this.forces_detail[obj_id].push({ 
+                            ff_id, 
+                            is_reaction: false,
+                            force 
+                        });
                     }
                 }
             }

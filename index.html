@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="ui/controls/help.css">
     <link rel="stylesheet" href="ui/style/leftbar.css">
     <link rel="stylesheet" href="ui/style/layer_select.css">
+    <link rel="stylesheet" href="ramble/ramble.css">
 </head>
 
 <body>
@@ -72,10 +73,33 @@
             <div id="notification-center" class="hide"></div>
             <div id="about-page" class="hide"></div>
             <div id="help-page" class="help-box hide"></div>
+            <div id="ramble-popover" class="ramble-popover hide">
+                <div class="ramble-header">
+                    <span>Ramble</span>
+                    <button class="ramble-clear-btn symbol" title="Clear Chat">&#xE107;</button>
+                </div>
+                <div class="ramble-content" id="ramble-content">
+                    <div class="ramble-dropzone" id="ramble-dropzone"></div>
+                    <div class="ramble-drop-hint">Drop images or text here</div>
+                    <div class="ramble-chat-area"></div>
+                </div>
+                <div class="ramble-input-area">
+                    <textarea placeholder="Type a message..."></textarea>
+                    <button id="ramble-voice-btn" class="ramble-btn-icon symbol" title="Voice Input"> &#xE720; </button>
+                    <button id="ramble-send-btn" class="ramble-btn-icon symbol" title="Send"> &#xE725; </button>
+                </div>
+            </div>
         </div>
     </div>
 </body>
 
+<script type="importmap">
+{
+    "imports": {
+        "@mathjs": "https://esm.unpkg.com/mathjs@15.0.0/?target=es2022"
+    }
+}
+</script>
 <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
 <script type="module" src="init.js"></script>
 <script type="module" src="test.js"></script>

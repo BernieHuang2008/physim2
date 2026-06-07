@@ -34,10 +34,10 @@ function mvc(var_id, vec_comp = null, others = {}) {
 }
 window.mvc_helper = function (elem) {
     const mvcId = elem.getAttribute("data-mvc-id");
-    
+
     const { var_id, vec_comp, others } = mvcSettings[mvcId];
-    const VarMon_config = { 
-        id: mvcId, 
+    const VarMon_config = {
+        id: mvcId,
         title: mvcId,
         annoX: others.annoX || null,
         annoY: others.annoY || null,
@@ -252,52 +252,10 @@ function monitor_phyobj(world, phyobj_id, return_to = null) {
                     }
                 }
 
-                let forces = [];
-                let totalForce = [0, 0];
-
-                var vars = {
-                    dt: SETTINGS.dt,
-                };
-                for (let var_id in world.vars) {
-                    vars[var_id] = world.vars[var_id].calc(world.vars, globalSimulation.time);
-                }
-
-                // Calculate forces from each force field
-                var ffd_id = null;
-                for (let ffid in world.ffs) {
-                    let ff = world.ffs[ffid];
-                    if (!ff.judge_condition(phyobj, globalSimulation.time, vars)) continue;
-
-                    if (ff.type === "FFD") {
-                        if (ffd_id !== null) {
-                            Noti.error(t("Simulation Error: Overlapping FFDs"), t("Detected multiple FFDs on one object!"));
-                            throw new Error("Multiple FFDs detected in acceleration calculation!");
-                        }
-                        ffd_id = ffid;
-                    } else {
-
-                        try {
-                            let force = ff.compute_force(phyobj, globalSimulation.time, vars);
-                            if (force && Array.isArray(force) && force.length >= 2) {
-                                forces.push(_createV([force[0] || 0, force[1] || 0], ff.nickname));
-                                totalForce[0] += force[0] || 0;
-                                totalForce[1] += force[1] || 0;
-                                // forces.push(force);
-                            }
-                        } catch (error) {
-                            console.warn(`Error calculating force from ${ff.nickname}:`, error);
-                            forces.push(_createV([0, 0], ff.nickname + " (Error)"));
-                        }
-                    }
-                }
-
-                // post-process FFD
-                if (ffd_id !== null) {
-                    let ffd_force = world.ffs[ffd_id].compute_force_ffd(phyobj, globalSimulation.time, vars, totalForce);
-                    if (ffd_force) {
-                        forces.push(_createV([ffd_force[0] || 0, ffd_force[1] || 0], world.ffs[ffd_id].nickname + ` [${t("FFD")}]`));
-                    }
-                }
+                let forces = (globalSimulation.forces_detail[phyobj.id] || []).map(({ ff_id, is_reaction, force }) => {
+                    let ff = world.ffs[ff_id];
+                    return _createV(force, (is_reaction ? t("[reaction_prefix]") + ' ' : '') + (ff.nickname || ff.id))
+                });
 
                 return forces;
             }

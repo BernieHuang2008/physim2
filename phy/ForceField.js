@@ -1,4 +1,4 @@
-import { math } from '../phyEngine/math.js';
+import * as math from '@mathjs';
 import { IDObject } from './idutils.js';
 import { t } from '../i18n/i18n.js';
 import { po_type_encode } from '../utils.js';
@@ -63,6 +63,7 @@ class ForceField extends IDObject {
             time: time,
             dt: 1 / 128, // precise dt will be passed in vars
             type: po_type_encode(phyobject.type),
+            self: phyobject.id === this.master_phyobj?.id ? true : false,
         };
 
         if (total_force) {
@@ -94,10 +95,10 @@ class ForceField extends IDObject {
     judge_condition(phyobject, time, vars = {}) {
         var scope = this._compute_scope(phyobject, time, vars);
 
-        // asign undefined to missing variables, to prevent mathjs error
+        // asign 0 to missing variables, to prevent mathjs error
         _getDependencies(this.condition).forEach(varid => {
             if (!(varid in scope)) {
-                scope[varid] = undefined;
+                scope[varid] = 0;
             }
         });
 
@@ -114,10 +115,10 @@ class ForceField extends IDObject {
             return null;
         }
 
-        // asign undefined to missing variables, to prevent mathjs error
+        // asign 0 to missing variables, to prevent mathjs error
         _getDependencies(this.condition).forEach(varid => {
             if (!(varid in scope)) {
-                scope[varid] = undefined;
+                scope[varid] = 0;
             }
         });
 

@@ -15,6 +15,7 @@ ffeditor_ui_section.deactivate();
 
 const templateUpdaters = {
     gravity: (ff) => {
+        // gravity must be slaved to anchor, otherwise the reaction force will be wired.
         var params = ff.template.params;
         var condition = "true";
         var expression = `mass * ${params.g} * (${params.direction} / norm(${params.direction}))`;
@@ -23,9 +24,11 @@ const templateUpdaters = {
     },
     universal_gravitational: (ff) => {
         var params = ff.template.params;
-        var condition = "true";
+        var condition = "not self and TARGET_flag_unigravity_applicable";
         // var condition = "norm(pos - " + ff.master_phyobj.pos.id + ")";
-        var expression = `- ${params.G} * mass * ${ff.master_phyobj.mass.id} / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * ((pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id}))`;
+        
+        // last part of the expression is for reaction force on master object, to satisfy Newton's third law.
+        var expression = `- ${params.G} * mass * ${ff.master_phyobj.mass.id} / (norm(pos - ${ff.master_phyobj.pos.id}) ^ 2) * ((pos - ${ff.master_phyobj.pos.id}) / norm(pos - ${ff.master_phyobj.pos.id})) * (mass / (mass + ${ff.master_phyobj.mass.id}))`;
 
         ff.reset(condition, expression);
     },
@@ -54,7 +57,8 @@ function defaultTemplates(template_type) {
                 break;
             case "universal_gravitational":
                 params = {
-                    G: new Variable('G', 6.67430e-11, 'immediate')
+                    G: new Variable('G', 6.67430e-11, 'immediate'),
+                    flag_unigravity_applicable: new Variable('flag_unigravity_applicable', 1, 'immediate'),
                 };
                 break;
             case "electrostatic":

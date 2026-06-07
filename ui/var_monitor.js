@@ -1,5 +1,5 @@
 import { t } from '../i18n/i18n.js';
-import { math } from '../phyEngine/math.js';
+import * as math from '@mathjs';
 import { showContextMenu } from './menu.js';
 import UIControls from './controls/controls.js';
 import { FakeVarFromFunction } from '../phy/FakeVarFromFunction.js';
@@ -17,20 +17,20 @@ var current_time_var_data = {};
 const defaultColors = ['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF'];
 
 class VarMonitor {
-    constructor({ id, title, exprX, ySeries = [], annoX, annoY, axis_match = false }) {
-        this.id = id;
-        this.meta = {
-            id: id,
-            title: title,
-            annoX: annoX,
-            annoY: annoY,
-            exprX: exprX,
-            ySeries: [],
+    constructor(config) {
+        this.id = config.id;
+        this.settings = {
+            id: config.id,
+            title: config.title,
+            annoX: config.annoX,
+            annoY: config.annoY,
+            exprX: config.exprX,
+            ySeries: [],    // process later
             display: {
-                pos: [100, 100],
-                size: [600, 400],
-                disp_type: "plotly/scatter",
-                axis_match: axis_match,
+                pos: config.display?.pos || [100, 100],
+                size: config.display?.size || [600, 400],
+                disp_type: config.display?.disp_type || "plotly/scatter",
+                axis_match: config.display?.axis_match || false,
             },
             datatype: "REAL",
         };
@@ -41,7 +41,7 @@ class VarMonitor {
         };
 
         // Initialize valueY arrays for each series
-        ySeries.forEach((ycfg) => this.addYSeries(ycfg));
+        config.ySeries.forEach((ycfg) => this.addYSeries(ycfg));
 
         this.gen_config();
         this.createPlotlyPlot();
@@ -51,12 +51,12 @@ class VarMonitor {
         // plotly layout
         this.plotly_layout = {
             margin: { t: 0, r: 0, b: 0, l: 0 },
-            xaxis: { title: { text: this.meta.annoX }, automargin: true },
-            yaxis: { title: { text: this.meta.annoY }, automargin: true },
+            xaxis: { title: { text: this.settings.annoX }, automargin: true },
+            yaxis: { title: { text: this.settings.annoY }, automargin: true },
             autosize: true,
         };
 
-        if (this.meta.display.axis_match) {
+        if (this.settings.display.axis_match) {
             this.plotly_layout.yaxis.scaleanchor = 'x';
             this.plotly_layout.yaxis.scaleratio = 1;
         }
@@ -69,9 +69,9 @@ class VarMonitor {
         };
     }
 
-    addYSeries({ name = "Y" + (this.meta.ySeries.length + 1), expr = "0", color = null }) {
+    addYSeries({ name = "Y" + (this.settings.ySeries.length + 1), expr = "0", color = null }) {
         if (!color) {
-            color = defaultColors[this.meta.ySeries.length % defaultColors.length];
+            color = defaultColors[this.settings.ySeries.length % defaultColors.length];
         }
 
         var item = {
@@ -93,28 +93,27 @@ class VarMonitor {
         };
 
         item.exprVar = fakeVar_expression_y;
-        this.meta.ySeries.push(item);
+        this.settings.ySeries.push(item);
         this.data.valueY.push([]);
     }
 
     createPlotlyPlot() {
-        const display = this.meta.display;
-
         // Create UI Section
         let title = "placeholder";
         this.section = new UI_Section(title);
+        this.section.dom.classList.add("var-monitor-section");
 
         this.section.on["activate"]["adjust_window_display"] = () => {
             // set title
-            this.section.setTitle(t("[Monitor]") + " " + (this.meta.title || t("Untitled")));
+            this.section.setTitle(t("[Monitor]") + " " + (this.settings.title || t("Untitled")));
             // Set initial position and size
-            if (display.pos) {
-                this.section.dom.style.left = (display.pos[0] || 0) + 'px';
-                this.section.dom.style.top = (display.pos[1] || 0) + 'px';
+            if (this.settings.display.pos) {
+                this.section.dom.style.left = (this.settings.display.pos[0] || 0) + 'px';
+                this.section.dom.style.top = (this.settings.display.pos[1] || 0) + 'px';
             }
-            if (display.size) {
-                this.section.dom.style.width = (display.size[0] || 400) + 'px';
-                this.section.dom.style.height = (display.size[1] || 300) + 'px';
+            if (this.settings.display.size) {
+                this.section.dom.style.width = (this.settings.display.size[0] || 400) + 'px';
+                this.section.dom.style.height = (this.settings.display.size[1] || 300) + 'px';
             }
         }
 
@@ -136,13 +135,13 @@ class VarMonitor {
         const oldDragEnd = this.section._onDragEnd.bind(this.section);
         this.section._onDragEnd = (e) => {
             oldDragEnd(e);
-            display.pos = [this.section.dom.offsetLeft, this.section.dom.offsetTop];
+            this.settings.display.pos = [this.section.dom.offsetLeft, this.section.dom.offsetTop];
         };
 
         const oldResizeEnd = this.section._onResizeEnd.bind(this.section);
         this.section._onResizeEnd = (e) => {
             oldResizeEnd(e);
-            display.size = [this.section.dom.offsetWidth, this.section.dom.offsetHeight];
+            this.settings.display.size = [this.section.dom.offsetWidth, this.section.dom.offsetHeight];
             Plotly.Plots.resize(this.plotDiv);
         };
 
@@ -180,7 +179,7 @@ class VarMonitor {
         contentContainer.appendChild(infoDiv);
 
         // Create plotly traces for each series
-        const traces = this.meta.ySeries.map((series, index) => ({
+        const traces = this.settings.ySeries.map((series, index) => ({
             x: this.data.valueX,
             y: this.data.valueY[index] || [],
             mode: 'scatter',
@@ -197,10 +196,10 @@ class VarMonitor {
     }
 
     editInfo() {
-        const display = this.meta.display;
+        const display = this.settings.display;
 
         // a one-time UI section for editing info
-        var section_info = new UI_Section(t("[Monitor]") + " " + (this.meta.title || t("Untitled")) + " - " + t("Info"));
+        var section_info = new UI_Section(t("[Monitor]") + " " + (this.settings.title || t("Untitled")) + " - " + t("Info"));
 
         section_info.on["activate"]["adjust_window_display"] = () => {
             // Set initial position and size
@@ -230,10 +229,10 @@ class VarMonitor {
         // fake vars
         const fakeVar_expression_x = new FakeVarFromFunction(() => null, "Var Monitor Expr Var X", null, globalWorld);
         fakeVar_expression_x.type = "derived";
-        fakeVar_expression_x.expression = this.meta.exprX;
+        fakeVar_expression_x.expression = this.settings.exprX;
         fakeVar_expression_x.update_expression = (newExpr) => {
             // update expr
-            this.meta.exprX = newExpr;
+            this.settings.exprX = newExpr;
             fakeVar_expression_x.expression = newExpr;
             // clear existing data to avoid confusion
             this.reset();
@@ -241,10 +240,10 @@ class VarMonitor {
 
         const fakeVar_title = new FakeVarFromFunction(() => null, "Var Monitor Title Var", null, globalWorld);
         fakeVar_title.type = "immediate";
-        fakeVar_title._value = this.meta.title;
+        fakeVar_title._value = this.settings.title;
         fakeVar_title.update = (newTitle) => {
             fakeVar_title._value = newTitle;
-            this.meta.title = newTitle;
+            this.settings.title = newTitle;
             this.section.setTitle(t("[Monitor]") + " " + (newTitle || t("Untitled")));
         };
 
@@ -257,9 +256,9 @@ class VarMonitor {
             })
             .addUIControl(UIControls.InputControls.InputNormal, {
                 field: t('X-axis Annotation'),
-                variable: new FakeVarFromFunction(() => this.meta.annoX, "Var Monitor Axis X Title", null, null),
+                variable: new FakeVarFromFunction(() => this.settings.annoX, "Var Monitor Axis X Title", null, null),
                 onChange: (variable, newValue) => {
-                    this.meta.annoX = newValue;
+                    this.settings.annoX = newValue;
                 }
             })
             .addUIControl(UIControls.InputControls.InputMath, {
@@ -268,14 +267,14 @@ class VarMonitor {
             })
             .addUIControl(UIControls.InputControls.InputNormal, {
                 field: t('Y-axis Annotation'),
-                variable: new FakeVarFromFunction(() => this.meta.annoY, "Var Monitor Axis Y Title", null, null),
+                variable: new FakeVarFromFunction(() => this.settings.annoY, "Var Monitor Axis Y Title", null, null),
                 onChange: (variable, newValue) => {
-                    this.meta.annoY = newValue;
+                    this.settings.annoY = newValue;
                 }
             })
             .addUIControl(UIControls.Tables.ColumedList, {
                 field: t("Y-axis Series"),
-                iterator: this.meta.ySeries,
+                iterator: this.settings.ySeries,
                 colums: [
                     // Col 1: Name
                     (series, index) => {
@@ -316,7 +315,7 @@ class VarMonitor {
                         deleteBtn.className = "small-button symbol red alert-theme";
                         deleteBtn.innerHTML = "&#xE74D;";
                         deleteBtn.onclick = () => {
-                            this.meta.ySeries.splice(index, 1);
+                            this.settings.ySeries.splice(index, 1);
                             this.data.valueY.splice(index, 1);
                             section_info.render();
                             this.updateFrame();
@@ -328,7 +327,7 @@ class VarMonitor {
                 ],
                 onAdd: () => {
                     const ycfg = {
-                        name: "Y" + (this.meta.ySeries.length + 1),
+                        name: "Y" + (this.settings.ySeries.length + 1),
                         expr: "0",
                         color: null
                     };
@@ -340,9 +339,9 @@ class VarMonitor {
             .addSubsection(t("Settings"))
             .addUIControl(UIControls.InputControls.InputCheckbox, {
                 field: t('Match X/Y Axis Scale'),
-                variable: new FakeVarFromFunction(() => this.meta.display.axis_match, "Var Monitor Axis Match", null, null),
+                variable: new FakeVarFromFunction(() => this.settings.display.axis_match, "Var Monitor Axis Match", null, null),
                 onChange: (variable, newValue) => {
-                    this.meta.display.axis_match = newValue;
+                    this.settings.display.axis_match = newValue;
                 }
             })
             .render();
@@ -365,11 +364,11 @@ class VarMonitor {
     reset() {
         this.data.time = [];
         this.data.valueX = [];
-        this.data.valueY = this.meta.ySeries.map(() => []);
+        this.data.valueY = this.settings.ySeries.map(() => []);
     }
 
     evaluateAndAppend(time, scope) {
-        let exprX = this.meta.exprX || "t";
+        let exprX = this.settings.exprX || "t";
 
         let valX = math.evaluate(exprX, scope);
 
@@ -377,7 +376,7 @@ class VarMonitor {
         this.data.time.push(time);
         this.data.valueX.push(valX);
 
-        this.meta.ySeries.forEach((series, index) => {
+        this.settings.ySeries.forEach((series, index) => {
             if (series.expr) {
                 try {
                     let valY = math.evaluate(series.expr, scope);
@@ -395,7 +394,7 @@ class VarMonitor {
         this.revision = (this.revision || 0) + 1;
         this.plotly_layout.datarevision = this.revision;
 
-        const traces = this.meta.ySeries.map((series, index) => ({
+        const traces = this.settings.ySeries.map((series, index) => ({
             x: this.data.valueX,
             y: this.data.valueY[index] || [],
             type: 'scatter',
@@ -404,6 +403,41 @@ class VarMonitor {
         }));
 
         Plotly.react(this.plotDiv, traces, this.plotly_layout, this.plotly_config);
+    }
+
+    toJSON() {
+        return {
+            settings: {
+                ...this.settings,
+                ySeries: this.settings.ySeries.map(series => {
+                    let series_copy = { ...series };
+                    delete series_copy.exprVar;
+                    return series_copy;
+                })
+            }
+        };
+    }
+
+    static fromJSON(json) {
+        let monitor = new VarMonitor(json.settings);
+        monitor.settings = json.settings;
+
+        // reconstruct valueY exprVars
+        monitor.settings.ySeries.forEach((series, index) => {
+            const fakeVar_expression_y = new FakeVarFromFunction(() => null, series.name, null, globalWorld);
+            fakeVar_expression_y.type = "derived";
+            fakeVar_expression_y.expression = series.expr;
+            fakeVar_expression_y.update_expression = (newExpr) => {
+                series.expr = newExpr;
+                fakeVar_expression_y.expression = newExpr;
+                monitor.reset();
+            };
+            series.exprVar = fakeVar_expression_y;
+        });
+
+        monitor.reset();
+        monitor.updateFrame();
+        return monitor;
     }
 }
 
@@ -511,4 +545,18 @@ function VarMon_toggle_external_mode() {
     }
 }
 
-export { VarMonitor, varMonitorData, VarMon_add, VarMon_reset, VarMon_report_ff, VarMon_report_vars, VarMon_report_simend, VarMon_update_frame, VarMon_toggle_external_mode };
+function export_json() {
+    const json = {};
+    for (const [id, monitor] of Object.entries(varMonitorData)) {
+        json[id] = monitor.toJSON();
+    }
+    return json;
+}
+
+function import_json(json) {
+    for (const [id, monitor_json] of Object.entries(json)) {
+        varMonitorData[id] = VarMonitor.fromJSON(monitor_json);
+    }
+}
+
+export { VarMonitor, varMonitorData, VarMon_add, VarMon_reset, VarMon_report_ff, VarMon_report_vars, VarMon_report_simend, VarMon_update_frame, VarMon_toggle_external_mode, export_json, import_json };

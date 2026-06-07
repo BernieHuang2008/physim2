@@ -1,3 +1,10 @@
+.var-monitor-section {
+    display: none !important;
+}
+body[data-mode=SIMULATE] .var-monitor-section {
+    display: block !important;
+}
+
 .var-monitor-window {
     position: absolute;
     background-color: white;

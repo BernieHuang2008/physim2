@@ -9,5 +9,5 @@
     width: var(--left-bar-width);
     height: var(--left-bar-width);
     filter: var(--icon-filter);
-    transform: translateX(-2px) translateY(-2px);
+    transform: translateX(-3px) translateY(-3px);
 }

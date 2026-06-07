@@ -1,4 +1,4 @@
-import { math } from '../../phyEngine/math.js';
+import * as math from '@mathjs';
 import * as Noti from '../notification/notification.js';
 import { t } from '../../i18n/i18n.js';
 import { mkHelp } from './help.js';

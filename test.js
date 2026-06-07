@@ -1,8 +1,10 @@
 import { UI_Section } from "./ui/ui_section/ui_section.js";
 import { $, $$ } from './utils.js';
-import { math } from './phyEngine/math.js';
+import * as math from '@mathjs';
 import { Variable } from './phy/Var.js';
 import { setLanguage, getCurrentLanguage, t } from './i18n/i18n.js';
+
+window.math = math; // TODO: debug
 
 // =====
 

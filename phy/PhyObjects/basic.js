@@ -1,4 +1,4 @@
-import { math } from '../../phyEngine/math.js';
+import * as math from '@mathjs';
 import { IDObject } from '../idutils.js';
 import { Variable } from '../Var.js';
 import { t } from '../../i18n/i18n.js';

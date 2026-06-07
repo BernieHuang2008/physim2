@@ -1,0 +1,323 @@
+#ramble-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 12.5%;
+
+    zoom: 75%;
+
+    border: 4px solid transparent;
+    border-radius: 50%;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, #e6e6e6, #e6e6e6), linear-gradient(90deg, #8F41E9, #578AEF);
+    transition: background-image 0.2s;
+}
+
+#ramble-btn:hover {
+    background-image: linear-gradient(to right, #e6e6e6, #e6e6e6), linear-gradient(90deg, #578AEF, #8F41E9);
+    cursor: pointer;
+}
+
+#ramble-btn.drag-over {
+    background: transparent;
+}
+
+.ramble-popover {
+    position: absolute;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.2s, transform 0.2s;
+    border: 1px solid #ddd;
+}
+
+.ramble-popover.hide {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.98);
+}
+
+.ramble-header {
+    padding: 10px 15px;
+    background: linear-gradient(90deg, #ffecdf, #dbe4ff);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.ramble-clear-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.ramble-clear-btn:hover {
+    color: #a00000;
+}
+
+.ramble-content {
+    flex: 1;
+    position: relative;
+    padding: 10px;
+    background-color: #fafafa;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ramble-dropzone {
+    position: absolute;
+    inset: 0;
+    border: 2px dashed transparent;
+    border-radius: 8px;
+    margin: 10px;
+    transition: background-color 0.2s, border-color 0.2s;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.ramble-content.drag-over .ramble-dropzone {
+    border-color: #007bff;
+    background-color: rgba(230, 240, 255, 0.8);
+}
+
+.ramble-drop-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #007bff;
+    pointer-events: none;
+    z-index: 11;
+}
+
+.ramble-content.drag-over .ramble-drop-hint {
+    display: flex;
+}
+
+.ramble-chat-area {
+    flex: 1;
+}
+
+.ramble-input-area {
+    display: flex;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #eee;
+    align-items: flex-end;
+}
+
+.ramble-input-area textarea {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 12px;
+    resize: none;
+    height: 36px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.ramble-input-area textarea:focus {
+    border-color: #007bff;
+}
+
+.ramble-btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 5px;
+    color: #007bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.ramble-btn-icon:hover {
+    background-color: #f0f8ff;
+}
+
+.ramble-entry-file {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 8px;
+    margin-bottom: 8px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.ramble-file-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.ramble-file-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.ramble-file-name {
+    font-size: 14px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ramble-file-preview {
+    font-size: 12px;
+    color: #666;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ramble-file-preview pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.ramble-entry-loading {
+    font-size: small;
+    color: gray;
+    display: flex;
+    justify-content: center;
+    padding: 3px;
+}
+
+.ramble-loading-spinner {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 2px solid #ddd;
+    border-right: 2px solid transparent;
+    animation: loading-14 1s linear infinite;
+    margin-left: 1ch;
+    margin-top: 0.05em;
+}
+
+.ramble-loading-spinner:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    border-bottom: 2px solid #ff3d00;
+    border-left: 2px solid transparent;
+}
+
+@keyframes loading-14 {
+    0% {
+        transform: rotate(0);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ramble-entry-success {
+    font-size: small;
+    color: gray;
+    display: flex;
+    justify-content: center;
+    padding: 3px;
+
+    &::after {
+        content: "✓";
+        color: green;
+        margin-left: 5px;
+    }
+}
+
+.ramble-entry-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: #666;
+    cursor: pointer;
+    line-height: 20px;
+    padding: 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.ramble-entry-close:hover {
+    background: rgba(0, 0, 0, 0.16);
+    color: #111;
+}
+
+.ramble-file-image-container {
+    width: 48px;
+    height: 48px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+.ramble-file-image-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ramble-image-viewer {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+    cursor: zoom-out;
+}
+
+.ramble-image-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
