@@ -45,7 +45,10 @@
 *   **`velocity`** `(Array)`: 当前的速度矢量 `[vx, vy]`。
 *   **`vars`** `(Array<String>)`: 记录挂载/作用在该对象上的自定义变量 ID 列表。
 *   **`ffs`** `(Array<String>)`: 记录生效于该对象或其参与定义的力场 (Force Field) ID 列表。
-*   **`style`** `(Object)`: 视觉外观样式，包含 `color`（颜色 Hex 码）和 `size`（渲染尺寸大小）。
+*   **`style`** `(Object)`: 视觉外观样式，包含：
+  -  `color`（颜色 Hex 码）
+  -  `size`（渲染尺寸大小）
+  -  `shape`（SVG 图形字符串，空字符串表示绘制默认质点）。采用CG坐标系（y轴向下），10px=1米，质心在(0, 0)。
 
 example:
 ```json
@@ -67,7 +70,8 @@ example:
         "ffs": [],
         "style": {
             "color": "#ff0000",
-            "size": 1
+            "size": 1,
+            "shape": ""
         }
     },
     "OBJ_T13DDJ16U": {
@@ -91,7 +95,8 @@ example:
         ],
         "style": {
             "color": "#ff0000",
-            "size": 1
+            "size": 1,
+            "shape": "<svg style=\"transform: translate(-20px, -30px);\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"...\" fill=\"var(--postyle-color)表示使用color属性中设置的颜色\"></path></svg>"
         }
     },
 }
@@ -264,7 +269,8 @@ example:
                 "ffs": [],
                 "style": {
                     "color": "#ff0000",
-                    "size": 1
+                    "size": 1,
+                    "shape": ""
                 }
             },
             "OBJ_T13DDJ16U": {
@@ -288,7 +294,8 @@ example:
                 ],
                 "style": {
                     "color": "#ff0000",
-                    "size": 1
+                    "size": 1,
+                    "shape": ""
                 }
             },
             "OBJ_M3KT0DMCN": {
@@ -308,7 +315,8 @@ example:
                 "ffs": [],
                 "style": {
                     "color": "#009dff",
-                    "size": 1
+                    "size": 1,
+                    "shape": ""
                 }
             }
         },

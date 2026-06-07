@@ -43,7 +43,9 @@ window.mvc_helper = function (elem) {
         annoY: others.annoY || null,
         exprX: null,
         ySeries: [],
-        axis_match: others.axis_match || false
+        display: {
+            axis_match: others.axis_match || false,
+        }
     };
 
     if (typeof vec_comp === "number") {
@@ -64,7 +66,7 @@ window.mvc_helper = function (elem) {
                 VarMon_config.annoY = others.annoY || `${var_id}[2]}`;
                 VarMon_config.exprX = `${var_id}[1]`;
                 VarMon_config.ySeries = [{ name: "Y", expr: `${var_id}[2]`, color: null }];
-                VarMon_config.axis_match = true;
+                VarMon_config.display.axis_match = true;
                 break;
             default:
                 VarMon_config.annoX = t("Time / s");

@@ -256,7 +256,6 @@ function init_ramble() {
         dom.ramblePopover.classList.remove('hide');
 
         // process drop
-        console.log(e)
         dom.rambleContentArea.classList.remove('drag-over');
         dom.rambleBtn.classList.remove('drag-over');
         dom.rambleImg.src = "/assets/icons/ramble_icon.svg";
@@ -413,12 +412,12 @@ function start_ramble() {
         content: 'Current World: ' + JSON.stringify(filev2.pack())
     });
 
-    console.log("Final Messages Sent to AI:", messages);
+    console.log("[Ramble] Final Messages Sent to AI:", messages);
 
     const sessionId = ramble_session;
 
     ask_ai(messages).then((response) => {
-        console.log("AI Response:", response);
+        console.log("[Ramble] AI Response:", response);
         if (response.choices && response.choices.length > 0) {
             if (sessionId !== ramble_session) {
                 console.warn("Received AI response for an old session. Ignoring.");
@@ -441,13 +440,10 @@ function start_ramble() {
             // show summary
             for (var i=0; i<ramble_results.length; i++) {
                 var html = marked.parse(ramble_results[i]);
+                console.log("[Ramble] Displaying result " + (i + 1) + ":");
                 ui.addControl(ui.createSuccessControl("<a href='javascript:rambleRestoreBackup(" + i + ")'>Restore Backup " + (i + 1) + "</a>"));
                 dom.rambleChatArea.innerHTML += html;
             }
-            var html = marked.parse(aiMessage.summary);
-            dom.rambleChatArea.innerHTML = html;
-
-            console.log(aiMessage);
         } else {
             console.error("Unexpected AI response format:", response);
         }

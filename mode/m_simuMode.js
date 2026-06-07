@@ -25,7 +25,9 @@ const simuMenu = [
                         ySeries: [{ name: "Y", expr: "undefined", color: "#1f77b4" }],
                         annoX: t("Time / s"),
                         annoY: t("Value"),
-                        axis_match: false
+                        display: {
+                            axis_match: false,
+                        }
                     });
                 }
             },

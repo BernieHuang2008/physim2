@@ -1,6 +1,7 @@
 import { createVectorVisualization } from './vector_visualizer.js';
 import { renderMathExpression, initializeMathInput } from './mathinput.js';
 import { mkHelp } from './help.js';
+import { t } from '../../i18n/i18n.js';
 
 function InputNormal({ field, variable, disabled = false, onChange = null, help = null, hide = false }) {
     if (hide) {
@@ -267,4 +268,62 @@ function InputColor({ field, variable, disabled = false, onChange = null, hide =
     return dom;
 }
 
-export { InputNormal, InputNumber, InputRange, InputVector2, InputMath, InputCheckbox, InputColor };
+function InputSvgShape({ field, variable, disabled = false, onChange = null, help = null, hide = false }) {
+    if (hide) {
+        return document.createElement("div");
+    }
+
+    var dom = document.createElement("div");
+    dom.innerHTML = `
+        <b class="field-title ${field ? '' : 'hidden'}">${field}:</b> 
+        ${help ? `<div class="help symbol">&#xE9CE;</div>` : ''}
+        <div class="input-svgshape-container">
+<textarea type="text" ${disabled ? "disabled" : ""}>
+${t("Enter SVG code")}
+<svg>...</svg>
+
+${t("*: Enter SVG Note")}
+</textarea>
+            <div class="svg-preview-area"></div>
+        </div>
+    `;
+    const input = dom.querySelector("textarea");
+    const svgPreviewArea = dom.querySelector(".svg-preview-area");
+
+    // init value & preview
+    if (variable.value) {
+        input.innerText = variable.value;
+        svgPreviewArea.innerHTML = variable.value;
+    }
+
+    // add help
+    if (help) {
+        mkHelp(dom.querySelector('.help'), help);
+    }
+
+    // bind change event
+    input.addEventListener("change", (e) => {
+        if (disabled) return;
+
+        const newValue = e.target.value;
+
+        variable.resetWithParams({
+            value: newValue,
+            type: 'immediate',
+        });
+
+        // Trigger onChange callback if provided
+        if (onChange && typeof onChange === 'function') {
+            onChange(variable, newValue);
+        }
+
+        // Update SVG preview
+        if (newValue) {
+            svgPreviewArea.innerHTML = newValue;
+        }
+    });
+
+    return dom;
+}
+
+export { InputNormal, InputNumber, InputRange, InputVector2, InputMath, InputCheckbox, InputColor, InputSvgShape };

@@ -72,6 +72,8 @@ function showMenuLv2(lst, menu_lv1_dom) {
     }
 }
 
+var curr_proj_name = "Untitled Project.json";
+
 const mainMenu = [
     {
         title: t("About"),
@@ -82,13 +84,13 @@ const mainMenu = [
         items: [
             {
                 type: "submenu",
-                title: t("Save"),
+                title: t("Save Project"),
                 action: function () {
                     var json = filev2.pack();
                     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json, specialJsonStringifyReplacer));
                     var downloadAnchorNode = document.createElement('a');
                     downloadAnchorNode.setAttribute("href", dataStr);
-                    downloadAnchorNode.setAttribute("download", "physim_world_static.json");
+                    downloadAnchorNode.setAttribute("download", curr_proj_name);
                     document.body.appendChild(downloadAnchorNode);
                     downloadAnchorNode.click();
                     downloadAnchorNode.remove();
@@ -96,7 +98,7 @@ const mainMenu = [
             },
             {
                 type: "submenu",
-                title: t("Open"),
+                title: t("Open Project"),
                 action: function () {
                     var input = document.createElement('input');
                     input.type = 'file';
@@ -122,7 +124,8 @@ const mainMenu = [
                                             Noti.error(t("Unsupported file version: " + json.version));
                                     }
 
-                                    console.log("Loaded world:", globalWorld);
+                                    curr_proj_name = file.name;
+                                    console.log("Loaded world:", curr_proj_name, globalWorld);
                                 } catch (error) {
                                     Noti.error(t("Failed to load world"), error.message);
                                     console.error('Error loading world:', error);
@@ -135,51 +138,15 @@ const mainMenu = [
                 }
             },
             {
-                type: "hr"
-            },
-            {
                 type: "submenu",
-                title: t("Save World (static)"),
+                title: t("New Project"),
                 action: function () {
-                    var json = globalWorld.toJSON();
-                    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json, specialJsonStringifyReplacer));
-                    var downloadAnchorNode = document.createElement('a');
-                    downloadAnchorNode.setAttribute("href", dataStr);
-                    downloadAnchorNode.setAttribute("download", "physim_world_static.json");
-                    document.body.appendChild(downloadAnchorNode);
-                    downloadAnchorNode.click();
-                    downloadAnchorNode.remove();
+                    globalWorld.reset(new World());
+                    scheduleRender(globalWorld, globalWorld.anchor, false, () => inspect_phyobj(globalWorld, globalWorld.anchor));
+                    varmon.VarMon_reset();
+                    curr_proj_name = "Untitled Project.json";
                 }
-            },
-            {
-                type: "submenu",
-                title: t("Load World (static)"),
-                action: function () {
-                    var input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.json';
-                    input.onchange = function (event) {
-                        var file = event.target.files[0];
-                        if (file) {
-                            var reader = new FileReader();
-                            reader.onload = function (e) {
-                                try {
-                                    var json = JSON.parse(e.target.result, specialJsonStringifyReviver);
-                                    var newWorld = World.fromJSON(json);
-                                    globalWorld.reset(newWorld);
-                                    console.log("Loaded world:", newWorld);
-                                    scheduleRender(newWorld, newWorld.anchor, false, () => inspect_phyobj(newWorld, newWorld.anchor));
-                                } catch (error) {
-                                    Noti.error(t("Failed to load world"), error.message);
-                                    console.error('Error loading world:', error);
-                                }
-                            };
-                            reader.readAsText(file);
-                        }
-                    };
-                    input.click();
-                }
-            },
+            }
         ]
     },
     {

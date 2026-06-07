@@ -20,7 +20,8 @@ class BasicPhyObject extends IDObject {
     // display property
     style = {
         color: "#ff0000",
-        size: 1.0
+        size: 1.0,
+        shape: ""
     }
 
     constructor(world, mass = 0, pos = null, velocity = null, vars = [], ffs = [], style = null, id = null) {

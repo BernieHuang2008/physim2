@@ -106,6 +106,12 @@ const translations = {
     "No data to display": "无数据显示",
     "Notifications": "通知",
     "No notifications.": "暂无通知。",
+    "Style": "样式",
+    "Color": "颜色",
+    "Shape": "形状",
+    "Current Time": "当前时间",
+    "ramble_clear_confirm": "确定要清除对话记录吗？此操作不可撤销。",
+    "[reaction_prefix]": "[反]",
 
     // Var info display
     "VAR": "变量",
@@ -133,13 +139,16 @@ const translations = {
     // 文件操作 (File Operations)
     // ===============================
     "File": "文件",
-    "Save World (static)": "保存世界（静态）",
-    "Load World (static)": "加载世界（静态）",
+    "Save Project": "保存项目 / Save",
+    "Open Project": "打开项目 / Open",
+    "New Project": "新建项目 / New",
     "Failed to load world": "加载世界失败",
 
     // ===============================
     // 通知消息 (Notification Messages)
     // ===============================
+    "Enter SVG code": "粘贴 SVG 代码",
+    "*: Enter SVG Note": "* 设置 style.transform、width/height、viewBox 等属性以调整显示效果。",
     // 成功消息 (Success Messages)
     "A new particle has been added to the world.": "一个新的质点已被添加到世界中。",
 
@@ -243,6 +252,7 @@ const translations = {
     // 其他页面 (Other Pages)
     // ===============================
     "About": "关于",
+    "Settings": "设置",
 
     // ===============================
     // 帮助文档 (Help Documentation)

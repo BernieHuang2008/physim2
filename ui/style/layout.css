@@ -41,7 +41,7 @@
     --top-bar-height: 28.2px;
     --bottom-bar-height: 1.5rem;
     --left-bar-width: 2.5rem;
-    --right-bar-width: 30%;
+    --right-bar-width: 30vw;
 }
 
 #top-bar {

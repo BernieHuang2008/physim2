@@ -151,6 +151,16 @@ function inspect_phyobj(world, phyobj_id, return_to = null) {
                 scheduleRender(world, phyobj.id);
             }
         })
+        .addUIControl(UIControls.InputControls.InputSvgShape, {
+            field: t("Shape"),
+            variable: new FakeVarFromFunction(() => phyobj.style.shape),
+            hide: phyobj.type !== "ParticlePO",
+            onChange: (newShape) => {
+                phyobj.style.shape = newShape.value;
+                inspector_ui_section.render();
+                scheduleRender(world, phyobj.id);
+            }
+        })
         .addUIControl(UIControls.InputControls.InputNumber, {
             field: t("Size"),
             variable: phyobj.style.size_var,

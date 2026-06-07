@@ -95,6 +95,9 @@ function render_phyobj(phyobj) {
     for (let style_key in phyobj.style) {
         dom_element.style.setProperty("--postyle-" + style_key, phyobj.style[style_key]);
     }
+    if (phyobj.style.shape) {
+        dom_element.innerHTML = phyobj.style.shape;
+    }
 
     switch (phyobj.type) {
         case 'ParticlePO':
